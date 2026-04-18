@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero-section bg-dark text-white d-flex align-items-center">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <span class="badge bg-warning text-dark mb-3 px-3 py-2">Authorized Dealer</span>
+                <h1 class="display-4 fw-bold mb-3">
+                    Ride the <span class="text-warning">Thrill</span>.<br>
+                    Own a Bajaj.
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    From Pulsar to Chetak EV — explore the full range of Bajaj bikes at your nearest showroom.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{% url 'bike_list' %}" class="btn btn-warning btn-lg fw-bold">
+                        <i class="bi bi-grid-fill me-2"></i>Explore Bikes
+                    </a>
+                    <a href="{% url 'enquiry' %}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-telephone me-2"></i>Book Test Ride
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CATEGORY QUICK LINKS -->
+<section class="py-4 bg-warning">
+    <div class="container">
+        <div class="d-flex gap-3 flex-wrap justify-content-center">
+            {% for cat in categories %}
+            <a href="{% url 'bike_list' %}?category={{ cat.slug }}"
+               class="btn btn-dark px-4 py-2 fw-semibold">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- FEATURED BIKES -->
+{% if featured_bikes %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Featured Bikes</h2>
+            <p class="text-muted">Our top picks just for you</p>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for bike in featured_bikes %}
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm bike-card">
+                    {% if bike.image %}
+                    <img src="{{ bike.image.url }}" class="card-img-top bike-img" alt="{{ bike.name }}">
+                    {% else %}
+                    <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
+                        <i class="bi bi-bicycle text-secondary" style="font-size: 4rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-warning text-dark mb-2">{{ bike.category.name }}</span>
+                        <h5 class="card-title fw-bold">{{ bike.name }}</h5>
+                        <p class="text-primary fw-bold fs-5">{{ bike.formatted_price }}</p>
+                        <div class="d-flex gap-2 small text-muted flex-wrap">
+                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>{% endif %}
+                            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>{% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 pb-3">
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'bike_detail' bike.slug %}" class="btn btn-dark btn-sm flex-fill">View Details</a>
+                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}" class="btn btn-warning btn-sm flex-fill">Book Ride</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'bike_list' %}" class="btn btn-outline-dark px-5">View All Bikes</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- QUICK ACTIONS -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3 col-6">
+                <a href="{% url 'enquiry' %}" class="text-decoration-none">
+                    <div class="quick-action-card p-4 bg-white rounded shadow-sm h-100">
+                        <i class="bi bi-calendar-check-fill text-warning fs-2 mb-2 d-block"></i>
+                        <h6 class="fw-bold text-dark">Book Test Ride</h6>
+                        <p class="text-muted small mb-0">Try before you buy</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="{% url 'book_service' %}" class="text-decoration-none">
+                    <div class="quick-action-card p-4 bg-white rounded shadow-sm h-100">
+                        <i class="bi bi-wrench-adjustable-circle-fill text-warning fs-2 mb-2 d-block"></i>
+                        <h6 class="fw-bold text-dark">Book Service</h6>
+                        <p class="text-muted small mb-0">Expert bike care</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="{% url 'exchange_bike' %}" class="text-decoration-none">
+                    <div class="quick-action-card p-4 bg-white rounded shadow-sm h-100">
+                        <i class="bi bi-arrow-left-right text-warning fs-2 mb-2 d-block"></i>
+                        <h6 class="fw-bold text-dark">Exchange Bike</h6>
+                        <p class="text-muted small mb-0">Upgrade your ride</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 col-6">
+                <a href="{% url 'contact' %}" class="text-decoration-none">
+                    <div class="quick-action-card p-4 bg-white rounded shadow-sm h-100">
+                        <i class="bi bi-geo-alt-fill text-warning fs-2 mb-2 d-block"></i>
+                        <h6 class="fw-bold text-dark">Find Showroom</h6>
+                        <p class="text-muted small mb-0">{{ all_showrooms.count }} outlets near you</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- YOUTUBE VIDEOS SECTION -->
+{% if videos %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Watch Our Latest Videos</h2>
+            <p class="text-muted">Ride experiences, reviews and more</p>
+        </div>
+        <div class="row g-4">
+            {% for video in videos %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="ratio ratio-16x9">
+                        <iframe
+                            src="{{ video.embed_url }}"
+                            title="{{ video.title }}"
+                            allowfullscreen
+                            loading="lazy"
+                            class="rounded-top">
+                        </iframe>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text fw-semibold mb-0">{{ video.title }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ENQUIRY FORM SECTION -->
+<section class="py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 text-center mb-4">
+                <h2 class="fw-bold">Interested? Let's Talk.</h2>
+                <p class="text-secondary">Fill in your details and our team will reach out within 24 hours.</p>
+            </div>
+            <div class="col-lg-7">
+                <form method="POST" action="{% url 'enquiry' %}">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">{{ enquiry_form.name.label_tag }}{{ enquiry_form.name }}</div>
+                        <div class="col-md-6">{{ enquiry_form.phone.label_tag }}{{ enquiry_form.phone }}</div>
+                        <div class="col-md-6">{{ enquiry_form.bike.label_tag }}{{ enquiry_form.bike }}</div>
+                        <div class="col-md-6">{{ enquiry_form.showroom.label_tag }}{{ enquiry_form.showroom }}</div>
+                        <div class="col-12">{{ enquiry_form.message.label_tag }}{{ enquiry_form.message }}</div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold">
+                                <i class="bi bi-send-fill me-2"></i>Send Enquiry
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SHOWROOMS STRIP -->
+<section class="py-4 bg-light border-top">
+    <div class="container">
+        <h6 class="text-center text-muted mb-3 text-uppercase fw-bold">Our Showroom Locations</h6>
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+            {% for showroom in showrooms %}
+            <a href="{% url 'contact' %}" class="badge bg-dark text-white px-3 py-2 text-decoration-none fs-6">
+                <i class="bi bi-geo-alt me-1"></i>{{ showroom.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

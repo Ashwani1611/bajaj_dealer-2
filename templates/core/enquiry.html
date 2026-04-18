@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Book Test Ride{% endblock %}
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <h2 class="fw-bold mb-1">Book a Test Ride</h2>
+                <p class="text-muted mb-4">Fill in your details — we'll confirm the slot.</p>
+                <div class="card border-0 shadow-sm p-4">
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            {% for field in form %}
+                            <div class="col-md-{% if field.name == 'message' %}12{% else %}6{% endif %}">
+                                <label class="form-label fw-semibold">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold">
+                                    <i class="bi bi-send-fill me-2"></i>Submit Enquiry
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

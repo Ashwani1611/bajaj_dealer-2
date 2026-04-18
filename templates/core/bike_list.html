@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}All Bikes{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="fw-bold mb-4">Explore Bikes</h2>
+
+        <!-- Category Filter -->
+        <div class="d-flex gap-2 flex-wrap mb-4">
+            <a href="{% url 'bike_list' %}"
+               class="btn btn-sm {% if not selected_category %}btn-dark{% else %}btn-outline-dark{% endif %}">
+                All
+            </a>
+            {% for cat in categories %}
+            <a href="?category={{ cat.slug }}"
+               class="btn btn-sm {% if selected_category == cat.slug %}btn-warning{% else %}btn-outline-dark{% endif %}">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- Bike Grid -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for bike in bikes %}
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm bike-card">
+                    {% if bike.image %}
+                    <img src="{{ bike.image.url }}" class="card-img-top bike-img" alt="{{ bike.name }}">
+                    {% else %}
+                    <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
+                        <i class="bi bi-bicycle text-secondary" style="font-size: 4rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-warning text-dark mb-2">{{ bike.category.name }}</span>
+                        <h5 class="fw-bold">{{ bike.name }}</h5>
+                        <p class="text-primary fw-bold">{{ bike.formatted_price }}</p>
+                        <div class="d-flex gap-3 small text-muted flex-wrap">
+                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>{% endif %}
+                            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>{% endif %}
+                            {% if bike.fuel_type %}<span><i class="bi bi-droplet me-1"></i>{{ bike.fuel_type }}</span>{% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 pb-3">
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'bike_detail' bike.slug %}" class="btn btn-dark btn-sm flex-fill">Details</a>
+                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}" class="btn btn-warning btn-sm flex-fill">Book Ride</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="bi bi-bicycle fs-1 d-block mb-3"></i>
+                <p>No bikes found in this category.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

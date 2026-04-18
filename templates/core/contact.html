@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Our Showrooms{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Our Showrooms</h2>
+            <p class="text-muted">Find the nearest authorized Bajaj showroom</p>
+        </div>
+        <div class="row g-4">
+            {% for showroom in showrooms %}
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    {% if showroom.google_maps_embed %}
+                    <div class="ratio ratio-16x9">
+                        {{ showroom.google_maps_embed|safe }}
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="fw-bold">
+                            <i class="bi bi-geo-alt-fill text-warning me-2"></i>{{ showroom.name }}
+                        </h5>
+                        <p class="text-muted mb-2"><i class="bi bi-house me-2"></i>{{ showroom.address }}</p>
+                        <p class="mb-1">
+                            <i class="bi bi-telephone-fill text-warning me-2"></i>
+                            <a href="tel:{{ showroom.phone }}" class="text-dark text-decoration-none fw-semibold">{{ showroom.phone }}</a>
+                            {% if showroom.phone2 %} / <a href="tel:{{ showroom.phone2 }}" class="text-dark text-decoration-none">{{ showroom.phone2 }}</a>{% endif %}
+                        </p>
+                        {% if showroom.email %}
+                        <p class="mb-1">
+                            <i class="bi bi-envelope-fill text-warning me-2"></i>
+                            <a href="mailto:{{ showroom.email }}" class="text-dark text-decoration-none">{{ showroom.email }}</a>
+                        </p>
+                        {% endif %}
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-clock me-2"></i>{{ showroom.working_hours }}
+                        </p>
+                        <div class="d-flex gap-2">
+                            {% if showroom.google_maps_url %}
+                            <a href="{{ showroom.google_maps_url }}" target="_blank" class="btn btn-dark btn-sm">
+                                <i class="bi bi-map me-1"></i>Get Directions
+                            </a>
+                            {% endif %}
+                            <a href="tel:{{ showroom.phone }}" class="btn btn-warning btn-sm">
+                                <i class="bi bi-telephone me-1"></i>Call Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center text-muted">
+                <i class="bi bi-geo-alt fs-1 d-block mb-3"></i>
+                <p>Showroom details coming soon.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
