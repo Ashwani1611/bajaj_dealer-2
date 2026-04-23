@@ -1,0 +1,142 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:24px;">Manage Users</h1>
+
+{% if messages %}
+  {% for msg in messages %}
+    <div style="padding:10px 16px;margin-bottom:16px;border-radius:6px;
+      background:{% if msg.tags == 'error' %}#f8d7da{% else %}#d4edda{% endif %};
+      color:{% if msg.tags == 'error' %}#721c24{% else %}#155724{% endif %};">
+      {{ msg }}
+    </div>
+  {% endfor %}
+{% endif %}
+
+<!-- Create New User -->
+<div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:24px;margin-bottom:32px;">
+  <h2 style="font-size:16px;margin-bottom:16px;">Create New Manager</h2>
+  <form method="post" action="{% url 'admin_create_manager' %}">
+    {% csrf_token %}
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:12px;align-items:end;">
+
+      <div>
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Username</label>
+        <input type="text" name="username" required
+          style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:5px;font-size:14px;">
+      </div>
+
+      <div>
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Password</label>
+        <input type="password" name="password" required
+          style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:5px;font-size:14px;">
+      </div>
+
+      <div>
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Assign To</label>
+        <select name="entity_type"
+          style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:5px;font-size:14px;">
+          <option value="">— No assignment —</option>
+          <option value="showroom">Showroom</option>
+          <option value="station">Service Station</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Location</label>
+        <select name="entity_id"
+          style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:5px;font-size:14px;">
+          <option value="">— Select —</option>
+          <optgroup label="Showrooms">
+            {% for s in showrooms %}
+              <option value="{{ s.pk }}" data-type="showroom">
+                {{ s.name }}{% if s.manager %} (has: {{ s.manager.username }}){% endif %}
+              </option>
+            {% endfor %}
+          </optgroup>
+          <optgroup label="Service Stations">
+            {% for st in stations %}
+              <option value="{{ st.pk }}" data-type="station">
+                {{ st.name }}{% if st.manager %} (has: {{ st.manager.username }}){% endif %}
+              </option>
+            {% endfor %}
+          </optgroup>
+        </select>
+      </div>
+
+      <div>
+        <button type="submit"
+          style="padding:8px 20px;background:#003087;color:#fff;border:none;
+          border-radius:5px;font-size:14px;cursor:pointer;white-space:nowrap;">
+          Create User
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Existing Staff Users -->
+<div style="background:#fff;border:1px solid #dee2e6;border-radius:8px;padding:24px;">
+  <h2 style="font-size:16px;margin-bottom:16px;">Existing Manager Accounts</h2>
+
+  {% if all_staff %}
+  <table style="width:100%;border-collapse:collapse;font-size:14px;">
+    <thead>
+      <tr style="background:#f8f9fa;border-bottom:2px solid #dee2e6;">
+        <th style="padding:10px 12px;text-align:left;">Username</th>
+        <th style="padding:10px 12px;text-align:left;">Assigned To</th>
+        <th style="padding:10px 12px;text-align:left;">Type</th>
+        <th style="padding:10px 12px;text-align:left;">Reset Password</th>
+        <th style="padding:10px 12px;text-align:left;">Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in all_staff %}
+      <tr style="border-bottom:1px solid #dee2e6;">
+        <td style="padding:10px 12px;font-weight:600;">{{ u.username }}</td>
+        <td style="padding:10px 12px;">
+          {% if u.managed_showroom %}{{ u.managed_showroom.name }}
+          {% elif u.managed_station %}{{ u.managed_station.name }}
+          {% else %}<span style="color:#999;">Unassigned</span>{% endif %}
+        </td>
+        <td style="padding:10px 12px;">
+          {% if u.managed_showroom %}
+            <span style="background:#e8f0fb;color:#003087;padding:2px 10px;border-radius:10px;font-size:12px;">Showroom</span>
+          {% elif u.managed_station %}
+            <span style="background:#d4edda;color:#155724;padding:2px 10px;border-radius:10px;font-size:12px;">Service Station</span>
+          {% else %}
+            <span style="background:#f1f1f1;color:#666;padding:2px 10px;border-radius:10px;font-size:12px;">Staff</span>
+          {% endif %}
+        </td>
+        <td style="padding:10px 12px;">
+          <form method="post" action="{% url 'admin_reset_password' u.pk %}" style="display:flex;gap:6px;">
+            {% csrf_token %}
+            <input type="password" name="password" placeholder="New password"
+              style="padding:5px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:140px;">
+            <button type="submit"
+              style="padding:5px 12px;background:#6c757d;color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;">
+              Reset
+            </button>
+          </form>
+        </td>
+        <td style="padding:10px 12px;">
+          <form method="post" action="{% url 'admin_delete_manager' u.pk %}"
+            onsubmit="return confirm('Delete user {{ u.username }}?')">
+            {% csrf_token %}
+            <button type="submit"
+              style="padding:5px 12px;background:#dc3545;color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;">
+              Delete
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p style="color:#999;">No manager accounts yet.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

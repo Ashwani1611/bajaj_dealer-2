@@ -2,7 +2,6 @@
 {% block title %}Book Service{% endblock %}
 
 {% block content %}
-
 <style>
     .service-card {
         border: 1px solid #d0dff5;
@@ -10,45 +9,57 @@
         background: #fff;
         box-shadow: 0 4px 20px rgba(0,48,135,.08);
     }
-    .form-label  { color: #003087; font-weight: 600; font-size: .88rem; }
-    .form-control,
-    .form-select {
+    .form-label { color: #003087; font-weight: 600; font-size: .88rem; }
+    .form-control, .form-select {
         border: 1px solid #d0dff5;
         border-radius: 8px;
         font-size: .92rem;
         color: #1a1a2e;
         background: #fafcff;
     }
-    .form-control:focus,
-    .form-select:focus {
+    .form-control:focus, .form-select:focus {
         border-color: #003087;
         box-shadow: 0 0 0 3px rgba(0,48,135,.1);
         background: #fff;
     }
     .btn-bajaj {
-        background: #003087;
-        color: #fff;
-        border: none;
-        font-weight: 600;
-        letter-spacing: .3px;
-        border-radius: 8px;
+        background: #003087; color: #fff;
+        border: none; font-weight: 600;
+        letter-spacing: .3px; border-radius: 8px;
     }
     .btn-bajaj:hover { background: #0055b3; color: #fff; }
-
     .section-badge {
         display: inline-block;
-        background: #e8f0fb;
-        color: #003087;
-        font-size: .75rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        padding: 4px 12px;
-        border-radius: 20px;
-        margin-bottom: 8px;
+        background: #e8f0fb; color: #003087;
+        font-size: .75rem; font-weight: 700;
+        letter-spacing: 1px; text-transform: uppercase;
+        padding: 4px 12px; border-radius: 20px; margin-bottom: 8px;
     }
-    .breadcrumb-item a      { color: #0055b3; text-decoration: none; }
+    .breadcrumb-item a { color: #0055b3; text-decoration: none; }
     .breadcrumb-item.active { color: #003087; font-weight: 600; }
+
+    /* Station info cards shown when station is selected */
+    .station-info-card {
+        display: none;
+        background: #e8f0fb;
+        border: 1px solid #d0dff5;
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-top: 8px;
+        font-size: .85rem;
+    }
+    .station-info-card.visible { display: block; }
+    .station-info-card strong { color: #003087; }
+
+    .timing-note {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: .83rem;
+        color: #856404;
+        margin-top: 6px;
+    }
 </style>
 
 <section class="py-5" style="background:#f8faff; min-height:80vh;">
@@ -65,48 +76,116 @@
     <div class="row justify-content-center">
         <div class="col-lg-7">
 
-            <!-- Heading -->
             <span class="section-badge">Service Center</span>
             <h2 class="fw-bold mb-1" style="color:#003087;">Book a Service</h2>
             <p class="mb-4" style="color:#5a6a8a;">
-                Schedule your bike's service at the nearest outlet.
-                Our team will confirm your appointment within 2 hours.
+                Select your nearest service station. Our trained Bajaj technicians
+                will confirm your appointment within 2 hours.
             </p>
+
+            <!-- Timing note — Tuesday closed -->
+            <div class="timing-note mb-4">
+                <i class="bi bi-calendar-x me-1"></i>
+                <strong>Note:</strong> All service stations are
+                <strong>closed on Tuesdays</strong>.
+                Timing: Mon, Wed–Sun: 9:00 AM – 6:00 PM.
+            </div>
+
+            <!-- Service station quick cards -->
+            {% if service_stations %}
+            <div class="row g-2 mb-4">
+                {% for station in service_stations %}
+                <div class="col-md-6">
+                    <div class="service-card p-3 h-100" style="cursor:pointer;"
+                         data-select-pk="{{ station.pk }}">
+                        <p class="fw-bold mb-1" style="color:#003087;font-size:.9rem;">
+                            <i class="bi bi-tools me-1"></i>{{ station.name }}
+                        </p>
+                        <p class="mb-1" style="font-size:.8rem;color:#5a6a8a;">
+                            <i class="bi bi-geo-alt me-1"></i>{{ station.address|truncatechars:60 }}
+                        </p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a href="tel:{{ station.phone }}"
+                               class="text-decoration-none"
+                               style="font-size:.78rem;color:#003087;font-weight:600;"
+                               onclick="event.stopPropagation()">
+                                <i class="bi bi-telephone-fill me-1"></i>{{ station.phone }}
+                            </a>
+                            {% if station.whatsapp_number %}
+                            <a href="{{ station.whatsapp_url }}"
+                               target="_blank"
+                               class="text-decoration-none"
+                               style="font-size:.78rem;color:#25d366;font-weight:600;"
+                               onclick="event.stopPropagation()">
+                                <i class="bi bi-whatsapp me-1"></i>WhatsApp
+                            </a>
+                            {% endif %}
+                        </div>
+                        <div class="mt-1" style="font-size:.75rem;color:#856404;">
+                            <i class="bi bi-clock me-1"></i>
+                            {{ station.working_hours }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
             <!-- Form card -->
             <div class="service-card p-4">
-
-                <!-- top info strip -->
-                <div class="d-flex gap-3 flex-wrap mb-4 pb-3"
-                     style="border-bottom:1px solid #e8f0fb;">
-                    <span style="font-size:.82rem; color:#5a6a8a;">
-                        <i class="bi bi-clock me-1" style="color:#003087;"></i>
-                        Mon – Sat &nbsp;|&nbsp; 9:00 AM – 6:00 PM
-                    </span>
-                    <span style="font-size:.82rem; color:#5a6a8a;">
+                <div class="d-flex gap-3 flex-wrap mb-4 pb-3" style="border-bottom:1px solid #e8f0fb;">
+                    <span style="font-size:.82rem;color:#5a6a8a;">
                         <i class="bi bi-patch-check me-1" style="color:#003087;"></i>
                         Trained Bajaj Technicians
                     </span>
-                    <span style="font-size:.82rem; color:#5a6a8a;">
+                    <span style="font-size:.82rem;color:#5a6a8a;">
                         <i class="bi bi-shield-check me-1" style="color:#003087;"></i>
                         Genuine Spare Parts
+                    </span>
+                    <span style="font-size:.82rem;color:#5a6a8a;">
+                        <i class="bi bi-calendar-check me-1" style="color:#003087;"></i>
+                        Slot in 2 Hours
                     </span>
                 </div>
 
                 <form method="POST" novalidate>
                     {% csrf_token %}
                     <div class="row g-3">
+
+                        <!-- Service Station — PRIMARY field, full width -->
+                        <div class="col-12">
+                            <label class="form-label">
+                                <i class="bi bi-tools me-1"></i>Select Service Station
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.service_station }}
+                            {% if form.service_station.errors %}
+                            <div class="mt-1" style="color:#c0392b;font-size:.8rem;">
+                                {{ form.service_station.errors.0 }}
+                            </div>
+                            {% endif %}
+                            <div id="stationInfoBox" class="station-info-card"></div>
+                        </div>
+
                         {% for field in form %}
-                        <div class="col-md-{% if field.name == 'issue_description' %}12{% else %}6{% endif %}">
+                        {% if field.name != 'service_station' and field.name != 'issue_description' %}
+                        <div class="col-md-6">
                             <label class="form-label">{{ field.label }}</label>
                             {{ field }}
                             {% if field.errors %}
-                            <div class="mt-1" style="color:#c0392b; font-size:.8rem;">
+                            <div class="mt-1" style="color:#c0392b;font-size:.8rem;">
                                 {{ field.errors.0 }}
                             </div>
                             {% endif %}
                         </div>
+                        {% endif %}
                         {% endfor %}
+
+                        <!-- Issue description — full width -->
+                        <div class="col-12">
+                            <label class="form-label">{{ form.issue_description.label }}</label>
+                            {{ form.issue_description }}
+                        </div>
 
                         <div class="col-12 mt-2">
                             <button type="submit" class="btn btn-bajaj btn-lg w-100">
@@ -114,23 +193,64 @@
                                 Book Service Appointment
                             </button>
                         </div>
-
                     </div>
                 </form>
-
             </div>
-            <!-- END form card -->
 
-            <!-- reassurance note -->
-            <p class="text-center mt-3" style="font-size:.8rem; color:#8a9abb;">
+            <p class="text-center mt-3" style="font-size:.8rem;color:#8a9abb;">
                 <i class="bi bi-lock-fill me-1"></i>
-                Your details are safe and will only be used to confirm your appointment.
+                Your details are safe and used only to confirm your appointment.
             </p>
 
         </div>
     </div>
-
 </div>
 </section>
 
+<!-- Station data for JS -->
+<script>
+var STATIONS = {
+    {% for station in service_stations %}
+    "{{ station.pk }}": {
+        name: "{{ station.name|escapejs }}",
+        phone: "{{ station.phone|escapejs }}",
+        whatsapp: "{{ station.get_whatsapp_number|escapejs }}",
+        address: "{{ station.address|escapejs }}",
+        hours: "{{ station.working_hours|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+function selectStation(pk) {
+    var sel = document.querySelector('[name="service_station"]');
+    if (sel) { sel.value = pk; sel.dispatchEvent(new Event('change')); }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    var sel  = document.querySelector('[name="service_station"]');
+    var box  = document.getElementById('stationInfoBox');
+    if (!sel || !box) return;
+
+    function updateBox() {
+        var pk = sel.value;
+        if (pk && STATIONS[pk]) {
+            var s = STATIONS[pk];
+            box.innerHTML =
+                '<strong>' + s.name + '</strong><br>' +
+                '<i class="bi bi-geo-alt me-1"></i>' + s.address + '<br>' +
+                '<i class="bi bi-telephone me-1"></i>' +
+                '<a href="tel:' + s.phone + '" style="color:#003087;">' + s.phone + '</a>' +
+                (s.whatsapp ? ' &nbsp; <a href="https://wa.me/' + s.whatsapp +
+                '" target="_blank" style="color:#25d366;"><i class="bi bi-whatsapp me-1"></i>WhatsApp</a>' : '') +
+                '<br><i class="bi bi-clock me-1" style="color:#856404;"></i>' +
+                '<span style="color:#856404;">' + s.hours + '</span>';
+            box.classList.add('visible');
+        } else {
+            box.classList.remove('visible');
+        }
+    }
+    sel.addEventListener('change', updateBox);
+    updateBox();
+});
+</script>
 {% endblock %}

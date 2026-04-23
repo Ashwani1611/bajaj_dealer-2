@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: Arial, sans-serif; background: #f8faff; margin: 0; padding: 0; }
+  .wrap { max-width: 560px; margin: 30px auto; background: #fff;
+          border-radius: 12px; overflow: hidden; border: 1px solid #d0dff5; }
+  .header { background: #003087; padding: 24px 28px; }
+  .header h1 { color: #fff; font-size: 20px; margin: 0; font-weight: 700; }
+  .header p { color: rgba(255,255,255,.7); font-size: 13px; margin: 4px 0 0; }
+  .body { padding: 24px 28px; }
+  .field-row { padding: 8px 0; border-bottom: 1px solid #e8f0fb; font-size: 14px; }
+  .field-row:last-child { border-bottom: none; }
+  .field-label { color: #5a6a8a; font-weight: 600; width: 160px; display: inline-block; }
+  .field-value { color: #1a1a2e; font-weight: 500; }
+  .footer { background: #f8faff; padding: 16px 28px; font-size: 12px; color: #8a9abb;
+            border-top: 1px solid #e8f0fb; text-align: center; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:12px;
+           font-size:12px; font-weight:600; background:#fff3cd; color:#856404; }
+  .wa-btn { display:inline-block; background:#25d366; color:#fff;
+            padding:10px 20px; border-radius:8px; text-decoration:none;
+            font-weight:600; font-size:14px; margin-top:16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>&#128260; New Exchange Request</h1>
+    <p>{{ settings.SITE_NAME }} — Authorized Bajaj Dealer</p>
+  </div>
+  <div class="body">
+    <p style="margin-bottom:16px;">
+      <span class="badge">Exchange Program</span>
+      &nbsp; Received {{ exchange.created_at|date:"d M Y, g:i A" }}
+    </p>
+    <div class="field-row">
+      <span class="field-label">Customer Name</span>
+      <span class="field-value">{{ exchange.name }}</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">Phone</span>
+      <span class="field-value"><a href="tel:{{ exchange.phone }}">{{ exchange.phone }}</a></span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">Current Bike</span>
+      <span class="field-value">{{ exchange.current_bike }}</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">Year</span>
+      <span class="field-value">{{ exchange.current_bike_year }}</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">KM Driven</span>
+      <span class="field-value">{{ exchange.km_driven|floatformat:0 }} km</span>
+    </div>
+    {% if exchange.interested_in %}
+    <div class="field-row">
+      <span class="field-label">Interested In</span>
+      <span class="field-value">{{ exchange.interested_in.name }}</span>
+    </div>
+    {% endif %}
+    {% if exchange.showroom %}
+    <div class="field-row">
+      <span class="field-label">Showroom</span>
+      <span class="field-value">{{ exchange.showroom.name }}</span>
+    </div>
+    {% endif %}
+
+    {% if exchange.showroom %}
+    <a href="{{ exchange.showroom.whatsapp_url }}" class="wa-btn">
+      &#128172; Reply on WhatsApp
+    </a>
+    {% endif %}
+  </div>
+  <div class="footer">
+    Automatically sent by {{ settings.SITE_NAME }}. Do not reply to this email.
+  </div>
+</div>
+</body>
+</html>

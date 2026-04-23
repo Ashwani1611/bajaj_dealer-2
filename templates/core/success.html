@@ -1,18 +1,171 @@
 {% extends 'base.html' %}
 {% block title %}{{ title }}{% endblock %}
+
 {% block content %}
-<section class="py-5">
+<style>
+    .success-wrap {
+        min-height: 80vh;
+        background: #f8faff;
+        display: flex;
+        align-items: center;
+        padding: 3rem 0;
+    }
+    .success-card {
+        background: #fff;
+        border: 1px solid #d0dff5;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,48,135,.09);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        max-width: 520px;
+        margin: 0 auto;
+    }
+    .success-icon-wrap {
+        width: 80px; height: 80px;
+        border-radius: 50%;
+        background: #f0fdf4;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2.4rem;
+        color: inherit;
+    }
+    .success-title {
+        font-family: 'Rajdhani', 'Inter', sans-serif;
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: #003087;
+        margin-bottom: .4rem;
+    }
+    .success-msg {
+        color: #5a6a8a;
+        font-size: .95rem;
+        margin-bottom: 1.5rem;
+    }
+    .details-card {
+        background: #f8faff;
+        border: 1px solid #d0dff5;
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
+    .details-card .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+        font-size: .88rem;
+        border-bottom: 1px solid #e8f0fb;
+    }
+    .details-card .detail-row:last-child { border-bottom: none; }
+    .details-card .detail-label { color: #5a6a8a; font-weight: 500; }
+    .details-card .detail-value { color: #003087; font-weight: 600; }
+    .btn-wa {
+        background: #25d366;
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-size: .95rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background .15s, transform .15s;
+    }
+    .btn-wa:hover { background: #1ebe5d; color: #fff; transform: translateY(-1px); }
+    .btn-home {
+        background: #003087;
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-size: .95rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background .15s;
+    }
+    .btn-home:hover { background: #0055b3; color: #fff; }
+    .btn-bikes {
+        background: #e8f0fb;
+        color: #003087;
+        border: 1px solid #d0dff5;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 10px 22px;
+        font-size: .95rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background .15s;
+    }
+    .btn-bikes:hover { background: #003087; color: #fff; }
+
+    .confetti-line {
+        height: 3px;
+        background: linear-gradient(90deg, #003087, #0055b3, #22c55e, #003087);
+        border-radius: 2px;
+        margin-bottom: 1.5rem;
+        animation: shimmer 2s infinite;
+        background-size: 200% 100%;
+    }
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
+
+<section class="success-wrap">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-5 text-center py-5">
-                <i class="bi {{ icon }} text-warning" style="font-size: 5rem;"></i>
-                <h2 class="fw-bold mt-4 mb-2">{{ title }}</h2>
-                <p class="text-muted mb-4">{{ message }}</p>
-                <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    <a href="{% url 'home' %}" class="btn btn-dark px-4">Back to Home</a>
-                    <a href="{% url 'bike_list' %}" class="btn btn-warning px-4">Explore Bikes</a>
-                </div>
+        <div class="success-card">
+            <div class="confetti-line"></div>
+
+            <div class="success-icon-wrap" style="color: {{ icon_color | default:'#22c55e' }};">
+                <i class="bi {{ icon }}"></i>
             </div>
+
+            <h2 class="success-title">{{ title }}</h2>
+            <p class="success-msg">{{ message }}</p>
+
+            {% if details %}
+            <div class="details-card">
+                <p class="fw-bold mb-2" style="font-size:.75rem;color:#5a6a8a;
+                   letter-spacing:1px;text-transform:uppercase;">Your Submission</p>
+                {% for detail in details %}
+                {% if detail.value %}
+                <div class="detail-row">
+                    <span class="detail-label">{{ detail.label }}</span>
+                    <span class="detail-value">{{ detail.value }}</span>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="d-flex gap-3 flex-wrap justify-content-center mb-3">
+                {% if wa_url %}
+                <a href="{{ wa_url }}" target="_blank" class="btn-wa">
+                    <i class="bi bi-whatsapp"></i> Chat on WhatsApp
+                </a>
+                {% endif %}
+                <a href="{% url 'home' %}" class="btn-home">
+                    <i class="bi bi-house-fill"></i> Back to Home
+                </a>
+            </div>
+
+            <a href="{% url 'bike_list' %}" class="btn-bikes">
+                <i class="bi bi-grid-fill"></i> Explore Bikes
+            </a>
+
+            <p class="mt-4 mb-0" style="font-size:.78rem;color:#a0aec0;">
+                <i class="bi bi-clock me-1"></i>
+                Our team typically responds within 2 hours during business hours.
+            </p>
         </div>
     </div>
 </section>

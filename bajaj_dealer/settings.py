@@ -11,14 +11,53 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,192.168.1.37,localhos
 
 # --- APPS ---
 INSTALLED_APPS = [
+    'jazzmin',                        # ← must be FIRST
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+    'core.apps.CoreConfig',
 ]
+JAZZMIN_SETTINGS = {
+    "site_title":        "Skyline Bajaj",
+    "site_header":       "Skyline Bajaj Admin",
+    "site_brand":        "Skyline Bajaj",
+    "welcome_sign":      "Welcome to Skyline Bajaj Admin",
+    "copyright":         "Skyline Bajaj",
+    "search_model":      ["core.Enquiry", "core.ServiceBooking"],
+    "topmenu_links": [
+        {"name": "View Site", "url": "/", "new_window": True},
+    ],
+    "icons": {
+        "auth.User":              "fas fa-users",
+        "core.Showroom":          "fas fa-store",
+        "core.ServiceStation":    "fas fa-wrench",
+        "core.Bike":              "fas fa-motorcycle",
+        "core.BikeCategory":      "fas fa-tags",
+        "core.Enquiry":           "fas fa-comments",
+        "core.ServiceBooking":    "fas fa-calendar-check",
+        "core.ExchangeRequest":   "fas fa-exchange-alt",
+        "core.YouTubeVideo":      "fab fa-youtube",
+    },
+    "default_icon_parents":  "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    "show_ui_builder":       False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme":                    "flatly",
+    "dark_mode_theme":          None,
+    "navbar_small_text":        False,
+    "brand_colour":             "navbar-primary",
+    "accent":                   "accent-primary",
+    "navbar":                   "navbar-white navbar-light",
+    "no_navbar_border":         False,
+    "sidebar":                  "sidebar-light-primary",
+    "sidebar_nav_compact_style": True,
+    "sidebar_disable_expand":   False,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -44,7 +83,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'core.context_processors.site_settings',  # global context
+                # 'core.context_processors.site_settings',  # global context
+                'core.context_processors.site_globals'
             ],
         },
     },
@@ -98,6 +138,16 @@ USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ── EMAIL ──────────────────────────────────────────────────────────────────────
+EMAIL_BACKEND    = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST       = 'smtp.gmail.com'
+EMAIL_PORT       = 587
+EMAIL_USE_TLS    = True
+EMAIL_HOST_USER  = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL  = config('EMAIL_HOST_USER', default='')
+DEALER_MASTER_EMAIL = config('DEALER_MASTER_EMAIL', default='')
 
 # --- SECURITY HEADERS (enable in production) ---
 if not DEBUG:

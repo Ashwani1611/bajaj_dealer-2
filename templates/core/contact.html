@@ -1,105 +1,91 @@
 {% extends 'base.html' %}
-{% block title %}Our Showrooms{% endblock %}
+{% block title %}Our Showrooms & Service Stations{% endblock %}
 
 {% block content %}
-
 <style>
-    .showroom-card {
+    .location-card {
         border: 1px solid #d0dff5;
         border-radius: 14px;
         overflow: hidden;
         background: #fff;
         box-shadow: 0 4px 20px rgba(0,48,135,.07);
         transition: box-shadow .2s, transform .2s;
+        height: 100%;
     }
-    .showroom-card:hover {
+    .location-card:hover {
         box-shadow: 0 8px 28px rgba(0,48,135,.13);
         transform: translateY(-2px);
     }
-    .showroom-card .map-wrap {
-        border-bottom: 1px solid #e8f0fb;
-    }
-    .showroom-card .card-body {
-        padding: 1.25rem 1.4rem;
-    }
+    .location-card .map-wrap { border-bottom: 1px solid #e8f0fb; }
+    .card-body-pad { padding: 1.25rem 1.4rem; }
 
-    .showroom-name {
-        color: #003087;
-        font-size: 1.05rem;
-        font-weight: 700;
-        margin-bottom: .4rem;
-    }
+    .location-name { color: #003087; font-size: 1.05rem; font-weight: 700; margin-bottom: .4rem; }
     .info-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        font-size: .88rem;
-        color: #4a5568;
-        margin-bottom: .45rem;
+        display: flex; align-items: flex-start;
+        gap: 8px; font-size: .88rem; color: #4a5568; margin-bottom: .45rem;
     }
-    .info-row i {
-        color: #003087;
-        font-size: .95rem;
-        margin-top: 2px;
-        flex-shrink: 0;
-    }
-    .info-row a {
-        color: #1a1a2e;
-        text-decoration: none;
-        font-weight: 600;
-    }
+    .info-row i { color: #003087; font-size: .95rem; margin-top: 2px; flex-shrink: 0; }
+    .info-row a { color: #1a1a2e; text-decoration: none; font-weight: 600; }
     .info-row a:hover { color: #003087; }
 
     .hours-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: #e8f0fb;
-        color: #003087;
-        font-size: .78rem;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 20px;
-        margin-bottom: .9rem;
+        display: inline-flex; align-items: center; gap: 6px;
+        background: #e8f0fb; color: #003087;
+        font-size: .78rem; font-weight: 600;
+        padding: 4px 10px; border-radius: 20px; margin-bottom: .9rem;
+    }
+    .hours-badge.service-hours {
+        background: #fff3cd; color: #856404;
     }
 
     .btn-directions {
-        background: #003087;
-        color: #fff;
-        border: none;
-        font-size: .82rem;
-        font-weight: 600;
-        border-radius: 7px;
-        padding: 6px 14px;
+        background: #003087; color: #fff; border: none;
+        font-size: .82rem; font-weight: 600;
+        border-radius: 7px; padding: 6px 14px;
     }
     .btn-directions:hover { background: #0055b3; color: #fff; }
-
     .btn-call {
-        background: #e8f0fb;
-        color: #003087;
+        background: #e8f0fb; color: #003087;
         border: 1px solid #d0dff5;
-        font-size: .82rem;
-        font-weight: 600;
-        border-radius: 7px;
-        padding: 6px 14px;
+        font-size: .82rem; font-weight: 600;
+        border-radius: 7px; padding: 6px 14px;
     }
     .btn-call:hover { background: #003087; color: #fff; }
+    .btn-wa-sm {
+        background: #25d366; color: #fff; border: none;
+        font-size: .82rem; font-weight: 600;
+        border-radius: 7px; padding: 6px 14px;
+        text-decoration: none;
+    }
+    .btn-wa-sm:hover { background: #1ebe5d; color: #fff; }
 
     .section-badge {
         display: inline-block;
-        background: #e8f0fb;
-        color: #003087;
-        font-size: .75rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        padding: 4px 14px;
-        border-radius: 20px;
-        margin-bottom: 10px;
+        background: #e8f0fb; color: #003087;
+        font-size: .75rem; font-weight: 700;
+        letter-spacing: 1px; text-transform: uppercase;
+        padding: 4px 14px; border-radius: 20px; margin-bottom: 10px;
     }
-
-    .breadcrumb-item a      { color: #0055b3; text-decoration: none; }
+    .section-badge.service-badge {
+        background: #fff3cd; color: #856404;
+    }
+    .section-divider {
+        border: none;
+        border-top: 2px dashed #d0dff5;
+        margin: 3rem 0;
+    }
+    .breadcrumb-item a { color: #0055b3; text-decoration: none; }
     .breadcrumb-item.active { color: #003087; font-weight: 600; }
+
+    .type-label {
+        display: inline-block;
+        font-size: .68rem; font-weight: 700;
+        letter-spacing: 1px; text-transform: uppercase;
+        padding: 2px 8px; border-radius: 4px;
+        margin-bottom: 6px;
+    }
+    .type-label.showroom { background: #e8f0fb; color: #003087; }
+    .type-label.service  { background: #fff3cd; color: #856404; }
 </style>
 
 <section class="py-5" style="background:#f8faff; min-height:80vh;">
@@ -109,97 +95,86 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item active">Showrooms</li>
+            <li class="breadcrumb-item active">Showrooms & Service</li>
         </ol>
     </nav>
 
-    <!-- Heading -->
+    <!-- ══════════ SHOWROOMS ══════════ -->
     <div class="text-center mb-5">
         <span class="section-badge">Authorized Dealer</span>
         <h2 class="fw-bold mb-1" style="color:#003087;">Our Showrooms</h2>
         <p style="color:#5a6a8a;">
-            Find the nearest authorized Bajaj showroom — walk in or call ahead.
+            Visit any of our showrooms — test ride, purchase, and exchange.
         </p>
     </div>
 
-    <!-- Showroom cards -->
     <div class="row g-4">
         {% for showroom in showrooms %}
         <div class="col-lg-6">
-            <div class="showroom-card h-100">
+            <div class="location-card">
 
-                <!-- Google Maps embed -->
                 {% if showroom.google_maps_embed %}
                 <div class="map-wrap ratio ratio-16x9">
                     {{ showroom.google_maps_embed|safe }}
                 </div>
                 {% endif %}
 
-                <div class="card-body">
-
-                    <!-- Name -->
-                    <p class="showroom-name">
+                <div class="card-body-pad">
+                    <span class="type-label showroom">Showroom</span>
+                    <p class="location-name">
                         <i class="bi bi-geo-alt-fill me-2"></i>{{ showroom.name }}
                     </p>
-
-                    <!-- Address -->
                     <div class="info-row">
                         <i class="bi bi-house-fill"></i>
                         <span>{{ showroom.address }}</span>
                     </div>
-
-                    <!-- Phone -->
                     <div class="info-row">
                         <i class="bi bi-telephone-fill"></i>
                         <span>
                             <a href="tel:{{ showroom.phone }}">{{ showroom.phone }}</a>
                             {% if showroom.phone2 %}
                             &nbsp;/&nbsp;
-                            <a href="tel:{{ showroom.phone2 }}"
-                               style="font-weight:400;">{{ showroom.phone2 }}</a>
+                            <a href="tel:{{ showroom.phone2 }}" style="font-weight:400;">{{ showroom.phone2 }}</a>
                             {% endif %}
                         </span>
                     </div>
-
-                    <!-- Email -->
                     {% if showroom.email %}
                     <div class="info-row">
                         <i class="bi bi-envelope-fill"></i>
                         <a href="mailto:{{ showroom.email }}">{{ showroom.email }}</a>
                     </div>
                     {% endif %}
-
-                    <!-- Working hours badge -->
                     <div class="hours-badge">
                         <i class="bi bi-clock"></i>
                         {{ showroom.working_hours }}
                     </div>
-
-                    <!-- Action buttons -->
                     <div class="d-flex gap-2 flex-wrap">
                         {% if showroom.google_maps_url %}
-                        <a href="{{ showroom.google_maps_url }}"
-                           target="_blank"
-                           class="btn btn-directions">
-                            <i class="bi bi-map me-1"></i>Get Directions
+                        <a href="{{ showroom.google_maps_url }}" target="_blank" class="btn btn-sm btn-directions">
+                            <i class="bi bi-map me-1"></i>Directions
                         </a>
                         {% endif %}
-                        <a href="tel:{{ showroom.phone }}"
-                           class="btn btn-call">
-                            <i class="bi bi-telephone me-1"></i>Call Now
+                        <a href="tel:{{ showroom.phone }}" class="btn btn-sm btn-call">
+                            <i class="bi bi-telephone me-1"></i>Call
                         </a>
-                        <a href="https://wa.me/{{ showroom.phone }}?text=Hi, I'm interested in visiting {{ showroom.name }}"
+                        <!-- Per-showroom WhatsApp — uses showroom.whatsapp_url() -->
+                        <a href="{{ showroom.whatsapp_url }}"
                            target="_blank"
-                           class="btn btn-sm btn-success"
-                           style="border-radius:7px; font-size:.82rem; font-weight:600; padding:6px 14px;">
+                           class="btn btn-sm btn-wa-sm">
                             <i class="bi bi-whatsapp me-1"></i>WhatsApp
                         </a>
+                        {% if showroom.email %}
+                        <a href="mailto:{{ showroom.email }}"
+                           class="btn btn-sm"
+                           style="background:#f0fdf4;color:#155724;border:1px solid #b7e5c4;
+                                  font-size:.82rem;font-weight:600;border-radius:7px;padding:6px 14px;">
+                            <i class="bi bi-envelope me-1"></i>Email
+                        </a>
+                        {% endif %}
                     </div>
-
                 </div>
             </div>
         </div>
-
         {% empty %}
         <div class="col-12 text-center py-5" style="color:#8a9abb;">
             <i class="bi bi-geo-alt d-block mb-3" style="font-size:3rem;"></i>
@@ -208,7 +183,92 @@
         {% endfor %}
     </div>
 
+    <!-- ══════════ SERVICE STATIONS ══════════ -->
+    <hr class="section-divider">
+
+    <div class="text-center mb-5">
+        <span class="section-badge service-badge">Service Center</span>
+        <h2 class="fw-bold mb-1" style="color:#003087;">Service Stations</h2>
+        <p style="color:#5a6a8a;">
+            Expert Bajaj-trained technicians. Genuine spare parts.
+            <strong style="color:#856404;">Closed every Tuesday.</strong>
+            Timing: Mon, Wed–Sun: 9:00 AM – 6:00 PM.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        {% for station in service_stations %}
+        <div class="col-lg-6">
+            <div class="location-card">
+
+                {% if station.google_maps_embed %}
+                <div class="map-wrap ratio ratio-16x9">
+                    {{ station.google_maps_embed|safe }}
+                </div>
+                {% endif %}
+
+                <div class="card-body-pad">
+                    <span class="type-label service">Service Station</span>
+                    <p class="location-name">
+                        <i class="bi bi-tools me-2"></i>{{ station.name }}
+                    </p>
+                    <div class="info-row">
+                        <i class="bi bi-house-fill"></i>
+                        <span>{{ station.address }}</span>
+                    </div>
+                    <div class="info-row">
+                        <i class="bi bi-telephone-fill"></i>
+                        <span>
+                            <a href="tel:{{ station.phone }}">{{ station.phone }}</a>
+                            {% if station.phone2 %}
+                            &nbsp;/&nbsp;
+                            <a href="tel:{{ station.phone2 }}" style="font-weight:400;">{{ station.phone2 }}</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% if station.email %}
+                    <div class="info-row">
+                        <i class="bi bi-envelope-fill"></i>
+                        <a href="mailto:{{ station.email }}">{{ station.email }}</a>
+                    </div>
+                    {% endif %}
+                    <div class="hours-badge service-hours">
+                        <i class="bi bi-clock"></i>
+                        {{ station.working_hours }}
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        {% if station.google_maps_url %}
+                        <a href="{{ station.google_maps_url }}" target="_blank" class="btn btn-sm btn-directions">
+                            <i class="bi bi-map me-1"></i>Directions
+                        </a>
+                        {% endif %}
+                        <a href="tel:{{ station.phone }}" class="btn btn-sm btn-call">
+                            <i class="bi bi-telephone me-1"></i>Call
+                        </a>
+                        <!-- Per-service-station WhatsApp -->
+                        <a href="{{ station.whatsapp_url }}"
+                           target="_blank"
+                           class="btn btn-sm btn-wa-sm">
+                            <i class="bi bi-whatsapp me-1"></i>WhatsApp
+                        </a>
+                        <a href="{% url 'book_service' %}"
+                           class="btn btn-sm"
+                           style="background:#003087;color:#fff;border:none;
+                                  font-size:.82rem;font-weight:600;border-radius:7px;padding:6px 14px;">
+                            <i class="bi bi-calendar-check me-1"></i>Book Service
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5" style="color:#8a9abb;">
+            <i class="bi bi-tools d-block mb-3" style="font-size:3rem;"></i>
+            <p class="mb-0">Service station details coming soon.</p>
+        </div>
+        {% endfor %}
+    </div>
+
 </div>
 </section>
-
 {% endblock %}

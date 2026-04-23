@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 import re
 import os
+from django.contrib.auth.models import User
 
 
 # ── validators ────────────────────────────────────────────────────────────────
@@ -187,10 +188,6 @@ class BikeImage(models.Model):
 # ── Showroom ──────────────────────────────────────────────────────────────────
 
 class Showroom(models.Model):
-    """
-    Sales showroom — each has its own WhatsApp number and email.
-    The whatsapp_number field is used for the per-showroom WhatsApp button.
-    """
     name               = models.CharField(max_length=200)
     address            = models.TextField()
     phone              = models.CharField(max_length=20, help_text='Primary contact number')
@@ -205,6 +202,12 @@ class Showroom(models.Model):
     working_hours      = models.CharField(max_length=150, default='Mon–Sun: 10:00 AM – 6:30 PM | Tuesday Off')
     is_active          = models.BooleanField(default=True)
     order              = models.PositiveIntegerField(default=0)
+    manager            = models.OneToOneField(          # ← NEW
+        User, null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='managed_showroom',
+        help_text='This user can only see this showroom\'s data in admin'
+    )
 
     class Meta:
         ordering = ['order']
@@ -213,7 +216,6 @@ class Showroom(models.Model):
         return self.name
 
     def get_whatsapp_number(self):
-        """Returns clean WhatsApp number (with 91 prefix if missing)."""
         num = (self.whatsapp_number or self.phone).replace(' ', '').replace('-', '').replace('+', '')
         if num and not num.startswith('91'):
             num = '91' + num
@@ -230,10 +232,6 @@ class Showroom(models.Model):
 # ── ServiceStation ────────────────────────────────────────────────────────────
 
 class ServiceStation(models.Model):
-    """
-    Separate service stations — each has its own WhatsApp and email.
-    Tuesday is off by default. Timing: 9:00 AM – 6:00 PM.
-    """
     name              = models.CharField(max_length=200)
     address           = models.TextField()
     phone             = models.CharField(max_length=20)
@@ -251,6 +249,12 @@ class ServiceStation(models.Model):
     )
     is_active         = models.BooleanField(default=True)
     order             = models.PositiveIntegerField(default=0)
+    manager           = models.OneToOneField(          # ← NEW
+        User, null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='managed_station',
+        help_text='This user can only see this station\'s data in admin'
+    )
 
     class Meta:
         ordering = ['order']
