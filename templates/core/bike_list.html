@@ -2,61 +2,330 @@
 {% block title %}All Bikes{% endblock %}
 
 {% block content %}
-<section class="py-5">
-    <div class="container">
-        <h2 class="fw-bold mb-4">Explore Bikes</h2>
 
-        <!-- Category Filter -->
-        <div class="d-flex gap-2 flex-wrap mb-4">
-            <a href="{% url 'bike_list' %}"
-               class="btn btn-sm {% if not selected_category %}btn-dark{% else %}btn-outline-dark{% endif %}">
-                All
-            </a>
-            {% for cat in categories %}
-            <a href="?category={{ cat.slug }}"
-               class="btn btn-sm {% if selected_category == cat.slug %}btn-warning{% else %}btn-outline-dark{% endif %}">
-                {{ cat.name }}
-            </a>
-            {% endfor %}
-        </div>
+<style>
+    .bike-carousel-list {
+        height: 220px;
+        overflow: hidden;
+        background: #f5f7fc;
+    }
+    .bike-carousel-list .carousel-inner,
+    .bike-carousel-list .carousel-item { height: 100%; }
+    .bike-carousel-list img,
+    .bike-carousel-list video          { width:100%; height:100%; object-fit:cover; }
+    .bike-carousel-list iframe         { width:100%; height:100%; border:0; }
 
-        <!-- Bike Grid -->
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for bike in bikes %}
-            <div class="col">
-                <div class="card h-100 border-0 shadow-sm bike-card">
-                    {% if bike.image %}
-                    <img src="{{ bike.image.url }}" class="card-img-top bike-img" alt="{{ bike.name }}">
-                    {% else %}
-                    <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
-                        <i class="bi bi-bicycle text-secondary" style="font-size: 4rem;"></i>
+    .carousel-indicators [data-bs-slide-to] {
+        width:6px; height:6px; border-radius:50%;
+        background:#003087; opacity:.35;
+    }
+    .carousel-indicators .active { opacity:1; }
+
+    /* small arrows for card carousels */
+    .bike-carousel-list .carousel-control-prev-icon,
+    .bike-carousel-list .carousel-control-next-icon {
+        background-color: #003087;
+        border-radius: 50%;
+        padding: 12px;
+        background-size: 55%;
+    }
+
+    /* color swatch row */
+    .list-swatch-btn {
+        width: 28px; height: 28px;
+        border: none; padding: 0;
+        border-radius: 50%; overflow: hidden;
+        cursor: pointer; flex-shrink: 0;
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+        transition: outline-color .15s;
+    }
+    .list-swatch-btn img         { width:100%; height:100%; object-fit:cover; }
+    .list-swatch-btn.swatch-active { outline-color: #003087; }
+    .swatch-fill { display:block; width:100%; height:100%; }
+
+    /* card */
+    .bike-card {
+        border: 1px solid #d0dff5 !important;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: box-shadow .2s, transform .2s;
+    }
+    .bike-card:hover {
+        box-shadow: 0 6px 24px rgba(0,48,135,.13);
+        transform: translateY(-2px);
+    }
+
+    /* filter buttons */
+    .filter-btn-active {
+        background: #003087;
+        color: #fff;
+        border-color: #003087;
+    }
+    .filter-btn {
+        border-color: #003087;
+        color: #003087;
+    }
+    .filter-btn:hover {
+        background: #003087;
+        color: #fff;
+    }
+
+    /* gallery toggle */
+    .list-color-gallery.hidden { display: none; }
+</style>
+
+<section class="py-5" style="background:#f8faff; min-height:80vh;">
+<div class="container">
+
+    <h2 class="fw-bold mb-1" style="color:#003087;">Explore Bikes</h2>
+    <p class="text-muted mb-4" style="font-size:.92rem;">
+        Choose from our full range of Bajaj motorcycles
+    </p>
+
+    <!-- Category Filter -->
+    <div class="d-flex gap-2 flex-wrap mb-4">
+        <a href="{% url 'bike_list' %}"
+           class="btn btn-sm {% if not selected_category %}filter-btn-active{% else %}filter-btn{% endif %}">
+            All
+        </a>
+        {% for cat in categories %}
+        <a href="?category={{ cat.slug }}"
+           class="btn btn-sm {% if selected_category == cat.slug %}filter-btn-active{% else %}filter-btn{% endif %}">
+            {{ cat.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Bike Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for bike in bikes %}
+        <div class="col">
+            <div class="card h-100 border-0 bike-card">
+
+                <!-- ── Media area ── -->
+                {% with colors=bike.colors.all %}
+                {% if colors %}
+
+                    <!-- one gallery per color, first visible -->
+                    {% for color in colors %}
+                    <div id="list-gallery-{{ bike.pk }}-{{ color.pk }}"
+                         class="list-color-gallery {% if not forloop.first %}hidden{% endif %}">
+
+                        {% with imgs=color.images.all %}
+                        {% if imgs %}
+                        <div id="list-carousel-{{ bike.pk }}-{{ color.pk }}"
+                             class="carousel slide bike-carousel-list"
+                             data-bs-ride="false">
+
+                            {% if imgs|length > 1 %}
+                            <div class="carousel-indicators">
+                                {% for item in imgs %}
+                                <button type="button"
+                                        data-bs-target="#list-carousel-{{ bike.pk }}-{{ color.pk }}"
+                                        data-bs-slide-to="{{ forloop.counter0 }}"
+                                        {% if forloop.first %}class="active" aria-current="true"{% endif %}>
+                                </button>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            <div class="carousel-inner">
+                                {% for item in imgs %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    {% if item.is_image %}
+                                        {% if item.image_file %}
+                                            <img src="{{ item.image_file.url }}"
+                                                 alt="{{ bike.name }} {{ color.name }}">
+                                        {% elif item.media_link %}
+                                            <img src="{{ item.get_display_url }}"
+                                                 referrerpolicy="no-referrer"
+                                                 alt="{{ bike.name }} {{ color.name }}">
+                                        {% endif %}
+                                    {% elif item.is_youtube %}
+                                        <iframe src="{{ item.get_display_url }}"
+                                                title="{{ bike.name }}"
+                                                allowfullscreen loading="lazy">
+                                        </iframe>
+                                    {% elif item.is_video %}
+                                        <video controls preload="metadata">
+                                            <source src="{{ item.get_display_url }}">
+                                        </video>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            {% if imgs|length > 1 %}
+                            <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#list-carousel-{{ bike.pk }}-{{ color.pk }}"
+                                    data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                    data-bs-target="#list-carousel-{{ bike.pk }}-{{ color.pk }}"
+                                    data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                            {% endif %}
+
+                        </div>
+
+                        {% else %}
+                        <!-- color exists but no images -->
+                        <div class="bike-carousel-list d-flex align-items-center justify-content-center bg-light">
+                            <i class="bi bi-bicycle text-secondary"
+                               style="font-size:3.5rem; opacity:.25;"></i>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+
+                    </div>
+                    {% endfor %}
+                    <!-- END per-color galleries -->
+
+                {% elif bike.image %}
+                    <!-- fallback: old single image -->
+                    <img src="{{ bike.image.url }}"
+                         class="bike-carousel-list"
+                         style="object-fit:cover; width:100%;"
+                         alt="{{ bike.name }}">
+                {% else %}
+                    <div class="bike-carousel-list d-flex align-items-center justify-content-center bg-light">
+                        <i class="bi bi-bicycle text-secondary"
+                           style="font-size:3.5rem; opacity:.25;"></i>
+                    </div>
+                {% endif %}
+                {% endwith %}
+                <!-- END media area -->
+
+                <!-- ── Card body ── -->
+                <div class="card-body pt-2 pb-1">
+
+                    <!-- Color swatches (only if colors exist) -->
+                    {% with colors=bike.colors.all %}
+                    {% if colors %}
+                    <div class="d-flex gap-1 flex-wrap align-items-center mb-2">
+                        {% for color in colors %}
+                        <button type="button"
+                                class="list-swatch-btn {% if forloop.first %}swatch-active{% endif %}"
+                                data-bike-id="{{ bike.pk }}"
+                                data-color-id="{{ color.pk }}"
+                                data-color-name="{{ color.name }}"
+                                data-hex="{{ color.color_hex }}"
+                                title="{{ color.name }}">
+                            {% with thumb=color.first_image_url %}
+                            {% if thumb %}
+                                <img src="{{ thumb }}"
+                                     referrerpolicy="no-referrer"
+                                     alt="{{ color.name }}">
+                            {% else %}
+                                <span class="swatch-fill" data-apply-hex="1"></span>
+                            {% endif %}
+                            {% endwith %}
+                        </button>
+                        {% endfor %}
+                        <span class="small ms-1"
+                              id="color-label-{{ bike.pk }}"
+                              style="color:#5a6a8a; font-size:.75rem;">
+                            {{ colors.first.name }}
+                        </span>
                     </div>
                     {% endif %}
-                    <div class="card-body">
-                        <span class="badge bg-warning text-dark mb-2">{{ bike.category.name }}</span>
-                        <h5 class="fw-bold">{{ bike.name }}</h5>
-                        <p class="text-primary fw-bold">{{ bike.formatted_price }}</p>
-                        <div class="d-flex gap-3 small text-muted flex-wrap">
-                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>{% endif %}
-                            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>{% endif %}
-                            {% if bike.fuel_type %}<span><i class="bi bi-droplet me-1"></i>{{ bike.fuel_type }}</span>{% endif %}
-                        </div>
-                    </div>
-                    <div class="card-footer bg-white border-0 pb-3">
-                        <div class="d-flex gap-2">
-                            <a href="{% url 'bike_detail' bike.slug %}" class="btn btn-dark btn-sm flex-fill">Details</a>
-                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}" class="btn btn-warning btn-sm flex-fill">Book Ride</a>
-                        </div>
+                    {% endwith %}
+
+                    <span class="badge px-2 py-1 mb-1"
+                          style="background:#e8f0fb; color:#003087; font-size:.72rem;">
+                        {{ bike.category.name }}
+                    </span>
+                    <h5 class="fw-bold mb-1" style="color:#111;">{{ bike.name }}</h5>
+                    <p class="fw-bold mb-2" style="color:#003087;">{{ bike.formatted_price }}</p>
+
+                    <div class="d-flex gap-3 flex-wrap" style="font-size:.8rem; color:#6b7a99;">
+                        {% if bike.engine_cc %}
+                        <span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>
+                        {% endif %}
+                        {% if bike.mileage %}
+                        <span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>
+                        {% endif %}
+                        {% if bike.fuel_type %}
+                        <span><i class="bi bi-droplet me-1"></i>{{ bike.fuel_type }}</span>
+                        {% endif %}
                     </div>
                 </div>
+
+                <!-- ── Card footer ── -->
+                <div class="card-footer bg-white border-0 pb-3 pt-2">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'bike_detail' bike.slug %}"
+                           class="btn btn-sm flex-fill fw-semibold"
+                           style="background:#003087; color:#fff; border:none;">
+                            Details
+                        </a>
+                        <a href="{% url 'enquiry' %}?bike={{ bike.pk }}"
+                           class="btn btn-sm flex-fill fw-semibold"
+                           style="background:#e8f0fb; color:#003087; border:1px solid #d0dff5;">
+                            Book Ride
+                        </a>
+                    </div>
+                </div>
+
             </div>
-            {% empty %}
-            <div class="col-12 text-center py-5 text-muted">
-                <i class="bi bi-bicycle fs-1 d-block mb-3"></i>
-                <p>No bikes found in this category.</p>
-            </div>
-            {% endfor %}
         </div>
+        {% empty %}
+        <div class="col-12 text-center py-5" style="color:#8a9abb;">
+            <i class="bi bi-bicycle d-block mb-3" style="font-size:3rem;"></i>
+            <p class="mb-0">No bikes found in this category.</p>
+        </div>
+        {% endfor %}
     </div>
+
+</div>
 </section>
+
+<script>
+(function () {
+
+    /* ── apply hex to swatch spans that have no image ── */
+    document.querySelectorAll('.list-swatch-btn').forEach(function (btn) {
+        var hex  = btn.getAttribute('data-hex');
+        var span = btn.querySelector('[data-apply-hex]');
+        if (span && hex) { span.style.background = hex; }
+    });
+
+    /* ── swatch click → switch gallery + update label ── */
+    document.querySelectorAll('.list-swatch-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var bikeId  = btn.getAttribute('data-bike-id');
+            var colorId = btn.getAttribute('data-color-id');
+            var name    = btn.getAttribute('data-color-name');
+
+            /* hide all galleries for this bike */
+            document.querySelectorAll(
+                '[id^="list-gallery-' + bikeId + '-"]'
+            ).forEach(function (el) {
+                el.classList.add('hidden');
+            });
+
+            /* show selected */
+            var target = document.getElementById(
+                'list-gallery-' + bikeId + '-' + colorId
+            );
+            if (target) { target.classList.remove('hidden'); }
+
+            /* reset swatches for this bike only */
+            btn.closest('.card')
+               .querySelectorAll('.list-swatch-btn')
+               .forEach(function (b) { b.classList.remove('swatch-active'); });
+            btn.classList.add('swatch-active');
+
+            /* update color label */
+            var label = document.getElementById('color-label-' + bikeId);
+            if (label) { label.textContent = name; }
+        });
+    });
+
+}());
+</script>
+
 {% endblock %}

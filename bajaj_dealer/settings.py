@@ -6,7 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # --- SECURITY ---
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,192.168.1.37,localhost,809b-103-46-201-88.ngrok-free.app').split(',')
+
 
 # --- APPS ---
 INSTALLED_APPS = [
@@ -110,4 +111,4 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
 
 # --- CUSTOM SITE SETTINGS ---
-WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='919311300692')
+WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='8360156287')

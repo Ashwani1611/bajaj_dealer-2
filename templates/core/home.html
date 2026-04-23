@@ -1,43 +1,195 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}Home{% endblock %}
 
 {% block content %}
 
-<!-- HERO SECTION -->
-<section class="hero-section bg-dark text-white d-flex align-items-center">
-    <div class="container py-5">
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #001a4d 0%, #003087 60%, #0055b3 100%);
+        min-height: 88vh;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-circle-1 {
+        position: absolute;
+        right: -80px; top: -80px;
+        width: 520px; height: 520px;
+        background: rgba(255,255,255,.04);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .hero-circle-2 {
+        position: absolute;
+        right: 80px; bottom: -120px;
+        width: 320px; height: 320px;
+        background: rgba(255,255,255,.03);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .hero-badge {
+        display: inline-block;
+        background: rgba(255,255,255,.15);
+        color: #fff;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 5px 14px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,.25);
+        margin-bottom: 1rem;
+    }
+    .cat-strip { background: #003087; padding: 14px 0; }
+    .cat-btn {
+        background: rgba(255,255,255,.12);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,.2);
+        border-radius: 6px;
+        font-size: .85rem;
+        font-weight: 600;
+        padding: 6px 18px;
+        text-decoration: none;
+        transition: background .2s;
+        display: inline-block;
+    }
+    .cat-btn:hover { background: rgba(255,255,255,.25); color: #fff; }
+    .section-badge {
+        display: inline-block;
+        background: #e8f0fb;
+        color: #003087;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 6px;
+    }
+    .bike-card {
+        border: 1px solid #d0dff5 !important;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: box-shadow .2s, transform .2s;
+    }
+    .bike-card:hover {
+        box-shadow: 0 6px 24px rgba(0,48,135,.13);
+        transform: translateY(-2px);
+    }
+    .bike-img { height: 200px; object-fit: cover; width: 100%; }
+    .bike-img-placeholder { height: 200px; }
+    .quick-action-card {
+        border: 1px solid #d0dff5;
+        border-radius: 12px;
+        transition: box-shadow .2s, transform .2s;
+    }
+    .quick-action-card:hover {
+        box-shadow: 0 6px 20px rgba(0,48,135,.12);
+        transform: translateY(-2px);
+    }
+    .video-card {
+        border: 1px solid #d0dff5;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: box-shadow .2s;
+    }
+    .video-card:hover { box-shadow: 0 4px 16px rgba(0,48,135,.1); }
+    .enquiry-section {
+        background: linear-gradient(135deg, #001a4d 0%, #003087 100%);
+    }
+    .enquiry-section .form-control,
+    .enquiry-section .form-select {
+        background: rgba(255,255,255,.1);
+        border: 1px solid rgba(255,255,255,.2);
+        color: #fff;
+        border-radius: 8px;
+    }
+    .enquiry-section .form-control::placeholder { color: rgba(255,255,255,.5); }
+    .enquiry-section .form-control:focus,
+    .enquiry-section .form-select:focus {
+        background: rgba(255,255,255,.15);
+        border-color: rgba(255,255,255,.5);
+        box-shadow: none;
+        color: #fff;
+    }
+    .enquiry-section label { color: rgba(255,255,255,.8); font-size: .85rem; }
+    .enquiry-section .form-select option { background: #003087; color: #fff; }
+    .showroom-badge {
+        background: #e8f0fb;
+        color: #003087;
+        border: 1px solid #d0dff5;
+        border-radius: 20px;
+        font-size: .82rem;
+        font-weight: 600;
+        padding: 5px 14px;
+        text-decoration: none;
+        transition: background .15s;
+        display: inline-block;
+    }
+    .showroom-badge:hover { background: #003087; color: #fff; }
+    .stat-divider {
+        border-left: 1px solid rgba(255,255,255,.15);
+        padding-left: 1rem;
+    }
+</style>
+
+<!-- HERO -->
+<section class="hero-section d-flex align-items-center">
+    <div class="hero-circle-1"></div>
+    <div class="hero-circle-2"></div>
+    <div class="container py-5" style="position:relative; z-index:1;">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <span class="badge bg-warning text-dark mb-3 px-3 py-2">Authorized Dealer</span>
-                <h1 class="display-4 fw-bold mb-3">
-                    Ride the <span class="text-warning">Thrill</span>.<br>
+                <span class="hero-badge">
+                    <i class="bi bi-patch-check-fill me-1"></i>Authorized Dealer
+                </span>
+                <h1 class="display-4 fw-bold mb-3 text-white" style="line-height:1.15;">
+                    Ride the <span style="color:#7eb3ff;">Thrill</span>.<br>
                     Own a Bajaj.
                 </h1>
-                <p class="lead text-secondary mb-4">
-                    From Pulsar to Chetak EV — explore the full range of Bajaj bikes at your nearest showroom.
+                <p class="mb-4" style="color:rgba(255,255,255,.7); font-size:1.05rem; line-height:1.7;">
+                    From Pulsar to Chetak EV — explore the full range of
+                    Bajaj bikes at your nearest showroom.
                 </p>
                 <div class="d-flex gap-3 flex-wrap">
-                    <a href="{% url 'bike_list' %}" class="btn btn-warning btn-lg fw-bold">
+                    <a href="{% url 'bike_list' %}"
+                       class="btn btn-lg fw-bold"
+                       style="background:#fff; color:#003087; border:none; border-radius:8px;">
                         <i class="bi bi-grid-fill me-2"></i>Explore Bikes
                     </a>
-                    <a href="{% url 'enquiry' %}" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-telephone me-2"></i>Book Test Ride
+                    <a href="{% url 'enquiry' %}"
+                       class="btn btn-lg fw-semibold"
+                       style="background:transparent; color:#fff; border:2px solid rgba(255,255,255,.5); border-radius:8px;">
+                        <i class="bi bi-calendar-check me-2"></i>Book Test Ride
                     </a>
+                </div>
+                <div class="d-flex gap-4 mt-5 flex-wrap">
+                    <div>
+                        <div class="fw-bold text-white" style="font-size:1.4rem;">
+                            {{ all_showrooms.count }}+
+                        </div>
+                        <div style="color:rgba(255,255,255,.55); font-size:.78rem;">Showrooms</div>
+                    </div>
+                    <div class="stat-divider">
+                        <div class="fw-bold text-white" style="font-size:1.4rem;">20+</div>
+                        <div style="color:rgba(255,255,255,.55); font-size:.78rem;">Bike Models</div>
+                    </div>
+                    <div class="stat-divider">
+                        <div class="fw-bold text-white" style="font-size:1.4rem;">10K+</div>
+                        <div style="color:rgba(255,255,255,.55); font-size:.78rem;">Happy Riders</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CATEGORY QUICK LINKS -->
-<section class="py-4 bg-warning">
+<!-- CATEGORY STRIP -->
+<section class="cat-strip">
     <div class="container">
-        <div class="d-flex gap-3 flex-wrap justify-content-center">
+        <div class="d-flex gap-2 flex-wrap justify-content-center">
             {% for cat in categories %}
-            <a href="{% url 'bike_list' %}?category={{ cat.slug }}"
-               class="btn btn-dark px-4 py-2 fw-semibold">
+            <a href="{% url 'bike_list' %}?category={{ cat.slug }}" class="cat-btn">
                 {{ cat.name }}
             </a>
             {% endfor %}
@@ -47,36 +199,72 @@
 
 <!-- FEATURED BIKES -->
 {% if featured_bikes %}
-<section class="py-5">
+<section class="py-5" style="background:#f8faff;">
     <div class="container">
         <div class="text-center mb-4">
-            <h2 class="fw-bold">Featured Bikes</h2>
-            <p class="text-muted">Our top picks just for you</p>
+            <span class="section-badge">Top Picks</span>
+            <h2 class="fw-bold mb-1" style="color:#003087;">Featured Bikes</h2>
+            <p style="color:#5a6a8a;">Handpicked models for every rider</p>
         </div>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for bike in featured_bikes %}
             <div class="col">
-                <div class="card h-100 border-0 shadow-sm bike-card">
-                    {% if bike.image %}
-                    <img src="{{ bike.image.url }}" class="card-img-top bike-img" alt="{{ bike.name }}">
+                <div class="card h-100 border-0 bike-card">
+
+                    {% with colors=bike.colors.all %}
+                    {% if colors %}
+                        {% with first_img=colors.first.first_image_url %}
+                        {% if first_img %}
+                        <img src="{{ first_img }}"
+                             class="bike-img"
+                             referrerpolicy="no-referrer"
+                             alt="{{ bike.name }}">
+                        {% else %}
+                        <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
+                            <i class="bi bi-bicycle text-secondary" style="font-size:4rem; opacity:.3;"></i>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    {% elif bike.image %}
+                        <img src="{{ bike.image.url }}" class="bike-img" alt="{{ bike.name }}">
                     {% else %}
-                    <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
-                        <i class="bi bi-bicycle text-secondary" style="font-size: 4rem;"></i>
-                    </div>
+                        <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
+                            <i class="bi bi-bicycle text-secondary" style="font-size:4rem; opacity:.3;"></i>
+                        </div>
                     {% endif %}
-                    <div class="card-body">
-                        <span class="badge bg-warning text-dark mb-2">{{ bike.category.name }}</span>
-                        <h5 class="card-title fw-bold">{{ bike.name }}</h5>
-                        <p class="text-primary fw-bold fs-5">{{ bike.formatted_price }}</p>
-                        <div class="d-flex gap-2 small text-muted flex-wrap">
-                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>{% endif %}
-                            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>{% endif %}
+                    {% endwith %}
+
+                    <div class="card-body pt-2">
+                        <span class="badge px-2 py-1 mb-1"
+                              style="background:#e8f0fb; color:#003087; font-size:.7rem;">
+                            {{ bike.category.name }}
+                        </span>
+                        <h5 class="fw-bold mb-1" style="color:#111;">{{ bike.name }}</h5>
+                        <p class="fw-bold mb-2" style="color:#003087; font-size:1.05rem;">
+                            {{ bike.formatted_price }}
+                        </p>
+                        <div class="d-flex gap-3 flex-wrap"
+                             style="font-size:.78rem; color:#6b7a99;">
+                            {% if bike.engine_cc %}
+                            <span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>
+                            {% endif %}
+                            {% if bike.mileage %}
+                            <span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="card-footer bg-white border-0 pb-3">
                         <div class="d-flex gap-2">
-                            <a href="{% url 'bike_detail' bike.slug %}" class="btn btn-dark btn-sm flex-fill">View Details</a>
-                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}" class="btn btn-warning btn-sm flex-fill">Book Ride</a>
+                            <a href="{% url 'bike_detail' bike.slug %}"
+                               class="btn btn-sm flex-fill fw-semibold"
+                               style="background:#003087; color:#fff; border:none;">
+                                View Details
+                            </a>
+                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}"
+                               class="btn btn-sm flex-fill fw-semibold"
+                               style="background:#e8f0fb; color:#003087; border:1px solid #d0dff5;">
+                                Book Ride
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -84,49 +272,63 @@
             {% endfor %}
         </div>
         <div class="text-center mt-4">
-            <a href="{% url 'bike_list' %}" class="btn btn-outline-dark px-5">View All Bikes</a>
+            <a href="{% url 'bike_list' %}"
+               class="btn fw-semibold px-5"
+               style="background:#003087; color:#fff; border:none; border-radius:8px;">
+                View All Bikes
+            </a>
         </div>
     </div>
 </section>
 {% endif %}
 
 <!-- QUICK ACTIONS -->
-<section class="py-5 bg-light">
+<section class="py-5" style="background:#fff;">
     <div class="container">
+        <div class="text-center mb-4">
+            <span class="section-badge">Quick Access</span>
+            <h2 class="fw-bold mb-1" style="color:#003087;">What Can We Help With?</h2>
+        </div>
         <div class="row g-4 text-center">
             <div class="col-md-3 col-6">
                 <a href="{% url 'enquiry' %}" class="text-decoration-none">
-                    <div class="quick-action-card p-4 bg-white rounded shadow-sm h-100">
-                        <i class="bi bi-calendar-check-fill text-warning fs-2 mb-2 d-block"></i>
-                        <h6 class="fw-bold text-dark">Book Test Ride</h6>
-                        <p class="text-muted small mb-0">Try before you buy</p>
+                    <div class="quick-action-card p-4 bg-white h-100">
+                        <i class="bi bi-calendar-check-fill fs-2 mb-2 d-block"
+                           style="color:#003087;"></i>
+                        <h6 class="fw-bold" style="color:#111;">Book Test Ride</h6>
+                        <p class="mb-0" style="font-size:.8rem; color:#5a6a8a;">Try before you buy</p>
                     </div>
                 </a>
             </div>
             <div class="col-md-3 col-6">
                 <a href="{% url 'book_service' %}" class="text-decoration-none">
-                    <div class="quick-action-card p-4 bg-white rounded shadow-sm h-100">
-                        <i class="bi bi-wrench-adjustable-circle-fill text-warning fs-2 mb-2 d-block"></i>
-                        <h6 class="fw-bold text-dark">Book Service</h6>
-                        <p class="text-muted small mb-0">Expert bike care</p>
+                    <div class="quick-action-card p-4 bg-white h-100">
+                        <i class="bi bi-wrench-adjustable-circle-fill fs-2 mb-2 d-block"
+                           style="color:#003087;"></i>
+                        <h6 class="fw-bold" style="color:#111;">Book Service</h6>
+                        <p class="mb-0" style="font-size:.8rem; color:#5a6a8a;">Expert bike care</p>
                     </div>
                 </a>
             </div>
             <div class="col-md-3 col-6">
                 <a href="{% url 'exchange_bike' %}" class="text-decoration-none">
-                    <div class="quick-action-card p-4 bg-white rounded shadow-sm h-100">
-                        <i class="bi bi-arrow-left-right text-warning fs-2 mb-2 d-block"></i>
-                        <h6 class="fw-bold text-dark">Exchange Bike</h6>
-                        <p class="text-muted small mb-0">Upgrade your ride</p>
+                    <div class="quick-action-card p-4 bg-white h-100">
+                        <i class="bi bi-arrow-left-right fs-2 mb-2 d-block"
+                           style="color:#003087;"></i>
+                        <h6 class="fw-bold" style="color:#111;">Exchange Bike</h6>
+                        <p class="mb-0" style="font-size:.8rem; color:#5a6a8a;">Upgrade your ride</p>
                     </div>
                 </a>
             </div>
             <div class="col-md-3 col-6">
                 <a href="{% url 'contact' %}" class="text-decoration-none">
-                    <div class="quick-action-card p-4 bg-white rounded shadow-sm h-100">
-                        <i class="bi bi-geo-alt-fill text-warning fs-2 mb-2 d-block"></i>
-                        <h6 class="fw-bold text-dark">Find Showroom</h6>
-                        <p class="text-muted small mb-0">{{ all_showrooms.count }} outlets near you</p>
+                    <div class="quick-action-card p-4 bg-white h-100">
+                        <i class="bi bi-geo-alt-fill fs-2 mb-2 d-block"
+                           style="color:#003087;"></i>
+                        <h6 class="fw-bold" style="color:#111;">Find Showroom</h6>
+                        <p class="mb-0" style="font-size:.8rem; color:#5a6a8a;">
+                            {{ all_showrooms.count }} outlets near you
+                        </p>
                     </div>
                 </a>
             </div>
@@ -134,29 +336,29 @@
     </div>
 </section>
 
-<!-- YOUTUBE VIDEOS SECTION -->
+<!-- VIDEOS -->
 {% if videos %}
-<section class="py-5">
+<section class="py-5" style="background:#f8faff;">
     <div class="container">
         <div class="text-center mb-4">
-            <h2 class="fw-bold">Watch Our Latest Videos</h2>
-            <p class="text-muted">Ride experiences, reviews and more</p>
+            <span class="section-badge">Watch</span>
+            <h2 class="fw-bold mb-1" style="color:#003087;">Latest Videos</h2>
+            <p style="color:#5a6a8a;">Ride experiences, reviews and more</p>
         </div>
         <div class="row g-4">
             {% for video in videos %}
             <div class="col-md-6 col-lg-4">
-                <div class="card border-0 shadow-sm">
+                <div class="video-card">
                     <div class="ratio ratio-16x9">
-                        <iframe
-                            src="{{ video.embed_url }}"
-                            title="{{ video.title }}"
-                            allowfullscreen
-                            loading="lazy"
-                            class="rounded-top">
+                        <iframe src="{{ video.embed_url }}"
+                                title="{{ video.title }}"
+                                allowfullscreen
+                                loading="lazy">
                         </iframe>
                     </div>
-                    <div class="card-body">
-                        <p class="card-text fw-semibold mb-0">{{ video.title }}</p>
+                    <div class="p-3">
+                        <p class="fw-semibold mb-0"
+                           style="font-size:.9rem; color:#1a1a2e;">{{ video.title }}</p>
                     </div>
                 </div>
             </div>
@@ -166,25 +368,45 @@
 </section>
 {% endif %}
 
-<!-- ENQUIRY FORM SECTION -->
-<section class="py-5 bg-dark text-white">
+<!-- ENQUIRY FORM -->
+<section class="enquiry-section py-5">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-7 text-center mb-4">
-                <h2 class="fw-bold">Interested? Let's Talk.</h2>
-                <p class="text-secondary">Fill in your details and our team will reach out within 24 hours.</p>
+                <span class="hero-badge">Get in Touch</span>
+                <h2 class="fw-bold text-white mt-2">Interested? Let's Talk.</h2>
+                <p style="color:rgba(255,255,255,.65);">
+                    Fill in your details and our team will reach out within 24 hours.
+                </p>
             </div>
             <div class="col-lg-7">
                 <form method="POST" action="{% url 'enquiry' %}">
                     {% csrf_token %}
                     <div class="row g-3">
-                        <div class="col-md-6">{{ enquiry_form.name.label_tag }}{{ enquiry_form.name }}</div>
-                        <div class="col-md-6">{{ enquiry_form.phone.label_tag }}{{ enquiry_form.phone }}</div>
-                        <div class="col-md-6">{{ enquiry_form.bike.label_tag }}{{ enquiry_form.bike }}</div>
-                        <div class="col-md-6">{{ enquiry_form.showroom.label_tag }}{{ enquiry_form.showroom }}</div>
-                        <div class="col-12">{{ enquiry_form.message.label_tag }}{{ enquiry_form.message }}</div>
+                        <div class="col-md-6">
+                            {{ enquiry_form.name.label_tag }}
+                            {{ enquiry_form.name }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ enquiry_form.phone.label_tag }}
+                            {{ enquiry_form.phone }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ enquiry_form.bike.label_tag }}
+                            {{ enquiry_form.bike }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ enquiry_form.showroom.label_tag }}
+                            {{ enquiry_form.showroom }}
+                        </div>
                         <div class="col-12">
-                            <button type="submit" class="btn btn-warning btn-lg w-100 fw-bold">
+                            {{ enquiry_form.message.label_tag }}
+                            {{ enquiry_form.message }}
+                        </div>
+                        <div class="col-12">
+                            <button type="submit"
+                                    class="btn btn-lg w-100 fw-bold"
+                                    style="background:#fff; color:#003087; border:none; border-radius:8px;">
                                 <i class="bi bi-send-fill me-2"></i>Send Enquiry
                             </button>
                         </div>
@@ -195,13 +417,16 @@
     </div>
 </section>
 
-<!-- SHOWROOMS STRIP -->
-<section class="py-4 bg-light border-top">
+<!-- SHOWROOM STRIP -->
+<section class="py-4" style="background:#fff; border-top:1px solid #e8f0fb;">
     <div class="container">
-        <h6 class="text-center text-muted mb-3 text-uppercase fw-bold">Our Showroom Locations</h6>
+        <p class="text-center fw-bold text-uppercase mb-3"
+           style="font-size:.72rem; letter-spacing:1.5px; color:#5a6a8a;">
+            Our Showroom Locations
+        </p>
         <div class="d-flex flex-wrap gap-2 justify-content-center">
             {% for showroom in showrooms %}
-            <a href="{% url 'contact' %}" class="badge bg-dark text-white px-3 py-2 text-decoration-none fs-6">
+            <a href="{% url 'contact' %}" class="showroom-badge">
                 <i class="bi bi-geo-alt me-1"></i>{{ showroom.name }}
             </a>
             {% endfor %}
