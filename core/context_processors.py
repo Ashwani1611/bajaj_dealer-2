@@ -20,4 +20,7 @@ def site_globals(request):
         'SITE_NAME':        getattr(settings, 'SITE_NAME', 'Skyline Bajaj'),
         'LOGO_URL':         getattr(settings, 'LOGO_URL', ''),
         'WHATSAPP_NUMBER':  getattr(settings, 'WHATSAPP_NUMBER', ''),
+        'FACEBOOK_URL':     getattr(settings, 'FACEBOOK_URL', ''),
+        'INSTAGRAM_URL':    getattr(settings, 'INSTAGRAM_URL', ''),
+        'YOUTUBE_URL':      getattr(settings, 'YOUTUBE_URL', ''),
     }

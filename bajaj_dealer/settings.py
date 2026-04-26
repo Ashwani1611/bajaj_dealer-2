@@ -1,6 +1,7 @@
 from pathlib import Path
 from decouple import config
 import os
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -185,3 +186,11 @@ if not DEBUG:
     SESSION_COOKIE_SECURE          = True
     CSRF_COOKIE_SECURE             = True
     X_FRAME_OPTIONS                = 'DENY'
+
+
+load_dotenv()
+
+FACEBOOK_URL = os.getenv('FACEBOOK_URL', '')
+INSTAGRAM_URL = os.getenv('INSTAGRAM_URL', '')
+YOUTUBE_URL = os.getenv('YOUTUBE_URL', '')
+WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '')
