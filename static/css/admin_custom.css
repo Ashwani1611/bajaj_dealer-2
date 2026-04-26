@@ -1,0 +1,12 @@
+/* Fix for the massive sidebar logo */
+.brand-link .brand-image {
+    max-height: 38px !important; /* This matches the height in your base.html */
+    width: auto !important;
+    margin-top: -5px;
+}
+
+/* Fix for the login page logo size */
+.login-logo img {
+    max-width: 180px;
+    height: auto;
+}

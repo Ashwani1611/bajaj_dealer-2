@@ -21,7 +21,6 @@
     }
     .carousel-indicators .active { opacity:1; }
 
-    /* small arrows for card carousels */
     .bike-carousel-list .carousel-control-prev-icon,
     .bike-carousel-list .carousel-control-next-icon {
         background-color: #003087;
@@ -30,7 +29,6 @@
         background-size: 55%;
     }
 
-    /* color swatch row */
     .list-swatch-btn {
         width: 28px; height: 28px;
         border: none; padding: 0;
@@ -44,7 +42,6 @@
     .list-swatch-btn.swatch-active { outline-color: #003087; }
     .swatch-fill { display:block; width:100%; height:100%; }
 
-    /* card */
     .bike-card {
         border: 1px solid #d0dff5 !important;
         border-radius: 12px;
@@ -56,7 +53,6 @@
         transform: translateY(-2px);
     }
 
-    /* filter buttons */
     .filter-btn-active {
         background: #003087;
         color: #fff;
@@ -71,7 +67,6 @@
         color: #fff;
     }
 
-    /* gallery toggle */
     .list-color-gallery.hidden { display: none; }
 </style>
 
@@ -103,11 +98,10 @@
         <div class="col">
             <div class="card h-100 border-0 bike-card">
 
-                <!-- ── Media area ── -->
+                <!-- Media area -->
                 {% with colors=bike.colors.all %}
                 {% if colors %}
 
-                    <!-- one gallery per color, first visible -->
                     {% for color in colors %}
                     <div id="list-gallery-{{ bike.pk }}-{{ color.pk }}"
                          class="list-color-gallery {% if not forloop.first %}hidden{% endif %}">
@@ -172,7 +166,6 @@
                         </div>
 
                         {% else %}
-                        <!-- color exists but no images -->
                         <div class="bike-carousel-list d-flex align-items-center justify-content-center bg-light">
                             <i class="bi bi-bicycle text-secondary"
                                style="font-size:3.5rem; opacity:.25;"></i>
@@ -182,10 +175,8 @@
 
                     </div>
                     {% endfor %}
-                    <!-- END per-color galleries -->
 
                 {% elif bike.image %}
-                    <!-- fallback: old single image -->
                     <img src="{{ bike.image.url }}"
                          class="bike-carousel-list"
                          style="object-fit:cover; width:100%;"
@@ -197,12 +188,10 @@
                     </div>
                 {% endif %}
                 {% endwith %}
-                <!-- END media area -->
 
-                <!-- ── Card body ── -->
+                <!-- Card body -->
                 <div class="card-body pt-2 pb-1">
 
-                    <!-- Color swatches (only if colors exist) -->
                     {% with colors=bike.colors.all %}
                     {% if colors %}
                     <div class="d-flex gap-1 flex-wrap align-items-center mb-2">
@@ -254,7 +243,7 @@
                     </div>
                 </div>
 
-                <!-- ── Card footer ── -->
+                <!-- Card footer -->
                 <div class="card-footer bg-white border-0 pb-3 pt-2">
                     <div class="d-flex gap-2">
                         <a href="{% url 'bike_detail' bike.slug %}"
@@ -286,40 +275,36 @@
 <script>
 (function () {
 
-    /* ── apply hex to swatch spans that have no image ── */
+    /* apply hex to swatch spans that have no image */
     document.querySelectorAll('.list-swatch-btn').forEach(function (btn) {
         var hex  = btn.getAttribute('data-hex');
         var span = btn.querySelector('[data-apply-hex]');
         if (span && hex) { span.style.background = hex; }
     });
 
-    /* ── swatch click → switch gallery + update label ── */
+    /* swatch click → switch gallery + update label */
     document.querySelectorAll('.list-swatch-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var bikeId  = btn.getAttribute('data-bike-id');
             var colorId = btn.getAttribute('data-color-id');
             var name    = btn.getAttribute('data-color-name');
 
-            /* hide all galleries for this bike */
             document.querySelectorAll(
                 '[id^="list-gallery-' + bikeId + '-"]'
             ).forEach(function (el) {
                 el.classList.add('hidden');
             });
 
-            /* show selected */
             var target = document.getElementById(
                 'list-gallery-' + bikeId + '-' + colorId
             );
             if (target) { target.classList.remove('hidden'); }
 
-            /* reset swatches for this bike only */
             btn.closest('.card')
                .querySelectorAll('.list-swatch-btn')
                .forEach(function (b) { b.classList.remove('swatch-active'); });
             btn.classList.add('swatch-active');
 
-            /* update color label */
             var label = document.getElementById('color-label-' + bikeId);
             if (label) { label.textContent = name; }
         });

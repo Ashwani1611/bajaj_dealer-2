@@ -109,9 +109,7 @@
 
     <div class="row g-5">
 
-        <!-- ══════════════════════════════════════
-             LEFT — Carousel + Thumbnails + Swatches
-        ══════════════════════════════════════ -->
+        <!-- LEFT — Carousel + Thumbnails + Swatches -->
         <div class="col-lg-6">
             {% with colors=bike.colors.all %}
             {% if colors %}
@@ -147,11 +145,17 @@
                                     {% if item.is_image %}
                                         {% if item.image_file %}
                                             <img src="{{ item.image_file.url }}"
-                                                 alt="{{ bike.name }} {{ color.name }}">
+                                                alt="{{ bike.name }} {{ color.name }}">
                                         {% elif item.media_link %}
+                                            {# This triggers if there is no physical file, but a URL exists #}
                                             <img src="{{ item.get_display_url }}"
-                                                 referrerpolicy="no-referrer"
-                                                 alt="{{ bike.name }} {{ color.name }}">
+                                                referrerpolicy="no-referrer"
+                                                alt="{{ bike.name }} {{ color.name }}">
+                                        {% else %}
+                                            {# Fallback icon if both are empty #}
+                                            <div class="d-flex align-items-center justify-content-center bg-light h-100">
+                                                <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                                            </div>
                                         {% endif %}
 
                                     {% elif item.is_youtube %}
@@ -204,8 +208,9 @@
                                     {% endif %}
 
                                 {% elif item.is_youtube %}
+                                    <!-- FIX: was item.get_youtube_thumbnail (wrong), now item.get_youtube_thumbnail_url -->
                                     <div class="w-100 h-100 bg-dark position-relative d-flex align-items-center justify-content-center">
-                                        <img src="{{ item.get_youtube_thumbnail }}"
+                                        <img src="{{ item.get_youtube_thumbnail_url }}"
                                              style="width:100%; height:100%; object-fit:cover; opacity:.7;"
                                              alt="video thumb">
                                         <i class="bi bi-play-circle-fill text-white position-absolute"
@@ -235,7 +240,6 @@
 
                 </div>
                 {% endfor %}
-                <!-- END per-color galleries -->
 
                 <!-- Color swatches -->
                 <div class="d-flex gap-2 flex-wrap align-items-center mt-1">
@@ -269,23 +273,18 @@
 
             {% else %}
                 {% if bike.image %}
-                    <img src="{{ bike.image.url }}"
-                         class="img-fluid rounded shadow"
-                         alt="{{ bike.name }}">
+                    <img src="{{ bike.image.url }}" class="img-fluid rounded shadow" alt="{{ bike.name }}">
                 {% else %}
                     <div class="bike-carousel d-flex align-items-center justify-content-center bg-light">
-                        <i class="bi bi-bicycle text-secondary"
-                           style="font-size:5rem; opacity:.25;"></i>
+                        <i class="bi bi-bicycle text-secondary" style="font-size:5rem; opacity:.25;"></i>
                     </div>
                 {% endif %}
+                
             {% endif %}
             {% endwith %}
         </div>
-        <!-- END left col -->
 
-        <!-- ══════════════════════════════════════
-             RIGHT — Info, Specs, Actions
-        ══════════════════════════════════════ -->
+        <!-- RIGHT — Info, Specs, Actions -->
         <div class="col-lg-6">
 
             <span class="badge px-3 py-2 mb-2"
@@ -330,7 +329,7 @@
                    class="btn btn-bajaj btn-lg flex-fill">
                     <i class="bi bi-calendar-check me-2"></i>Book Test Ride
                 </a>
-                <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Hi, I'm interested in {{ bike.name }}"
+                <a href="https://wa.me/{{ primary_showroom.get_whatsapp_number }}?text=Hi%2C%20I%27m%20interested%20in%20{{ bike.name|urlencode }}"
                    class="btn btn-success btn-lg"
                    target="_blank"
                    title="WhatsApp">
@@ -339,7 +338,6 @@
             </div>
 
         </div>
-        <!-- END right col -->
 
     </div>
 
@@ -456,11 +454,7 @@
         if (!gallery) { return; }
 
         gallery.querySelectorAll('.thumb-trigger').forEach(function (t, i) {
-            if (i === index) {
-                t.classList.add('thumb-active');
-            } else {
-                t.classList.remove('thumb-active');
-            }
+            t.classList.toggle('thumb-active', i === index);
         });
     });
 

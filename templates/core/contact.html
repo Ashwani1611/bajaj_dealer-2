@@ -99,7 +99,7 @@
         </ol>
     </nav>
 
-    <!-- ══════════ SHOWROOMS ══════════ -->
+    <!-- SHOWROOMS -->
     <div class="text-center mb-5">
         <span class="section-badge">Authorized Dealer</span>
         <h2 class="fw-bold mb-1" style="color:#003087;">Our Showrooms</h2>
@@ -150,14 +150,14 @@
                     </div>
                     <div class="d-flex gap-2 flex-wrap">
                         {% if showroom.google_maps_url %}
-                        <a href="{{ showroom.google_maps_url }}" target="_blank" class="btn btn-sm btn-directions">
+                        <a href="{{ showroom.google_maps_url }}" target="_blank"
+                           class="btn btn-sm btn-directions">
                             <i class="bi bi-map me-1"></i>Directions
                         </a>
                         {% endif %}
                         <a href="tel:{{ showroom.phone }}" class="btn btn-sm btn-call">
                             <i class="bi bi-telephone me-1"></i>Call
                         </a>
-                        <!-- Per-showroom WhatsApp — uses showroom.whatsapp_url() -->
                         <a href="{{ showroom.whatsapp_url }}"
                            target="_blank"
                            class="btn btn-sm btn-wa-sm">
@@ -183,7 +183,7 @@
         {% endfor %}
     </div>
 
-    <!-- ══════════ SERVICE STATIONS ══════════ -->
+    <!-- SERVICE STATIONS -->
     <hr class="section-divider">
 
     <div class="text-center mb-5">
@@ -238,14 +238,14 @@
                     </div>
                     <div class="d-flex gap-2 flex-wrap">
                         {% if station.google_maps_url %}
-                        <a href="{{ station.google_maps_url }}" target="_blank" class="btn btn-sm btn-directions">
+                        <a href="{{ station.google_maps_url }}" target="_blank"
+                           class="btn btn-sm btn-directions">
                             <i class="bi bi-map me-1"></i>Directions
                         </a>
                         {% endif %}
                         <a href="tel:{{ station.phone }}" class="btn btn-sm btn-call">
                             <i class="bi bi-telephone me-1"></i>Call
                         </a>
-                        <!-- Per-service-station WhatsApp -->
                         <a href="{{ station.whatsapp_url }}"
                            target="_blank"
                            class="btn btn-sm btn-wa-sm">

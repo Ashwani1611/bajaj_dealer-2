@@ -23,19 +23,19 @@
 
       <div>
         <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Username</label>
-        <input type="text" name="username" required
+        <input type="text" name="username" required autocomplete="off"
           style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:5px;font-size:14px;">
       </div>
 
       <div>
         <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Password</label>
-        <input type="password" name="password" required
+        <input type="password" name="password" required autocomplete="new-password"
           style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:5px;font-size:14px;">
       </div>
 
       <div>
         <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Assign To</label>
-        <select name="entity_type"
+        <select name="entity_type" id="id_entity_type"
           style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:5px;font-size:14px;">
           <option value="">— No assignment —</option>
           <option value="showroom">Showroom</option>
@@ -45,23 +45,19 @@
 
       <div>
         <label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px;">Location</label>
-        <select name="entity_id"
+        <select name="entity_id" id="id_entity_id"
           style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:5px;font-size:14px;">
-          <option value="">— Select —</option>
-          <optgroup label="Showrooms">
-            {% for s in showrooms %}
-              <option value="{{ s.pk }}" data-type="showroom">
-                {{ s.name }}{% if s.manager %} (has: {{ s.manager.username }}){% endif %}
-              </option>
-            {% endfor %}
-          </optgroup>
-          <optgroup label="Service Stations">
-            {% for st in stations %}
-              <option value="{{ st.pk }}" data-type="station">
-                {{ st.name }}{% if st.manager %} (has: {{ st.manager.username }}){% endif %}
-              </option>
-            {% endfor %}
-          </optgroup>
+          <option value="">— Select type first —</option>
+          {% for s in showrooms %}
+            <option value="{{ s.pk }}" data-type="showroom">
+              {{ s.name }}{% if s.manager %} ⚠ has: {{ s.manager.username }}{% endif %}
+            </option>
+          {% endfor %}
+          {% for st in stations %}
+            <option value="{{ st.pk }}" data-type="station">
+              {{ st.name }}{% if st.manager %} ⚠ has: {{ st.manager.username }}{% endif %}
+            </option>
+          {% endfor %}
         </select>
       </div>
 
@@ -112,7 +108,7 @@
         <td style="padding:10px 12px;">
           <form method="post" action="{% url 'admin_reset_password' u.pk %}" style="display:flex;gap:6px;">
             {% csrf_token %}
-            <input type="password" name="password" placeholder="New password"
+            <input type="password" name="password" placeholder="New password" autocomplete="new-password"
               style="padding:5px 8px;border:1px solid #ccc;border-radius:4px;font-size:13px;width:140px;">
             <button type="submit"
               style="padding:5px 12px;background:#6c757d;color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;">
@@ -122,7 +118,7 @@
         </td>
         <td style="padding:10px 12px;">
           <form method="post" action="{% url 'admin_delete_manager' u.pk %}"
-            onsubmit="return confirm('Delete user {{ u.username }}?')">
+            onsubmit="return confirm('Delete user \'{{ u.username }}\'? This cannot be undone.')">
             {% csrf_token %}
             <button type="submit"
               style="padding:5px 12px;background:#dc3545;color:#fff;border:none;border-radius:4px;font-size:12px;cursor:pointer;">
@@ -138,5 +134,40 @@
     <p style="color:#999;">No manager accounts yet.</p>
   {% endif %}
 </div>
+
+<script>
+(function () {
+  var typeSelect     = document.getElementById('id_entity_type');
+  var locationSelect = document.getElementById('id_entity_id');
+  var allOptions     = Array.from(locationSelect.options).slice(1); // skip placeholder
+
+  function filterLocations() {
+    var chosen = typeSelect.value;
+
+    // Remove all location options except placeholder
+    while (locationSelect.options.length > 1) {
+      locationSelect.remove(1);
+    }
+
+    if (!chosen) {
+      // No type selected — restore placeholder text, leave empty
+      locationSelect.options[0].text = '— Select type first —';
+      return;
+    }
+
+    locationSelect.options[0].text = '— Select location —';
+
+    // Re-add only options matching the chosen type
+    allOptions.forEach(function (opt) {
+      if (opt.dataset.type === chosen) {
+        locationSelect.appendChild(opt.cloneNode(true));
+      }
+    });
+  }
+
+  typeSelect.addEventListener('change', filterLocations);
+  filterLocations(); // run on page load in case of back-navigation
+})();
+</script>
 
 {% endblock %}

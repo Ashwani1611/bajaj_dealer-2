@@ -38,7 +38,6 @@
     .breadcrumb-item a { color: #0055b3; text-decoration: none; }
     .breadcrumb-item.active { color: #003087; font-weight: 600; }
 
-    /* Station info cards shown when station is selected */
     .station-info-card {
         display: none;
         background: #e8f0fb;
@@ -59,6 +58,26 @@
         font-size: .83rem;
         color: #856404;
         margin-top: 6px;
+    }
+
+    /* FIX: visual feedback when a station card is selected */
+    .station-quick-card {
+        border: 1px solid #d0dff5;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 4px 20px rgba(0,48,135,.08);
+        cursor: pointer;
+        transition: border-color .15s, box-shadow .15s;
+        padding: 1rem;
+        height: 100%;
+    }
+    .station-quick-card:hover {
+        border-color: #003087;
+        box-shadow: 0 4px 20px rgba(0,48,135,.16);
+    }
+    .station-quick-card.selected {
+        border-color: #003087;
+        background: #e8f0fb;
     }
 </style>
 
@@ -83,7 +102,6 @@
                 will confirm your appointment within 2 hours.
             </p>
 
-            <!-- Timing note — Tuesday closed -->
             <div class="timing-note mb-4">
                 <i class="bi bi-calendar-x me-1"></i>
                 <strong>Note:</strong> All service stations are
@@ -91,12 +109,12 @@
                 Timing: Mon, Wed–Sun: 9:00 AM – 6:00 PM.
             </div>
 
-            <!-- Service station quick cards -->
+            <!-- Station quick cards — FIX: click listeners wired up via JS -->
             {% if service_stations %}
             <div class="row g-2 mb-4">
                 {% for station in service_stations %}
                 <div class="col-md-6">
-                    <div class="service-card p-3 h-100" style="cursor:pointer;"
+                    <div class="station-quick-card"
                          data-select-pk="{{ station.pk }}">
                         <p class="fw-bold mb-1" style="color:#003087;font-size:.9rem;">
                             <i class="bi bi-tools me-1"></i>{{ station.name }}
@@ -152,7 +170,7 @@
                     {% csrf_token %}
                     <div class="row g-3">
 
-                        <!-- Service Station — PRIMARY field, full width -->
+                        <!-- Service Station field -->
                         <div class="col-12">
                             <label class="form-label">
                                 <i class="bi bi-tools me-1"></i>Select Service Station
@@ -168,7 +186,7 @@
                         </div>
 
                         {% for field in form %}
-                        {% if field.name != 'service_station' and field.name != 'issue_description' %}
+                        {% if field.name != 'service_station' and field.name != 'issue_description' and field.name != 'showroom' %}
                         <div class="col-md-6">
                             <label class="form-label">{{ field.label }}</label>
                             {{ field }}
@@ -181,7 +199,7 @@
                         {% endif %}
                         {% endfor %}
 
-                        <!-- Issue description — full width -->
+                        <!-- Issue description -->
                         <div class="col-12">
                             <label class="form-label">{{ form.issue_description.label }}</label>
                             {{ form.issue_description }}
@@ -212,23 +230,40 @@
 var STATIONS = {
     {% for station in service_stations %}
     "{{ station.pk }}": {
-        name: "{{ station.name|escapejs }}",
-        phone: "{{ station.phone|escapejs }}",
+        name:     "{{ station.name|escapejs }}",
+        phone:    "{{ station.phone|escapejs }}",
         whatsapp: "{{ station.get_whatsapp_number|escapejs }}",
-        address: "{{ station.address|escapejs }}",
-        hours: "{{ station.working_hours|escapejs }}"
+        address:  "{{ station.address|escapejs }}",
+        hours:    "{{ station.working_hours|escapejs }}"
     }{% if not forloop.last %},{% endif %}
     {% endfor %}
 };
 
+/* FIX: select station both from the dropdown and from the quick-card click */
 function selectStation(pk) {
     var sel = document.querySelector('[name="service_station"]');
-    if (sel) { sel.value = pk; sel.dispatchEvent(new Event('change')); }
+    if (sel) {
+        sel.value = pk;
+        sel.dispatchEvent(new Event('change'));
+    }
+    /* highlight the matching card */
+    document.querySelectorAll('.station-quick-card').forEach(function (card) {
+        card.classList.toggle('selected', card.getAttribute('data-select-pk') === String(pk));
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    var sel  = document.querySelector('[name="service_station"]');
-    var box  = document.getElementById('stationInfoBox');
+    var sel = document.querySelector('[name="service_station"]');
+    var box = document.getElementById('stationInfoBox');
+
+    /* ── FIX: wire up quick-card clicks ── */
+    document.querySelectorAll('.station-quick-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+            selectStation(card.getAttribute('data-select-pk'));
+        });
+    });
+
+    /* ── station info box ── */
     if (!sel || !box) return;
 
     function updateBox() {
@@ -240,15 +275,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 '<i class="bi bi-geo-alt me-1"></i>' + s.address + '<br>' +
                 '<i class="bi bi-telephone me-1"></i>' +
                 '<a href="tel:' + s.phone + '" style="color:#003087;">' + s.phone + '</a>' +
-                (s.whatsapp ? ' &nbsp; <a href="https://wa.me/' + s.whatsapp +
-                '" target="_blank" style="color:#25d366;"><i class="bi bi-whatsapp me-1"></i>WhatsApp</a>' : '') +
+                (s.whatsapp
+                    ? ' &nbsp; <a href="https://wa.me/' + s.whatsapp +
+                      '" target="_blank" style="color:#25d366;">' +
+                      '<i class="bi bi-whatsapp me-1"></i>WhatsApp</a>'
+                    : '') +
                 '<br><i class="bi bi-clock me-1" style="color:#856404;"></i>' +
                 '<span style="color:#856404;">' + s.hours + '</span>';
             box.classList.add('visible');
         } else {
             box.classList.remove('visible');
+            box.innerHTML = '';
         }
+        /* sync card highlight when user picks from the dropdown directly */
+        document.querySelectorAll('.station-quick-card').forEach(function (card) {
+            card.classList.toggle('selected', card.getAttribute('data-select-pk') === sel.value);
+        });
     }
+
     sel.addEventListener('change', updateBox);
     updateBox();
 });

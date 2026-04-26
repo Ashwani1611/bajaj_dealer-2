@@ -1,13 +1,25 @@
 {% extends "admin/index.html" %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Force admin logo size and match site colors */
+        .brand-link { background-color: var(--bajaj-blue) !important; }
+        .brand-link .brand-image { max-height: 35px !important; width: auto !important; }
+    </style>
+{% endblock %}
+
 {% block content %}
-{% if request.user.is_superuser %}
-<div style="margin-bottom:20px;">
-  <a href="/admin/manage-users/"
-    style="display:inline-block;padding:10px 20px;background:#003087;color:#fff;
-    border-radius:6px;text-decoration:none;font-weight:600;">
-    👥 Manage Manager Users
-  </a>
-</div>
-{% endif %}
-{{ block.super }}
+    {% if request.user.is_superuser %}
+    <div class="mb-4">
+      <a href="/admin/manage-users/" class="btn" 
+         style="background:#003087; color:#fff; border-radius:6px; font-weight:600;">
+        👥 Manage Manager Users
+      </a>
+    </div>
+    {% endif %}
+
+    {{ block.super }}
 {% endblock %}

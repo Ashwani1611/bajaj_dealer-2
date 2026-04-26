@@ -3,186 +3,662 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-
 <style>
-    .hero-section {
+    :root {
+        --blue:   #003087;
+        --blue2:  #0055b3;
+        --accent: #e8f0fb;
+        --border: #d0dff5;
+        --gold:   #f5a623;
+    }
+
+    /* ══ SECTION 1 — Full-screen bike image ══ */
+    .fullscreen-bike {
+        position: relative;
+        width: 100%;
+        height: 96vh;
+        min-height: 560px;
+        overflow: hidden;
+        background: #000d24;
+    }
+    .fullscreen-bike img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 55%;
+        animation: subtle-zoom 8s ease-in-out infinite alternate;
+    }
+    @keyframes subtle-zoom {
+        from { transform: scale(1); }
+        to   { transform: scale(1.04); }
+    }
+    .fullscreen-bike-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(0,13,36,.18) 0%,
+            rgba(0,13,36,.10) 40%,
+            rgba(0,13,36,.55) 80%,
+            rgba(0,13,36,.90) 100%
+        );
+        z-index: 1;
+    }
+    /* Bottom caption on full-screen image */
+    .fullscreen-bike-caption {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        z-index: 2;
+        padding: 2.5rem 2.5rem 3rem;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .fullscreen-bike-caption .bike-name {
+        font-family: 'Rajdhani', sans-serif;
+        font-size: clamp(2rem, 5vw, 3.8rem);
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        letter-spacing: -1px;
+        text-shadow: 0 2px 20px rgba(0,0,0,.4);
+    }
+    .fullscreen-bike-caption .bike-price {
+        color: #7eb3ff;
+        font-size: 1.1rem;
+        font-weight: 700;
+        display: block;
+        margin-top: 4px;
+    }
+    .fullscreen-bike-caption .bike-cat-tag {
+        display: inline-block;
+        background: rgba(255,255,255,.15);
+        color: #fff;
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        padding: 3px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,.25);
+        margin-bottom: 8px;
+    }
+    /* Dot indicators on fullscreen */
+    .fullscreen-dots {
+        position: absolute;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        display: flex;
+        gap: 8px;
+    }
+    .fullscreen-dots span {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.35);
+        cursor: pointer;
+        transition: background .2s, transform .2s;
+        display: block;
+    }
+    .fullscreen-dots span.active {
+        background: #fff;
+        transform: scale(1.4);
+    }
+    /* Scroll hint arrow */
+    .scroll-hint {
+        position: absolute;
+        bottom: 24px; right: 32px;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        color: rgba(255,255,255,.5);
+        font-size: .7rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        animation: bounce-down 2s ease-in-out infinite;
+    }
+    .scroll-hint i { font-size: 1.3rem; }
+    @keyframes bounce-down {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(6px); }
+    }
+    /* Slide nav arrows on fullscreen */
+    .fullscreen-nav {
+        position: absolute;
+        top: 50%; transform: translateY(-50%);
+        z-index: 3;
+        background: rgba(255,255,255,.15);
+        border: none;
+        color: #fff;
+        width: 48px; height: 48px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem;
+        cursor: pointer;
+        backdrop-filter: blur(4px);
+        transition: background .15s;
+    }
+    .fullscreen-nav:hover { background: rgba(255,255,255,.28); }
+    .fullscreen-nav.prev { left: 20px; }
+    .fullscreen-nav.next { right: 20px; }
+
+    /* ══ SECTION 2 — Hero text (Authorized dealer, stats) ══ */
+    .hero-text-section {
         background: linear-gradient(135deg, #001a4d 0%, #003087 60%, #0055b3 100%);
-        min-height: 88vh;
+        padding: 4rem 0 3.5rem;
         position: relative;
         overflow: hidden;
     }
-    .hero-circle-1 {
+    .hero-text-section::before {
+        content: '';
         position: absolute;
-        right: -80px; top: -80px;
-        width: 520px; height: 520px;
-        background: rgba(255,255,255,.04);
+        right: -120px; top: -120px;
+        width: 500px; height: 500px;
+        background: rgba(255,255,255,.03);
         border-radius: 50%;
         pointer-events: none;
     }
-    .hero-circle-2 {
+    .hero-text-section::after {
+        content: '';
         position: absolute;
-        right: 80px; bottom: -120px;
-        width: 320px; height: 320px;
-        background: rgba(255,255,255,.03);
+        left: -60px; bottom: -80px;
+        width: 300px; height: 300px;
+        background: rgba(255,255,255,.02);
         border-radius: 50%;
         pointer-events: none;
     }
     .hero-badge {
         display: inline-block;
-        background: rgba(255,255,255,.15);
-        color: #fff;
-        font-size: .75rem;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        padding: 5px 14px;
-        border-radius: 20px;
-        border: 1px solid rgba(255,255,255,.25);
-        margin-bottom: 1rem;
+        background: rgba(255,255,255,.15); color: #fff;
+        font-size: .75rem; font-weight: 700; letter-spacing: 1.5px;
+        text-transform: uppercase; padding: 5px 14px;
+        border-radius: 20px; border: 1px solid rgba(255,255,255,.25);
+        margin-bottom: 1.2rem;
     }
-    .cat-strip { background: #003087; padding: 14px 0; }
+    .stat-divider { border-left: 1px solid rgba(255,255,255,.15); padding-left: 1.2rem; }
+
+    /* ══ SECTION 3 — Bike Carousel (after hero text) ══ */
+    .bike-hero-carousel {
+        position: relative;
+        width: 100%;
+        min-height: 500px;
+        background: #000d24;
+    }
+    .bike-hero-carousel .carousel-inner { min-height: 500px; }
+    .bike-hero-carousel .carousel-item  { min-height: 500px; }
+    .hero-slide {
+        width: 100%; min-height: 500px;
+        display: flex; align-items: flex-end;
+        position: relative; overflow: hidden;
+    }
+    .hero-slide img {
+        position: absolute; inset: 0;
+        width: 100%; height: 100%;
+        object-fit: cover; object-position: center 60%;
+        transition: transform 6s ease;
+    }
+    .carousel-item.active .hero-slide img { transform: scale(1.04); }
+    .hero-slide-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(to top,
+            rgba(0,24,72,.88) 0%,
+            rgba(0,48,135,.35) 45%,
+            rgba(0,48,135,.06) 100%);
+        z-index: 1;
+    }
+    .hero-slide-caption {
+        position: relative; z-index: 2;
+        width: 100%; padding: 2rem 2.5rem 2.5rem;
+    }
+    .bike-category-tag {
+        display: inline-block;
+        background: rgba(255,255,255,.18); color: #fff;
+        font-size: .7rem; font-weight: 700; letter-spacing: 1.2px;
+        text-transform: uppercase; padding: 3px 12px;
+        border-radius: 12px; margin-bottom: .5rem;
+    }
+    .hero-slide-caption h2 {
+        color: #fff; font-family: 'Rajdhani', sans-serif;
+        font-size: clamp(1.8rem, 4vw, 3rem);
+        font-weight: 700; margin: 0 0 .3rem; line-height: 1.1;
+    }
+    .hero-slide-caption .price-tag {
+        color: #7eb3ff; font-size: 1.15rem; font-weight: 700;
+        margin-bottom: 1rem; display: block;
+    }
+    .btn-slide-detail {
+        background: #fff; color: #003087;
+        font-weight: 700; border: none; border-radius: 7px;
+        padding: 9px 22px; font-size: .88rem;
+        text-decoration: none; display: inline-flex;
+        align-items: center; gap: 6px;
+        transition: background .15s, transform .15s;
+    }
+    .btn-slide-detail:hover { background: #e8f0fb; transform: translateY(-1px); }
+    .btn-slide-ride {
+        background: transparent; color: #fff;
+        font-weight: 600; border: 1.5px solid rgba(255,255,255,.5);
+        border-radius: 7px; padding: 9px 20px; font-size: .88rem;
+        text-decoration: none; display: inline-flex;
+        align-items: center; gap: 6px;
+        transition: background .15s;
+    }
+    .btn-slide-ride:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .bike-hero-carousel .carousel-control-prev,
+    .bike-hero-carousel .carousel-control-next {
+        width: 48px; height: 48px;
+        background: rgba(255,255,255,.18); border-radius: 50%;
+        top: 50%; transform: translateY(-50%);
+        margin: 0 12px; opacity: 1; transition: background .15s;
+    }
+    .bike-hero-carousel .carousel-control-prev:hover,
+    .bike-hero-carousel .carousel-control-next:hover { background: rgba(255,255,255,.32); }
+    .bike-hero-carousel .carousel-indicators { bottom: 14px; margin-bottom: 0; }
+    .bike-hero-carousel .carousel-indicators [data-bs-slide-to] {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: rgba(255,255,255,.4); border: none; opacity: 1;
+    }
+    .bike-hero-carousel .carousel-indicators .active {
+        background: #fff; transform: scale(1.3);
+    }
+    /* Thumbnail strip */
+    .hero-thumb-strip {
+        position: absolute; right: 16px; top: 50%;
+        transform: translateY(-50%);
+        display: flex; flex-direction: column; gap: 8px; z-index: 10;
+    }
+    .hero-thumb {
+        width: 64px; height: 48px; border-radius: 8px; overflow: hidden;
+        border: 2px solid rgba(255,255,255,.25);
+        cursor: pointer; transition: border-color .15s, transform .15s;
+    }
+    .hero-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-thumb.active { border-color: #fff; transform: scale(1.1); }
+    @media (max-width: 767px) { .hero-thumb-strip { display: none; } }
+
+    /* ══ Category Strip ══ */
+    .cat-strip { background: var(--blue); padding: 14px 0; }
     .cat-btn {
-        background: rgba(255,255,255,.12);
-        color: #fff;
-        border: 1px solid rgba(255,255,255,.2);
-        border-radius: 6px;
-        font-size: .85rem;
-        font-weight: 600;
-        padding: 6px 18px;
-        text-decoration: none;
-        transition: background .2s;
-        display: inline-block;
+        background: rgba(255,255,255,.12); color: #fff;
+        border: 1px solid rgba(255,255,255,.2); border-radius: 6px;
+        font-size: .85rem; font-weight: 600; padding: 6px 18px;
+        text-decoration: none; transition: background .2s; display: inline-block;
     }
-    .cat-btn:hover { background: rgba(255,255,255,.25); color: #fff; }
+    .cat-btn:hover { background: rgba(255,255,255,.28); color: #fff; }
+
+    /* ══ Section badge ══ */
     .section-badge {
-        display: inline-block;
-        background: #e8f0fb;
-        color: #003087;
-        font-size: .72rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        padding: 4px 12px;
-        border-radius: 20px;
-        margin-bottom: 6px;
+        display: inline-block; background: var(--accent); color: var(--blue);
+        font-size: .72rem; font-weight: 700; letter-spacing: 1px;
+        text-transform: uppercase; padding: 4px 12px;
+        border-radius: 20px; margin-bottom: 6px;
     }
+
+    /* ══ Alternating Showcase ══ */
+    .showcase-section {
+        display: flex; align-items: stretch; min-height: 480px; overflow: hidden;
+    }
+    .showcase-section .showcase-img-side {
+        flex: 1; position: relative; min-height: 380px; overflow: hidden; cursor: pointer;
+    }
+    .showcase-section .showcase-img-side img {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        object-fit: cover; transition: transform .6s ease;
+    }
+    .showcase-section .showcase-img-side:hover img { transform: scale(1.05); }
+    .showcase-section .showcase-img-side .showcase-img-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, rgba(0,24,72,.55) 0%, rgba(0,48,135,.15) 60%, transparent 100%);
+        z-index: 1; transition: opacity .3s;
+    }
+    .showcase-section .showcase-img-side:hover .showcase-img-overlay { opacity: .7; }
+    .showcase-section .showcase-img-side .img-corner-badge {
+        position: absolute; top: 20px; left: 20px; z-index: 2;
+        background: rgba(255,255,255,.15); backdrop-filter: blur(8px);
+        color: #fff; font-size: .7rem; font-weight: 700;
+        letter-spacing: 1.2px; text-transform: uppercase;
+        padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,.25);
+    }
+    .showcase-section .showcase-img-side .img-view-btn {
+        position: absolute; bottom: 24px; left: 24px; z-index: 2;
+        background: rgba(255,255,255,.92); color: var(--blue);
+        font-weight: 700; font-size: .85rem;
+        padding: 8px 20px; border-radius: 8px;
+        text-decoration: none; display: flex; align-items: center; gap: 6px;
+        transform: translateY(8px); opacity: 0; transition: opacity .3s, transform .3s;
+    }
+    .showcase-section .showcase-img-side:hover .img-view-btn { opacity: 1; transform: translateY(0); }
+    .showcase-section .showcase-cta-side {
+        flex: 0 0 400px; padding: 3.5rem;
+        display: flex; flex-direction: column; justify-content: center; background: #fff;
+    }
+    .showcase-section.alt .showcase-cta-side { background: #f8faff; }
+    @media (max-width: 900px) {
+        .showcase-section { flex-direction: column !important; }
+        .showcase-section .showcase-img-side { min-height: 260px; flex: none; }
+        .showcase-section .showcase-cta-side { flex: none; padding: 2rem; }
+    }
+
+    /* ══ Gallery ══ */
+    .gallery-section { background: #0d1f4a; }
+    .gallery-strip-wrap {
+        overflow-x: auto; padding-bottom: 12px;
+        scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.2) transparent;
+    }
+    .gallery-strip { display: flex; gap: 12px; padding: 0 4px; min-width: max-content; }
+    .gallery-thumb {
+        width: 200px; height: 130px; border-radius: 10px; overflow: hidden; flex-shrink: 0;
+        border: 2px solid rgba(255,255,255,.1); cursor: pointer;
+        transition: border-color .2s, transform .2s; position: relative;
+    }
+    .gallery-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+    .gallery-thumb:hover { border-color: rgba(255,255,255,.6); transform: translateY(-3px); }
+    .gallery-thumb:hover img { transform: scale(1.08); }
+    .gallery-thumb .gallery-thumb-label {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,.75) 0%, transparent 100%);
+        color: #fff; font-size: .68rem; font-weight: 600;
+        padding: 12px 8px 6px; opacity: 0; transition: opacity .2s;
+    }
+    .gallery-thumb:hover .gallery-thumb-label { opacity: 1; }
+    .big-gallery-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+    }
+    .big-gallery-item {
+        position: relative; border-radius: 14px; overflow: hidden;
+        aspect-ratio: 4/3; cursor: pointer; display: block; text-decoration: none;
+    }
+    .big-gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+    .big-gallery-item:hover img { transform: scale(1.07); }
+    .big-gallery-item .item-overlay {
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(0,24,72,.85) 0%, rgba(0,24,72,.2) 50%, transparent 100%);
+        opacity: 0; transition: opacity .3s;
+    }
+    .big-gallery-item:hover .item-overlay { opacity: 1; }
+    .big-gallery-item .item-info {
+        position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 16px 16px;
+        transform: translateY(6px); opacity: 0; transition: opacity .3s, transform .3s;
+    }
+    .big-gallery-item:hover .item-info { opacity: 1; transform: translateY(0); }
+    .big-gallery-item .item-info .item-name {
+        color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; font-weight: 700;
+    }
+    .big-gallery-item .item-info .item-price { color: #7eb3ff; font-size: .82rem; font-weight: 600; margin-top: 2px; }
+    .big-gallery-item .item-info .item-cta {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: #fff; color: var(--blue); font-size: .78rem; font-weight: 700;
+        padding: 5px 14px; border-radius: 6px; margin-top: 10px;
+    }
+    .big-gallery-item.large { grid-column: span 2; aspect-ratio: 16/7; }
+    @media (max-width: 600px) { .big-gallery-item.large { grid-column: span 1; aspect-ratio: 4/3; } }
+
+    /* ══ Bike cards ══ */
     .bike-card {
-        border: 1px solid #d0dff5 !important;
-        border-radius: 12px;
-        overflow: hidden;
+        border: 1px solid var(--border) !important; border-radius: 14px; overflow: hidden;
         transition: box-shadow .2s, transform .2s;
     }
-    .bike-card:hover {
-        box-shadow: 0 6px 24px rgba(0,48,135,.13);
-        transform: translateY(-2px);
-    }
-    .bike-img { height: 200px; object-fit: cover; width: 100%; }
-    .bike-img-placeholder { height: 200px; }
+    .bike-card:hover { box-shadow: 0 8px 28px rgba(0,48,135,.14); transform: translateY(-3px); }
+    .bike-img { height: 210px; object-fit: cover; width: 100%; transition: transform .4s; }
+    .bike-card:hover .bike-img { transform: scale(1.04); }
+    .bike-img-wrap { overflow: hidden; }
+    .bike-img-placeholder { height: 210px; }
+
+    /* ══ Quick Actions ══ */
     .quick-action-card {
-        border: 1px solid #d0dff5;
-        border-radius: 12px;
+        border: 1px solid var(--border); border-radius: 14px;
         transition: box-shadow .2s, transform .2s;
     }
-    .quick-action-card:hover {
-        box-shadow: 0 6px 20px rgba(0,48,135,.12);
-        transform: translateY(-2px);
-    }
-    .video-card {
-        border: 1px solid #d0dff5;
-        border-radius: 12px;
-        overflow: hidden;
-        transition: box-shadow .2s;
-    }
+    .quick-action-card:hover { box-shadow: 0 6px 20px rgba(0,48,135,.12); transform: translateY(-3px); }
+
+    /* ══ Video ══ */
+    .video-card { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: box-shadow .2s; }
     .video-card:hover { box-shadow: 0 4px 16px rgba(0,48,135,.1); }
-    .enquiry-section {
-        background: linear-gradient(135deg, #001a4d 0%, #003087 100%);
-    }
+
+    /* ══ Enquiry Form ══ */
+    .enquiry-section { background: linear-gradient(135deg, #001a4d 0%, #003087 100%); }
     .enquiry-section .form-control,
     .enquiry-section .form-select {
-        background: rgba(255,255,255,.1);
-        border: 1px solid rgba(255,255,255,.2);
-        color: #fff;
-        border-radius: 8px;
+        background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+        color: #fff; border-radius: 8px;
     }
     .enquiry-section .form-control::placeholder { color: rgba(255,255,255,.5); }
     .enquiry-section .form-control:focus,
     .enquiry-section .form-select:focus {
-        background: rgba(255,255,255,.15);
-        border-color: rgba(255,255,255,.5);
-        box-shadow: none;
-        color: #fff;
+        background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.5);
+        box-shadow: none; color: #fff;
     }
     .enquiry-section label { color: rgba(255,255,255,.8); font-size: .85rem; }
     .enquiry-section .form-select option { background: #003087; color: #fff; }
+
+    /* ══ Showroom strip ══ */
     .showroom-badge {
-        background: #e8f0fb;
-        color: #003087;
-        border: 1px solid #d0dff5;
-        border-radius: 20px;
-        font-size: .82rem;
-        font-weight: 600;
-        padding: 5px 14px;
-        text-decoration: none;
-        transition: background .15s;
-        display: inline-block;
+        background: var(--accent); color: var(--blue); border: 1px solid var(--border);
+        border-radius: 20px; font-size: .82rem; font-weight: 600; padding: 5px 14px;
+        text-decoration: none; transition: background .15s; display: inline-block;
     }
-    .showroom-badge:hover { background: #003087; color: #fff; }
-    .stat-divider {
-        border-left: 1px solid rgba(255,255,255,.15);
-        padding-left: 1rem;
-    }
+    .showroom-badge:hover { background: var(--blue); color: #fff; }
+
+    /* ══ Offers ══ */
+    .offers-section { background: #fff9f0; border-top: 3px solid var(--gold); border-bottom: 3px solid var(--gold); }
+    .offer-slide-img { width: 100%; aspect-ratio: 16/5; object-fit: cover; border-radius: 12px; cursor: pointer; transition: transform .3s; }
+    .offer-slide-img:hover { transform: scale(1.01); }
 </style>
 
-<!-- HERO -->
-<section class="hero-section d-flex align-items-center">
-    <div class="hero-circle-1"></div>
-    <div class="hero-circle-2"></div>
-    <div class="container py-5" style="position:relative; z-index:1;">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 1 — FULL SCREEN BIKE IMAGE (first thing visitor sees)
+══════════════════════════════════════════════════════════════ -->
+{% if featured_bikes %}
+<div class="fullscreen-bike" id="fullscreenSlider">
+
+    {% for bike in featured_bikes %}
+    <div class="fullscreen-slide" data-index="{{ forloop.counter0 }}"
+         style="position:absolute;inset:0;opacity:{% if forloop.first %}1{% else %}0{% endif %};transition:opacity .8s ease;z-index:{% if forloop.first %}1{% else %}0{% endif %};">
+        {% with img_url=bike.get_primary_image_url %}
+        {% if img_url %}
+            <img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+        {% else %}
+            <img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">
+        {% endif %}
+        {% endwith %}
+    </div>
+    {% endfor %}
+
+    <div class="fullscreen-bike-overlay"></div>
+
+    <!-- bottom caption -->
+    <div class="fullscreen-bike-caption" id="fullscreenCaption">
+        {% for bike in featured_bikes %}
+        <div class="fullscreen-caption-item"
+             data-index="{{ forloop.counter0 }}"
+             style="display:{% if forloop.first %}block{% else %}none{% endif %}">
+            <span class="bike-cat-tag">{{ bike.category.name }}</span>
+            <div class="bike-name">{{ bike.name }}</div>
+            <span class="bike-price">{{ bike.formatted_price }}</span>
+        </div>
+        {% endfor %}
+
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'bike_list' %}" id="fullscreenDetailBtn"
+               class="btn fw-bold"
+               style="background:#fff;color:#003087;border:none;border-radius:8px;padding:10px 24px;">
+                <i class="bi bi-eye-fill me-2"></i>View Details
+            </a>
+            <a href="{% url 'enquiry' %}" id="fullscreenRideBtn"
+               class="btn fw-semibold"
+               style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:8px;padding:10px 22px;">
+                <i class="bi bi-calendar-check me-2"></i>Book Ride
+            </a>
+        </div>
+    </div>
+
+    <!-- prev / next -->
+    <button class="fullscreen-nav prev" onclick="fullscreenSlide(-1)">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+    <button class="fullscreen-nav next" onclick="fullscreenSlide(1)">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+
+    <!-- dot indicators -->
+    <div class="fullscreen-dots" id="fullscreenDots">
+        {% for bike in featured_bikes %}
+        <span class="{% if forloop.first %}active{% endif %}"
+              onclick="fullscreenGoTo({{ forloop.counter0 }})"></span>
+        {% endfor %}
+    </div>
+
+    <!-- scroll hint -->
+    <div class="scroll-hint">
+        <i class="bi bi-chevron-double-down"></i>
+        <span>Scroll</span>
+    </div>
+</div>
+{% endif %}
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 2 — AUTHORIZED DEALER / HERO TEXT / STATS
+══════════════════════════════════════════════════════════════ -->
+<section class="hero-text-section">
+    <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-6">
+            <div class="col-lg-8">
                 <span class="hero-badge">
                     <i class="bi bi-patch-check-fill me-1"></i>Authorized Dealer
                 </span>
-                <h1 class="display-4 fw-bold mb-3 text-white" style="line-height:1.15;">
-                    Ride the <span style="color:#7eb3ff;">Thrill</span>.<br>
-                    Own a Bajaj.
+                <h1 class="display-4 fw-bold mb-3 text-white"
+                    style="line-height:1.15; font-family:'Rajdhani',sans-serif;">
+                    Ride the <span style="color:#7eb3ff;">Thrill</span>.<br>Own a Bajaj.
                 </h1>
-                <p class="mb-4" style="color:rgba(255,255,255,.7); font-size:1.05rem; line-height:1.7;">
-                    From Pulsar to Chetak EV — explore the full range of
-                    Bajaj bikes at your nearest showroom.
+                <p class="mb-4"
+                   style="color:rgba(255,255,255,.7); font-size:1.05rem; line-height:1.7; max-width:520px;">
+                    From Pulsar to Chetak EV — explore the full range at your nearest showroom.
                 </p>
-                <div class="d-flex gap-3 flex-wrap">
+                <div class="d-flex gap-3 flex-wrap mb-4">
                     <a href="{% url 'bike_list' %}"
                        class="btn btn-lg fw-bold"
-                       style="background:#fff; color:#003087; border:none; border-radius:8px;">
-                        <i class="bi bi-grid-fill me-2"></i>Explore Bikes
+                       style="background:#fff;color:#003087;border:none;border-radius:8px;">
+                        <i class="bi bi-grid-fill me-2"></i>Explore All Bikes
                     </a>
                     <a href="{% url 'enquiry' %}"
                        class="btn btn-lg fw-semibold"
-                       style="background:transparent; color:#fff; border:2px solid rgba(255,255,255,.5); border-radius:8px;">
+                       style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:8px;">
                         <i class="bi bi-calendar-check me-2"></i>Book Test Ride
                     </a>
                 </div>
-                <div class="d-flex gap-4 mt-5 flex-wrap">
+                <div class="d-flex gap-4 flex-wrap">
                     <div>
-                        <div class="fw-bold text-white" style="font-size:1.4rem;">
-                            {{ all_showrooms.count }}+
-                        </div>
+                        <div class="fw-bold text-white" style="font-size:1.6rem;">{{ all_showrooms.count }}+</div>
                         <div style="color:rgba(255,255,255,.55); font-size:.78rem;">Showrooms</div>
                     </div>
                     <div class="stat-divider">
-                        <div class="fw-bold text-white" style="font-size:1.4rem;">20+</div>
+                        <div class="fw-bold text-white" style="font-size:1.6rem;">20+</div>
                         <div style="color:rgba(255,255,255,.55); font-size:.78rem;">Bike Models</div>
                     </div>
                     <div class="stat-divider">
-                        <div class="fw-bold text-white" style="font-size:1.4rem;">10K+</div>
+                        <div class="fw-bold text-white" style="font-size:1.6rem;">10K+</div>
                         <div style="color:rgba(255,255,255,.55); font-size:.78rem;">Happy Riders</div>
                     </div>
+                </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-flex justify-content-end">
+                <div style="text-align:right; color:rgba(255,255,255,.2); font-family:'Rajdhani',sans-serif; font-size:6rem; font-weight:800; line-height:1; letter-spacing:-4px; user-select:none;">
+                    BAJAJ
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 3 — BIKE CAROUSEL (below hero text)
+══════════════════════════════════════════════════════════════ -->
+{% if featured_bikes %}
+<div id="bikeHeroCarousel"
+     class="carousel slide bike-hero-carousel"
+     data-bs-ride="carousel"
+     data-bs-interval="4000">
+
+    <div class="carousel-indicators">
+        {% for bike in featured_bikes %}
+        <button type="button"
+                data-bs-target="#bikeHeroCarousel"
+                data-bs-slide-to="{{ forloop.counter0 }}"
+                {% if forloop.first %}class="active" aria-current="true"{% endif %}>
+        </button>
+        {% endfor %}
+    </div>
+
+    <div class="carousel-inner">
+        {% for bike in featured_bikes %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <a href="{% url 'bike_detail' bike.slug %}" class="hero-slide" style="text-decoration:none;">
+                {% with img_url=bike.get_primary_image_url %}
+                {% if img_url %}
+                    <img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+                {% else %}
+                    <img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">
+                {% endif %}
+                {% endwith %}
+                <div class="hero-slide-overlay"></div>
+                <div class="hero-slide-caption">
+                    <span class="bike-category-tag">{{ bike.category.name }}</span>
+                    <h2>{{ bike.name }}</h2>
+                    <span class="price-tag">{{ bike.formatted_price }}</span>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <span class="btn-slide-detail">
+                            <i class="bi bi-eye-fill"></i> View Details
+                        </span>
+                        <a href="{% url 'enquiry' %}?bike={{ bike.pk }}"
+                           class="btn-slide-ride"
+                           onclick="event.stopPropagation();event.preventDefault();window.location='{% url 'enquiry' %}?bike={{ bike.pk }}';">
+                            <i class="bi bi-calendar-check"></i> Book Ride
+                        </a>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="carousel-control-prev" type="button"
+            data-bs-target="#bikeHeroCarousel" data-bs-slide="prev"
+            onclick="event.stopPropagation();">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button"
+            data-bs-target="#bikeHeroCarousel" data-bs-slide="next"
+            onclick="event.stopPropagation();">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+
+    <div class="hero-thumb-strip" id="heroThumbStrip">
+        {% for bike in featured_bikes %}
+        <div class="hero-thumb {% if forloop.first %}active{% endif %}"
+             data-slide-to="{{ forloop.counter0 }}">
+            {% with thumb=bike.get_primary_image_url %}
+            {% if thumb %}
+                <img src="{{ thumb }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+            {% else %}
+                <img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">
+            {% endif %}
+            {% endwith %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 
 <!-- CATEGORY STRIP -->
 <section class="cat-strip">
@@ -197,7 +673,135 @@
     </div>
 </section>
 
-<!-- FEATURED BIKES -->
+
+<!-- ══ OFFERS ══ -->
+{% if offers %}
+<section class="offers-section py-4">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <span class="section-badge" style="background:#fff3dc;color:#b07800;">
+                    <i class="bi bi-tag-fill me-1"></i>Current Offers
+                </span>
+                <h3 class="fw-bold mb-0" style="color:#003087;font-size:1.3rem;">Exclusive Deals &amp; Promotions</h3>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-target="#offersCarousel" data-bs-slide="prev"><i class="bi bi-chevron-left"></i></button>
+                <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-target="#offersCarousel" data-bs-slide="next"><i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+        <div id="offersCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="carousel-inner">
+                {% for offer in offers %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    {% if offer.link %}<a href="{{ offer.link }}" target="_blank">{% endif %}
+                    <img src="{{ offer.image.url }}" class="offer-slide-img" alt="{{ offer.title }}">
+                    {% if offer.link %}</a>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+<!-- ══ ALTERNATING SHOWCASE ══ -->
+{% if featured_bikes %}
+{% for bike in featured_bikes|slice:":4" %}
+{% with img_url=bike.get_primary_image_url colors=bike.colors.all %}
+<section class="showcase-section {% if not forloop.first %}alt{% endif %} {% if forloop.counter|divisibleby:2 %}flex-row-reverse{% endif %}">
+    <a href="{% url 'bike_detail' bike.slug %}" class="showcase-img-side" style="text-decoration:none;">
+        {% if img_url %}<img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+        {% else %}<img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">{% endif %}
+        <div class="showcase-img-overlay"></div>
+        <span class="img-corner-badge">{{ bike.category.name }}</span>
+        <span class="img-view-btn"><i class="bi bi-eye-fill"></i> View Details</span>
+    </a>
+    <div class="showcase-cta-side">
+        <span class="section-badge mb-2">
+            {% if forloop.first %}Top Pick{% elif forloop.counter == 2 %}Most Popular{% elif forloop.counter == 3 %}New Arrival{% else %}Fan Favourite{% endif %}
+        </span>
+        <h2 class="fw-bold mb-2" style="font-family:'Rajdhani',sans-serif;color:#001a4d;font-size:2rem;">{{ bike.name }}</h2>
+        <p class="fw-bold mb-1" style="color:var(--blue);font-size:1.2rem;">{{ bike.formatted_price }}</p>
+        <div class="d-flex gap-3 flex-wrap mb-3" style="font-size:.8rem;color:#6b7a99;">
+            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>{% endif %}
+            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>{% endif %}
+        </div>
+        {% if colors %}
+        <div class="d-flex gap-2 flex-wrap mb-3">
+            {% for color in colors %}{% with cimg=color.first_image_url %}{% if cimg %}
+            <a href="{% url 'bike_detail' bike.slug %}" title="{{ color.name }}"
+               style="width:48px;height:36px;border-radius:6px;overflow:hidden;border:2px solid #d0dff5;display:block;text-decoration:none;">
+                <img src="{{ cimg }}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;" alt="{{ color.name }}">
+            </a>
+            {% endif %}{% endwith %}{% endfor %}
+        </div>
+        {% endif %}
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'bike_detail' bike.slug %}" class="btn fw-semibold"
+               style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:10px 24px;">
+                <i class="bi bi-eye-fill me-2"></i>View Details
+            </a>
+            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}" class="btn fw-semibold"
+               style="background:var(--accent);color:var(--blue);border:1px solid var(--border);border-radius:8px;padding:10px 24px;">
+                <i class="bi bi-calendar-check me-2"></i>Book Ride
+            </a>
+        </div>
+    </div>
+</section>
+{% endwith %}
+{% endfor %}
+{% endif %}
+
+
+<!-- ══ GALLERY ══ -->
+{% if all_bikes %}
+<section class="gallery-section py-5">
+    <div class="container-fluid px-4">
+        <div class="text-center mb-4">
+            <span class="section-badge" style="background:rgba(255,255,255,.1);color:#7eb3ff;">Our Bikes</span>
+            <h2 class="fw-bold text-white" style="font-family:'Rajdhani',sans-serif;font-size:2rem;">Explore the Full Range</h2>
+            <p style="color:rgba(255,255,255,.5);">Click any bike to see full details</p>
+        </div>
+        <div class="gallery-strip-wrap mb-4">
+            <div class="gallery-strip" id="galleryStrip">
+                {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
+                <a href="{% url 'bike_detail' bike.slug %}" class="gallery-thumb" title="{{ bike.name }}" style="text-decoration:none;">
+                    {% if img_url %}<img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+                    {% else %}<img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">{% endif %}
+                    <div class="gallery-thumb-label">{{ bike.name }}</div>
+                </a>
+                {% endwith %}{% endfor %}
+            </div>
+        </div>
+        <div class="big-gallery-grid">
+            {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
+            <a href="{% url 'bike_detail' bike.slug %}"
+               class="big-gallery-item {% if forloop.counter == 1 or forloop.counter == 6 %}large{% endif %}">
+                {% if img_url %}<img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+                {% else %}<img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">{% endif %}
+                <div class="item-overlay"></div>
+                <div class="item-info">
+                    <div class="item-name">{{ bike.name }}</div>
+                    <div class="item-price">{{ bike.formatted_price }}</div>
+                    <span class="item-cta"><i class="bi bi-eye-fill"></i> View Details</span>
+                </div>
+            </a>
+            {% endwith %}{% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'bike_list' %}" class="btn fw-semibold px-5"
+               style="background:#fff;color:var(--blue);border:none;border-radius:8px;padding:12px 36px;">
+                View All Bikes <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+<!-- ══ FEATURED BIKES CARDS ══ -->
 {% if featured_bikes %}
 <section class="py-5" style="background:#f8faff;">
     <div class="container">
@@ -209,80 +813,51 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for bike in featured_bikes %}
             <div class="col">
+                <a href="{% url 'bike_detail' bike.slug %}" class="text-decoration-none">
                 <div class="card h-100 border-0 bike-card">
-
-                    {% with colors=bike.colors.all %}
-                    {% if colors %}
-                        {% with first_img=colors.first.first_image_url %}
+                    <div class="bike-img-wrap">
+                        {% with first_img=bike.get_primary_image_url %}
                         {% if first_img %}
-                        <img src="{{ first_img }}"
-                             class="bike-img"
-                             referrerpolicy="no-referrer"
-                             alt="{{ bike.name }}">
+                            <img src="{{ first_img }}" class="bike-img" referrerpolicy="no-referrer" alt="{{ bike.name }}">
                         {% else %}
-                        <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
-                            <i class="bi bi-bicycle text-secondary" style="font-size:4rem; opacity:.3;"></i>
-                        </div>
+                            <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
+                                <i class="bi bi-bicycle text-secondary" style="font-size:4rem;opacity:.3;"></i>
+                            </div>
                         {% endif %}
                         {% endwith %}
-                    {% elif bike.image %}
-                        <img src="{{ bike.image.url }}" class="bike-img" alt="{{ bike.name }}">
-                    {% else %}
-                        <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
-                            <i class="bi bi-bicycle text-secondary" style="font-size:4rem; opacity:.3;"></i>
-                        </div>
-                    {% endif %}
-                    {% endwith %}
-
+                    </div>
                     <div class="card-body pt-2">
-                        <span class="badge px-2 py-1 mb-1"
-                              style="background:#e8f0fb; color:#003087; font-size:.7rem;">
-                            {{ bike.category.name }}
-                        </span>
+                        <span class="badge px-2 py-1 mb-1" style="background:#e8f0fb;color:#003087;font-size:.7rem;">{{ bike.category.name }}</span>
                         <h5 class="fw-bold mb-1" style="color:#111;">{{ bike.name }}</h5>
-                        <p class="fw-bold mb-2" style="color:#003087; font-size:1.05rem;">
-                            {{ bike.formatted_price }}
-                        </p>
-                        <div class="d-flex gap-3 flex-wrap"
-                             style="font-size:.78rem; color:#6b7a99;">
-                            {% if bike.engine_cc %}
-                            <span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>
-                            {% endif %}
-                            {% if bike.mileage %}
-                            <span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>
-                            {% endif %}
+                        <p class="fw-bold mb-2" style="color:#003087;font-size:1.05rem;">{{ bike.formatted_price }}</p>
+                        <div class="d-flex gap-3 flex-wrap" style="font-size:.78rem;color:#6b7a99;">
+                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>{% endif %}
+                            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>{% endif %}
                         </div>
                     </div>
                     <div class="card-footer bg-white border-0 pb-3">
                         <div class="d-flex gap-2">
-                            <a href="{% url 'bike_detail' bike.slug %}"
-                               class="btn btn-sm flex-fill fw-semibold"
-                               style="background:#003087; color:#fff; border:none;">
-                                View Details
-                            </a>
-                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}"
-                               class="btn btn-sm flex-fill fw-semibold"
-                               style="background:#e8f0fb; color:#003087; border:1px solid #d0dff5;">
-                                Book Ride
-                            </a>
+                            <span class="btn btn-sm flex-fill fw-semibold" style="background:#003087;color:#fff;border:none;">View Details</span>
+                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}" class="btn btn-sm flex-fill fw-semibold"
+                               style="background:#e8f0fb;color:#003087;border:1px solid #d0dff5;"
+                               onclick="event.stopPropagation();">Book Ride</a>
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
             {% endfor %}
         </div>
         <div class="text-center mt-4">
-            <a href="{% url 'bike_list' %}"
-               class="btn fw-semibold px-5"
-               style="background:#003087; color:#fff; border:none; border-radius:8px;">
-                View All Bikes
-            </a>
+            <a href="{% url 'bike_list' %}" class="btn fw-semibold px-5"
+               style="background:#003087;color:#fff;border:none;border-radius:8px;">View All Bikes</a>
         </div>
     </div>
 </section>
 {% endif %}
 
-<!-- QUICK ACTIONS -->
+
+<!-- ══ QUICK ACTIONS ══ -->
 <section class="py-5" style="background:#fff;">
     <div class="container">
         <div class="text-center mb-4">
@@ -293,42 +868,36 @@
             <div class="col-md-3 col-6">
                 <a href="{% url 'enquiry' %}" class="text-decoration-none">
                     <div class="quick-action-card p-4 bg-white h-100">
-                        <i class="bi bi-calendar-check-fill fs-2 mb-2 d-block"
-                           style="color:#003087;"></i>
+                        <i class="bi bi-calendar-check-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
                         <h6 class="fw-bold" style="color:#111;">Book Test Ride</h6>
-                        <p class="mb-0" style="font-size:.8rem; color:#5a6a8a;">Try before you buy</p>
+                        <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Try before you buy</p>
                     </div>
                 </a>
             </div>
             <div class="col-md-3 col-6">
                 <a href="{% url 'book_service' %}" class="text-decoration-none">
                     <div class="quick-action-card p-4 bg-white h-100">
-                        <i class="bi bi-wrench-adjustable-circle-fill fs-2 mb-2 d-block"
-                           style="color:#003087;"></i>
+                        <i class="bi bi-wrench-adjustable-circle-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
                         <h6 class="fw-bold" style="color:#111;">Book Service</h6>
-                        <p class="mb-0" style="font-size:.8rem; color:#5a6a8a;">Expert bike care</p>
+                        <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Expert bike care</p>
                     </div>
                 </a>
             </div>
             <div class="col-md-3 col-6">
                 <a href="{% url 'exchange_bike' %}" class="text-decoration-none">
                     <div class="quick-action-card p-4 bg-white h-100">
-                        <i class="bi bi-arrow-left-right fs-2 mb-2 d-block"
-                           style="color:#003087;"></i>
+                        <i class="bi bi-arrow-left-right fs-2 mb-2 d-block" style="color:#003087;"></i>
                         <h6 class="fw-bold" style="color:#111;">Exchange Bike</h6>
-                        <p class="mb-0" style="font-size:.8rem; color:#5a6a8a;">Upgrade your ride</p>
+                        <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Upgrade your ride</p>
                     </div>
                 </a>
             </div>
             <div class="col-md-3 col-6">
                 <a href="{% url 'contact' %}" class="text-decoration-none">
                     <div class="quick-action-card p-4 bg-white h-100">
-                        <i class="bi bi-geo-alt-fill fs-2 mb-2 d-block"
-                           style="color:#003087;"></i>
+                        <i class="bi bi-geo-alt-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
                         <h6 class="fw-bold" style="color:#111;">Find Showroom</h6>
-                        <p class="mb-0" style="font-size:.8rem; color:#5a6a8a;">
-                            {{ all_showrooms.count }} outlets near you
-                        </p>
+                        <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">{{ all_showrooms.count }} outlets near you</p>
                     </div>
                 </a>
             </div>
@@ -336,7 +905,8 @@
     </div>
 </section>
 
-<!-- VIDEOS -->
+
+<!-- ══ VIDEOS ══ -->
 {% if videos %}
 <section class="py-5" style="background:#f8faff;">
     <div class="container">
@@ -350,15 +920,10 @@
             <div class="col-md-6 col-lg-4">
                 <div class="video-card">
                     <div class="ratio ratio-16x9">
-                        <iframe src="{{ video.embed_url }}"
-                                title="{{ video.title }}"
-                                allowfullscreen
-                                loading="lazy">
-                        </iframe>
+                        <iframe src="{{ video.embed_url }}" title="{{ video.title }}" allowfullscreen loading="lazy"></iframe>
                     </div>
                     <div class="p-3">
-                        <p class="fw-semibold mb-0"
-                           style="font-size:.9rem; color:#1a1a2e;">{{ video.title }}</p>
+                        <p class="fw-semibold mb-0" style="font-size:.9rem;color:#1a1a2e;">{{ video.title }}</p>
                     </div>
                 </div>
             </div>
@@ -368,45 +933,29 @@
 </section>
 {% endif %}
 
-<!-- ENQUIRY FORM -->
+
+<!-- ══ ENQUIRY FORM ══ -->
 <section class="enquiry-section py-5">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-7 text-center mb-4">
                 <span class="hero-badge">Get in Touch</span>
                 <h2 class="fw-bold text-white mt-2">Interested? Let's Talk.</h2>
-                <p style="color:rgba(255,255,255,.65);">
-                    Fill in your details and our team will reach out within 24 hours.
-                </p>
+                <p style="color:rgba(255,255,255,.65);">Fill in your details and our team will reach out within 24 hours.</p>
             </div>
             <div class="col-lg-7">
                 <form method="POST" action="{% url 'enquiry' %}">
                     {% csrf_token %}
+                    <input type="hidden" name="enquiry_type" value="general">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            {{ enquiry_form.name.label_tag }}
-                            {{ enquiry_form.name }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ enquiry_form.phone.label_tag }}
-                            {{ enquiry_form.phone }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ enquiry_form.bike.label_tag }}
-                            {{ enquiry_form.bike }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ enquiry_form.showroom.label_tag }}
-                            {{ enquiry_form.showroom }}
-                        </div>
+                        <div class="col-md-6">{{ enquiry_form.name.label_tag }}{{ enquiry_form.name }}</div>
+                        <div class="col-md-6">{{ enquiry_form.phone.label_tag }}{{ enquiry_form.phone }}</div>
+                        <div class="col-md-6">{{ enquiry_form.bike.label_tag }}{{ enquiry_form.bike }}</div>
+                        <div class="col-md-6">{{ enquiry_form.showroom.label_tag }}{{ enquiry_form.showroom }}</div>
+                        <div class="col-12">{{ enquiry_form.message.label_tag }}{{ enquiry_form.message }}</div>
                         <div class="col-12">
-                            {{ enquiry_form.message.label_tag }}
-                            {{ enquiry_form.message }}
-                        </div>
-                        <div class="col-12">
-                            <button type="submit"
-                                    class="btn btn-lg w-100 fw-bold"
-                                    style="background:#fff; color:#003087; border:none; border-radius:8px;">
+                            <button type="submit" class="btn btn-lg w-100 fw-bold"
+                                    style="background:#fff;color:#003087;border:none;border-radius:8px;">
                                 <i class="bi bi-send-fill me-2"></i>Send Enquiry
                             </button>
                         </div>
@@ -417,21 +966,110 @@
     </div>
 </section>
 
-<!-- SHOWROOM STRIP -->
-<section class="py-4" style="background:#fff; border-top:1px solid #e8f0fb;">
+
+<!-- ══ SHOWROOM STRIP ══ -->
+<section class="py-4" style="background:#fff;border-top:1px solid #e8f0fb;">
     <div class="container">
         <p class="text-center fw-bold text-uppercase mb-3"
-           style="font-size:.72rem; letter-spacing:1.5px; color:#5a6a8a;">
-            Our Showroom Locations
-        </p>
+           style="font-size:.72rem;letter-spacing:1.5px;color:#5a6a8a;">Our Showroom Locations</p>
         <div class="d-flex flex-wrap gap-2 justify-content-center">
             {% for showroom in showrooms %}
-            <a href="{% url 'contact' %}" class="showroom-badge">
+            <a href="{% url 'contact' %}#{{ showroom.slug }}" class="showroom-badge">
                 <i class="bi bi-geo-alt me-1"></i>{{ showroom.name }}
             </a>
             {% endfor %}
         </div>
     </div>
 </section>
+
+
+<script>
+(function () {
+
+    /* ══ FULLSCREEN SLIDER ══ */
+    var fsSlides   = document.querySelectorAll('.fullscreen-slide');
+    var fsCaptions = document.querySelectorAll('.fullscreen-caption-item');
+    var fsDots     = document.querySelectorAll('#fullscreenDots span');
+    var fsBikes    = [
+        {% for bike in featured_bikes %}
+        {
+            detailUrl: "{% url 'bike_detail' bike.slug %}",
+            rideUrl:   "{% url 'enquiry' %}?bike={{ bike.pk }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    var fsCurrent  = 0;
+    var fsTimer    = null;
+
+    function fullscreenGoTo(idx) {
+        if (!fsSlides.length) return;
+        // hide current
+        fsSlides[fsCurrent].style.opacity  = '0';
+        fsSlides[fsCurrent].style.zIndex   = '0';
+        fsCaptions[fsCurrent].style.display = 'none';
+        fsDots[fsCurrent].classList.remove('active');
+        // show next
+        fsCurrent = (idx + fsSlides.length) % fsSlides.length;
+        fsSlides[fsCurrent].style.opacity  = '1';
+        fsSlides[fsCurrent].style.zIndex   = '1';
+        fsCaptions[fsCurrent].style.display = 'block';
+        fsDots[fsCurrent].classList.add('active');
+        // update buttons
+        var db = document.getElementById('fullscreenDetailBtn');
+        var rb = document.getElementById('fullscreenRideBtn');
+        if (db && fsBikes[fsCurrent]) db.href = fsBikes[fsCurrent].detailUrl;
+        if (rb && fsBikes[fsCurrent]) rb.href = fsBikes[fsCurrent].rideUrl;
+        // restart timer
+        clearInterval(fsTimer);
+        fsTimer = setInterval(function () { fullscreenGoTo(fsCurrent + 1); }, 5000);
+    }
+
+    function fullscreenSlide(dir) { fullscreenGoTo(fsCurrent + dir); }
+
+    // expose to inline onclick
+    window.fullscreenGoTo  = fullscreenGoTo;
+    window.fullscreenSlide = fullscreenSlide;
+
+    // auto-play
+    if (fsSlides.length > 1) {
+        fsTimer = setInterval(function () { fullscreenGoTo(fsCurrent + 1); }, 5000);
+    }
+
+    /* ══ HERO CAROUSEL THUMBNAILS ══ */
+    var carousel = document.getElementById('bikeHeroCarousel');
+    if (carousel) {
+        var thumbs = document.querySelectorAll('.hero-thumb');
+        thumbs.forEach(function (thumb) {
+            thumb.addEventListener('click', function () {
+                bootstrap.Carousel.getOrCreateInstance(carousel)
+                    .to(parseInt(thumb.getAttribute('data-slide-to'), 10));
+            });
+        });
+        carousel.addEventListener('slide.bs.carousel', function (e) {
+            thumbs.forEach(function (t, i) { t.classList.toggle('active', i === e.to); });
+        });
+    }
+
+    /* ══ GALLERY STRIP DRAG SCROLL ══ */
+    var strip = document.getElementById('galleryStrip');
+    if (strip) {
+        var isDown = false, startX, scrollLeft;
+        strip.addEventListener('mousedown', function (e) {
+            isDown = true; strip.style.cursor = 'grabbing';
+            startX = e.pageX - strip.offsetLeft;
+            scrollLeft = strip.parentElement.scrollLeft;
+        });
+        strip.addEventListener('mouseleave', function () { isDown = false; strip.style.cursor = 'grab'; });
+        strip.addEventListener('mouseup',    function () { isDown = false; strip.style.cursor = 'grab'; });
+        strip.addEventListener('mousemove',  function (e) {
+            if (!isDown) return; e.preventDefault();
+            var x = e.pageX - strip.offsetLeft;
+            strip.parentElement.scrollLeft = scrollLeft - (x - startX) * 1.5;
+        });
+        strip.style.cursor = 'grab';
+    }
+
+})();
+</script>
 
 {% endblock %}

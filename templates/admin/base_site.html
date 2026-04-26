@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+{% load webpush_notifications %}
+
+{% block extrahead %}
+    {{ block.super }}
+    {% webpush_header %}
+{% endblock %}
+
+{% block footer %}
+    {{ block.super }}
+    {% if user.is_authenticated %}
+    <div style="
+        position:fixed;bottom:20px;right:20px;z-index:9999;
+        background:#003087;color:#fff;padding:10px 18px;
+        border-radius:10px;font-size:13px;
+        box-shadow:0 4px 12px rgba(0,0,0,.25);
+        display:flex;align-items:center;gap:8px;
+    ">
+        🔔 {% webpush_button %}
+    </div>
+    {% endif %}
+{% endblock %}
