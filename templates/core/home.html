@@ -156,6 +156,22 @@
         position: relative;
         overflow: hidden;
     }
+
+    /* @media (max-width: 767px) {
+    .fullscreen-bike img {
+        object-position: center 30%; 
+    }
+    } */
+    @media (max-width: 767px) {
+    .fullscreen-bike {
+        height: 60vh;
+        min-height: 320px;
+    }
+    .fullscreen-bike img {
+        object-fit: contain;
+        object-position: center center;
+    }
+}
     .hero-text-section::before {
         content: '';
         position: absolute;
@@ -941,7 +957,7 @@
             <div class="col-lg-7 text-center mb-4">
                 <span class="hero-badge">Get in Touch</span>
                 <h2 class="fw-bold text-white mt-2">Interested? Let's Talk.</h2>
-                <p style="color:rgba(255,255,255,.65);">Fill in your details and our team will reach out within 24 hours.</p>
+                <p style="color:rgba(255,255,255,.65);">Fill in your details and our team will reach out within 2 hours.</p>
             </div>
             <div class="col-lg-7">
                 <form method="POST" action="{% url 'enquiry' %}">

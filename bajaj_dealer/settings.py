@@ -9,7 +9,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-produc
 DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='127.0.0.1,192.168.1.37,localhost'
+    default='127.0.0.1,192.168.1.37,localhost,aac0-103-46-201-25.ngrok-free.app'
 ).split(',')
 
 # --- APPS ---
@@ -118,7 +118,7 @@ if _db_name:
         'default': {
             'ENGINE':   'django.db.backends.postgresql',
             'NAME':     _db_name,
-            'USER':     config('DB_USER',     default=''),
+            'USER':     config('DB_USER',     default='postgres'),
             'PASSWORD': config('DB_PASSWORD', default=''),
             'HOST':     config('DB_HOST',     default='localhost'),
             'PORT':     config('DB_PORT',     default='5432'),
