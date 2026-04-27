@@ -1,7 +1,6 @@
 from pathlib import Path
 from decouple import config
 import os
-from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,7 +11,6 @@ ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
     default='127.0.0.1,192.168.1.37,localhost'
 ).split(',')
- 
 
 # --- APPS ---
 INSTALLED_APPS = [
@@ -24,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'cloudinary_storage',
     'django.contrib.staticfiles',
-    'webpush',  
+    'webpush',
     'core.apps.CoreConfig',
     'drf_spectacular',
     'cloudinary',
@@ -33,7 +31,7 @@ INSTALLED_APPS = [
 WEBPUSH_SETTINGS = {
     "VAPID_PUBLIC_KEY":  config('VAPID_PUBLIC_KEY',  default=''),
     "VAPID_PRIVATE_KEY": config('VAPID_PRIVATE_KEY', default=''),
-    "VAPID_ADMIN_EMAIL": config('VAPID_ADMIN_EMAIL', default='a4ashwanik4kr@gmail.com'),
+    "VAPID_ADMIN_EMAIL": config('VAPID_ADMIN_EMAIL', default=''),
 }
 
 # --- DRF ---
@@ -143,9 +141,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # --- STATIC & MEDIA ---
-STATIC_URL      = '/static/'
+STATIC_URL       = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT     = BASE_DIR / 'staticfiles'
+STATIC_ROOT      = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL  = '/media/'
@@ -169,12 +167,13 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL  = config('EMAIL_HOST_USER',     default='')
 DEALER_MASTER_EMAIL = config('DEALER_MASTER_EMAIL', default='')
 
-# --- TELEGRAM ---
-TELEGRAM_BOT_TOKEN       = config('TELEGRAM_BOT_TOKEN',       default='')
-TELEGRAM_MASTER_CHAT_ID  = config('TELEGRAM_MASTER_CHAT_ID',  default='')
-
 # --- WHATSAPP ---
-WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='9470725228')
+WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='')
+
+# --- SOCIAL LINKS (used by core.context_processors.site_globals) ---
+FACEBOOK_URL  = config('FACEBOOK_URL',  default='')
+INSTAGRAM_URL = config('INSTAGRAM_URL', default='')
+YOUTUBE_URL   = config('YOUTUBE_URL',   default='')
 
 # --- SECURITY HEADERS (production only) ---
 if not DEBUG:
@@ -186,11 +185,3 @@ if not DEBUG:
     SESSION_COOKIE_SECURE          = True
     CSRF_COOKIE_SECURE             = True
     X_FRAME_OPTIONS                = 'DENY'
-
-
-load_dotenv()
-
-FACEBOOK_URL = os.getenv('FACEBOOK_URL', '')
-INSTAGRAM_URL = os.getenv('INSTAGRAM_URL', '')
-YOUTUBE_URL = os.getenv('YOUTUBE_URL', '')
-WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '')
