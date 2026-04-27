@@ -75,17 +75,6 @@ class Bike(models.Model):
         return 'On Request'
     formatted_price.short_description = 'Price' 
 
-    # def get_primary_image_url(self):
-    # # Use prefetched colors — filter in Python, not DB
-    #     for color in self.colors.all():
-    #         if color.is_available:
-    #             url = color.first_image_url()
-    #             if url:
-    #                 return url
-    #     # Fall back to main image field
-    #     if self.image:
-    #         return self.image.url
-    #     return ''
 
 
     def get_primary_image_url(self):
@@ -306,27 +295,6 @@ class BikeImage(models.Model):
 
         super().save(*args, **kwargs)
 
-    # def clean(self):
-    #     """Field-level validation called by Django forms and admin."""
-    #     # image_url / video_url need a link
-    #     if self.media_type in ('image_url', 'video_url') and not self.media_link:
-    #         raise ValidationError(
-    #             {'media_link': 'Please provide a URL for this media type.'}
-    #         )
-    #     # youtube needs a link
-    #     if self.media_type == 'youtube' and not self.media_link:
-    #         raise ValidationError(
-    #             {'media_link': 'Please provide a YouTube URL or video ID.'}
-    #         )
-    #     # image_upload needs a file
-    #     if self.media_type in ('image_upload', 'gif_upload') and not self.image_file:
-    #         raise ValidationError(
-    #             {'image_file': 'Please upload an image file.'}
-    #         )
-    #     # video_upload needs a file
-    #     if self.media_type == 'video_upload' and not self.video_file:
-    #         raise ValidationError(
-    #             {'video_file': 'Please upload a video file.'}
     #         )
     def clean(self):
     # Skip validation for empty extra inline forms
