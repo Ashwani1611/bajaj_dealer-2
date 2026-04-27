@@ -12,6 +12,8 @@ ALLOWED_HOSTS = config(
     default='127.0.0.1,192.168.1.37,localhost,aac0-103-46-201-25.ngrok-free.app'
 ).split(',')
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # --- APPS ---
 INSTALLED_APPS = [
     'jazzmin',                        # ← must be FIRST

@@ -1,0 +1,1 @@
+web: gunicorn bajaj_dealer.wsgi:application

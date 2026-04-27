@@ -1,0 +1,6 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "gunicorn bajaj_dealer.wsgi:application"
+restartPolicyType = "ON_FAILURE"
