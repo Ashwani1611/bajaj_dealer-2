@@ -9,8 +9,14 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-produc
 DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS',
-    default='127.0.0.1,192.168.1.37,localhost,aac0-103-46-201-25.ngrok-free.app'
+    default='127.0.0.1,localhost,skylinewheels.in,www.skylinewheels.in,web-production-0f894.up.railway.app'
 ).split(',')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://skylinewheels.in',
+    'https://www.skylinewheels.in',
+    'https://web-production-0f894.up.railway.app',
+]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
