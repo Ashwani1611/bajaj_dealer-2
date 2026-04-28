@@ -1,121 +1,224 @@
-# Skyline Bajaj — All Fixes Applied
+# 🏍️ Bajaj Dealership Website
 
-## Files in this package
+A professional Django-based dealership website built for a Bajaj motorcycle dealer. Features bike listings, enquiry forms, push notifications, and a full admin panel.
 
-| File | What changed |
+---
+
+## 🌐 Live Demo
+
+🔗 [https://web-production-0f894.up.railway.app](https://web-production-0f894.up.railway.app)
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
 |---|---|
-| `admin.py` | Fixed 3 bugs + major improvements |
-| `views.py` | Per-showroom/station email + WhatsApp |
-| `context_processors.py` | NEW — injects logo, showrooms into all templates |
-| `settings_additions.py` | All required settings |
-| `templates/base.html` | Real logo, per-showroom WA float, scroll shadow |
-| `templates/core/success.html` | Branded card with submitted details + WA CTA |
-| `templates/core/book_service.html` | Service station primary, Tuesday closed note |
-| `templates/core/contact.html` | Per-showroom WA fix, service stations section added |
-| `templates/emails/enquiry_notification.html` | HTML email to showroom |
-| `templates/emails/service_notification.html` | HTML email to service station |
-| `templates/emails/exchange_notification.html` | HTML email to showroom |
+| **Backend** | Django (Python) |
+| **Database** | PostgreSQL (Supabase) |
+| **Image Storage** | Cloudinary |
+| **Hosting** | Railway |
+| **CI/CD** | GitHub Actions |
+| **Web Server** | Gunicorn |
+| **Frontend** | HTML, CSS, Bootstrap |
 
 ---
 
-## Bugs fixed
+## ✨ Features
 
-### 1. admin.py — ServiceStation never registered (CRASH)
-- Added `@admin.register(ServiceStation)` with full fieldsets
-
-### 2. admin.py — ServiceBooking list_filter crashed
-- `is_confirmed` is a `@property`, not a DB field — can't filter on it
-- Changed to `list_filter = ['status']`
-
-### 3. contact.html — wrong WhatsApp URL
-- Was using raw `showroom.phone` in wa.me link
-- Now uses `showroom.whatsapp_url` method (proper country code handling)
-
-### 4. base.html — global WA number for all showrooms
-- Float button now uses `primary_showroom.whatsapp_url` (first active showroom)
-- Each showroom and service station has its own WA number used in forms
-
-### 5. book_service.html — showroom shown instead of service station
-- `service_station` is now the primary/first field
-- Shows station info card dynamically when station is selected
-- Tuesday closed note displayed prominently
-- Correct timing: Mon, Wed–Sun: 9:00 AM – 6:00 PM
-
-### 6. Email routing
-- Enquiry email → selected showroom's email (+ CC master)
-- Service email → selected service_station's email (+ CC master)
-- Exchange email → selected showroom's email (+ CC master)
+- 🏍️ Bike listings with detailed pages
+- 📋 Customer enquiry forms
+- 🔔 Push notifications (VAPID)
+- 🗺️ Google Maps integration
+- 📱 WhatsApp, Facebook, Instagram links
+- 🔒 Admin panel for management
+- ☁️ Cloudinary image uploads
+- 🔐 Secure environment variable management
 
 ---
 
-## Quick setup (5 steps)
+## ⚙️ Local Setup
 
-### Step 1 — Copy files
-```
-your_project/
-  core/
-    admin.py                          ← replace
-    views.py                          ← replace
-    context_processors.py             ← NEW file
-  templates/
-    base.html                         ← replace
-    core/
-      success.html                    ← replace
-      book_service.html               ← replace
-      contact.html                    ← replace
-    emails/
-      enquiry_notification.html       ← NEW
-      service_notification.html       ← NEW
-      exchange_notification.html      ← NEW
-```
+### 1. Clone the repository
 
-### Step 2 — Add context processor to settings.py
-Open `settings.py`, find `TEMPLATES`, add to `context_processors`:
-```python
-'core.context_processors.site_globals',
-```
-
-### Step 3 — Add settings values to settings.py
-Copy from `settings_additions.py` and fill in real values:
-- `SITE_NAME`
-- `LOGO_URL`
-- `WHATSAPP_NUMBER`
-- `DEALER_MASTER_EMAIL`
-- Email SMTP settings
-
-### Step 4 — Copy your logo
 ```bash
-mkdir -p static/images/
-cp bajaj_logo-1.png static/images/skyline_bajaj_logo.png
+git clone https://github.com/Ashwani1611/bajaj_dealer-2.git
+cd bajaj_dealer-2
 ```
-Then in settings: `LOGO_URL = '/static/images/skyline_bajaj_logo.png'`
 
-### Step 5 — Add ServiceStation data in admin
-Go to `/admin/` → Service Stations → Add each station with:
-- Name, address, phone
-- **WhatsApp number** (with country code, no +, e.g. `919876543210`)
-- **Email** (service booking emails will go here)
-- Working hours (default: Mon, Wed–Sun: 9:00 AM – 6:00 PM | Tuesday Closed)
+### 2. Create virtual environment
+
+```bash
+python -m venv venv
+source venv/bin/activate  # Mac/Linux
+venv\Scripts\activate     # Windows
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Setup environment variables
+
+```bash
+cp .env.example .env
+# Fill in your actual values in .env
+```
+
+### 5. Run migrations
+
+```bash
+python manage.py migrate
+```
+
+### 6. Create superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+### 7. Run development server
+
+```bash
+python manage.py runserver
+```
+
+Visit → http://localhost:8000
 
 ---
 
-## Admin improvements summary
+## 🔐 Environment Variables
 
-- **Enquiry**: mark_as_read/unread bulk action, export CSV, color-coded type badges, "New" indicator
-- **ServiceBooking**: status dropdown bulk actions (confirm/complete), export CSV, status badges
-- **ServiceStation**: now fully registered and manageable
-- **Bike**: list_editable for is_featured + is_active
-- **YouTubeVideo**: thumbnail preview in list, list_editable order
-- **All forms**: export_as_csv action available
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+SECRET_KEY=your-django-secret-key
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Database (PostgreSQL)
+DB_NAME=your-db-name
+DB_USER=your-db-user
+DB_PASSWORD=your-db-password
+DB_HOST=your-db-host
+DB_PORT=5432
+
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+
+# Social Media
+WHATSAPP_NUMBER=your-number
+FACEBOOK_URL=your-facebook-url
+INSTAGRAM_URL=your-instagram-url
+
+# Google Maps
+GOOGLE_MAPS_API_KEY=your-maps-key
+
+# Push Notifications (VAPID)
+VAPID_PUBLIC_KEY=your-public-key
+VAPID_PRIVATE_KEY=your-private-key
+VAPID_ADMIN_EMAIL=your-email
+```
 
 ---
 
-## WhatsApp routing summary
+## 🚀 CI/CD Pipeline
 
-| Form | WhatsApp goes to |
-|---|---|
-| Enquiry form | Selected showroom's WA number |
-| Service booking | Selected service station's WA number |
-| Exchange request | Selected showroom's WA number |
-| Navbar float button | First active showroom's WA number |
-| Fallback (none selected) | `settings.WHATSAPP_NUMBER` |
+This project uses **GitHub Actions** for CI/CD:
+
+```
+git push → GitHub Actions
+               ↓
+        Install dependencies
+               ↓
+        Run Django checks
+               ↓
+        Railway auto deploys
+               ↓
+        Site updated! ✅
+```
+
+Pipeline file: `.github/workflows/django.yml`
+
+---
+
+## 🗄️ Database
+
+- **Production**: Supabase PostgreSQL (free tier)
+- **Local**: Configure via `.env` file
+
+### Run migrations
+```bash
+python manage.py migrate
+```
+
+### Export/Import data
+```bash
+# Export
+python manage.py dumpdata --output=data.json
+
+# Import
+python manage.py loaddata data.json
+```
+
+---
+
+## 📁 Project Structure
+
+```
+bajaj_dealer-2/
+├── bajaj_dealer/          # Main Django project
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── core/                  # Main app
+│   ├── models.py
+│   ├── views.py
+│   └── urls.py
+├── templates/             # HTML templates
+├── static/                # CSS, JS, images
+├── media/                 # Uploaded files
+├── .github/
+│   └── workflows/
+│       └── django.yml     # CI/CD pipeline
+├── .env.example           # Environment template
+├── Procfile               # Railway deployment
+├── requirements.txt
+└── manage.py
+```
+
+---
+
+## 🚢 Deployment
+
+This project is deployed on **Railway** with **Supabase** PostgreSQL.
+
+### Environment Variables on Railway
+Add all variables from `.env.example` in Railway dashboard under **Variables** tab.
+
+### Deploy manually
+```bash
+git add .
+git commit -m "your changes"
+git push
+# Railway auto deploys! ✅
+```
+
+---
+
+## 👨‍💻 Developer
+
+**Ashwani Kumar**
+- GitHub: [@Ashwani1611](https://github.com/Ashwani1611)
+- Email: a4ashwanik4kr@gmail.com
+
+---
+
+## 📄 License
+
+This project is private and built for a client.
+© 2024 Ashwani Kumar. All rights reserved.
