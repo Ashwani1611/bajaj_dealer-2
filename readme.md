@@ -221,4 +221,4 @@ git push
 ## 📄 License
 
 This project is private and built for a client.
-© 2024 Ashwani Kumar. All rights reserved.
+© 2026 Ashwani Kumar. All rights reserved.
