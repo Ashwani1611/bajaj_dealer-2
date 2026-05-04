@@ -11,6 +11,7 @@ cryptography==47.0.0
 Django==5.0.6
 django-cloudinary-storage==0.3.0
 django-jazzmin==3.0.4
+django-redis==6.0.0
 django-webpush==0.3.6
 djangorestframework==3.17.1
 drf-spectacular==0.29.0
@@ -32,6 +33,7 @@ python-decouple==3.8
 python-dotenv==1.2.2
 pywebpush==2.3.0
 PyYAML==6.0.3
+redis==7.4.0
 referencing==0.37.0
 requests==2.33.1
 rpds-py==0.30.0

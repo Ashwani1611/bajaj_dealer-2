@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils.html import strip_tags
 from django.urls import reverse
-from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
 from .models import (
     Bike, BikeCategory, BikeColor, BikeImage,
@@ -115,6 +115,34 @@ def _collect_emails(*locations):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# CACHE HELPERS
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _get_all_showrooms():
+    """Cached showroom list. Shared across home, bike_detail, contact."""
+    showrooms = cache.get('all_showrooms')
+    if not showrooms:
+        showrooms = list(Showroom.objects.filter(is_active=True).order_by('order'))
+        cache.set('all_showrooms', showrooms, timeout=60 * 30)
+    return showrooms
+
+
+def _get_all_categories():
+    """Cached category list. Shared across home, bike_list."""
+    categories = cache.get('all_categories')
+    if not categories:
+        categories = list(BikeCategory.objects.all().order_by('order'))
+        cache.set('all_categories', categories, timeout=60 * 30)
+    return categories
+
+
+def _media_images_qs():
+    return BikeImage.objects.filter(
+        media_type__in=['image_upload', 'image_url', 'gif_upload']
+    ).order_by('order')
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # TEMPLATE VIEWS
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -131,49 +159,48 @@ def home(request):
     else:
         form = EnquiryForm()
 
-    # Define images_qs once — reused in both querysets
-    images_qs = BikeImage.objects.filter(
-        media_type__in=['image_upload', 'image_url', 'gif_upload']
-    ).order_by('order')
+    # ── featured bikes ────────────────────────────────────────────
+    featured_bikes = cache.get('featured_bikes')
+    if not featured_bikes:
+        featured_bikes = list(
+            Bike.objects
+            .filter(is_featured=True, is_active=True)
+            .select_related('category')
+            .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
+            .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
+        )
+        cache.set('featured_bikes', featured_bikes, timeout=60 * 15)
 
-    color_pf = _color_prefetch(images_qs=images_qs)
+    # ── all bikes (home strip, capped at 24) ──────────────────────
+    home_bikes = cache.get('home_all_bikes')
+    if not home_bikes:
+        home_bikes = list(
+            Bike.objects
+            .filter(is_active=True)
+            .select_related('category')
+            .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
+            .only('id', 'name', 'slug', 'price', 'category')
+            [:24]
+        )
+        cache.set('home_all_bikes', home_bikes, timeout=60 * 15)
 
-    featured_bikes = list(
-        Bike.objects
-        .filter(is_featured=True, is_active=True)
-        .select_related('category')
-        .prefetch_related(color_pf)
-        .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
-    )
+    # ── videos ────────────────────────────────────────────────────
+    videos = cache.get('home_videos')
+    if not videos:
+        videos = list(
+            YouTubeVideo.objects
+            .filter(is_active=True, section='home')
+            .order_by('order')[:6]
+        )
+        cache.set('home_videos', videos, timeout=60 * 30)
 
-    all_bikes = list(
-        Bike.objects
-        .filter(is_active=True)
-        .select_related('category')
-        .prefetch_related(color_pf)
-        .only('id', 'name', 'slug', 'price', 'category')
-        [:24]  # cap — no need to load every bike on the home page
-    )
-
-    # Evaluated once as a list — reused for both `all_showrooms` and `showrooms`
-    all_showrooms = list(
-        Showroom.objects.filter(is_active=True).order_by('order')
-    )
-
-    # Evaluated once — reused for both `nav_categories` and `categories`
-    categories = list(
-        BikeCategory.objects.all().order_by('order')
-    )
-
-    videos = list(
-        YouTubeVideo.objects
-        .filter(is_active=True, section='home')
-        .order_by('order')[:6]
-    )
+    # ── shared cached data ────────────────────────────────────────
+    all_showrooms = _get_all_showrooms()
+    categories    = _get_all_categories()
 
     return render(request, 'core/home.html', {
         'featured_bikes': featured_bikes,
-        'all_bikes':      all_bikes,
+        'all_bikes':      home_bikes,
         'all_showrooms':  all_showrooms,
         'showrooms':      all_showrooms,       # showroom badge strip
         'nav_categories': categories,          # navbar dropdown
@@ -181,35 +208,38 @@ def home(request):
         'videos':         videos,
         'offers':         [],
         'enquiry_form':   form,
-        'showroom_count': len(all_showrooms),  # use in template instead of .count
+        'showroom_count': len(all_showrooms),
     })
 
 
 # ── bike list ─────────────────────────────────────────────────────────────────
 
 def bike_list(request):
-    selected_category = request.GET.get('category')
+    selected_category = request.GET.get('category', '')
 
-    categories = list(BikeCategory.objects.all().order_by('order'))
+    categories = _get_all_categories()
 
-    bikes_qs = (
-        Bike.objects
-        .filter(is_active=True)
-        .select_related('category')
-        .prefetch_related(
-            _color_prefetch(
-                images_qs=BikeImage.objects.filter(
-                    media_type__in=['image_upload', 'image_url', 'gif_upload']
-                ).order_by('order')
+    # Different cache key per category filter so /bikes/?category=sports
+    # doesn't serve the same data as /bikes/
+    cache_key = f'bike_list_{selected_category or "all"}'
+    bikes = cache.get(cache_key)
+    if not bikes:
+        bikes_qs = (
+            Bike.objects
+            .filter(is_active=True)
+            .select_related('category')
+            .prefetch_related(
+                _color_prefetch(images_qs=_media_images_qs())
             )
+            .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
         )
-        .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
-    )
-    if selected_category:
-        bikes_qs = bikes_qs.filter(category__slug=selected_category)
+        if selected_category:
+            bikes_qs = bikes_qs.filter(category__slug=selected_category)
+        bikes = list(bikes_qs)
+        cache.set(cache_key, bikes, timeout=60 * 15)
 
     return render(request, 'core/bike_list.html', {
-        'bikes':             bikes_qs,
+        'bikes':             bikes,
         'categories':        categories,
         'selected_category': selected_category,
     })
@@ -218,40 +248,42 @@ def bike_list(request):
 # ── bike detail ───────────────────────────────────────────────────────────────
 
 def bike_detail(request, slug):
-    bike = get_object_or_404(
-        Bike.objects
-        .select_related('category')
-        .prefetch_related(
-            _color_prefetch(),
-            Prefetch(
-                'all_media',
-                queryset=BikeImage.objects.filter(
-                    color__isnull=True
-                ).order_by('order'),
-                to_attr='general_media',
+    bike = cache.get(f'bike_{slug}')
+    if not bike:
+        bike = get_object_or_404(
+            Bike.objects
+            .select_related('category')
+            .prefetch_related(
+                _color_prefetch(),
+                Prefetch(
+                    'all_media',
+                    queryset=BikeImage.objects.filter(
+                        color__isnull=True
+                    ).order_by('order'),
+                    to_attr='general_media',
+                ),
             ),
-        ),
-        slug=slug,
-        is_active=True,
-    )
-
-    related_bikes = list(
-        Bike.objects
-        .filter(category=bike.category, is_active=True)
-        .exclude(pk=bike.pk)
-        .select_related('category')
-        .prefetch_related(
-            _color_prefetch(
-                images_qs=BikeImage.objects.filter(
-                    media_type__in=['image_upload', 'image_url', 'gif_upload']
-                ).order_by('order')
-            )
+            slug=slug,
+            is_active=True,
         )
-        .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
-        [:4]
-    )
+        cache.set(f'bike_{slug}', bike, timeout=60 * 15)
 
-    showrooms = list(Showroom.objects.filter(is_active=True))
+    related_bikes = cache.get(f'related_bikes_{slug}')
+    if not related_bikes:
+        related_bikes = list(
+            Bike.objects
+            .filter(category=bike.category, is_active=True)
+            .exclude(pk=bike.pk)
+            .select_related('category')
+            .prefetch_related(
+                _color_prefetch(images_qs=_media_images_qs())
+            )
+            .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
+            [:4]
+        )
+        cache.set(f'related_bikes_{slug}', related_bikes, timeout=60 * 15)
+
+    showrooms = _get_all_showrooms()
 
     return render(request, 'core/bike_detail.html', {
         'bike':             bike,
@@ -404,10 +436,23 @@ def book_service(request):
     else:
         form = ServiceBookingForm()
 
+    # ── cached for GET requests ───────────────────────────────────
+    service_stations = cache.get('service_stations')
+    if not service_stations:
+        service_stations = list(ServiceStation.objects.filter(is_active=True))
+        cache.set('service_stations', service_stations, timeout=60 * 30)
+
+    showrooms_with_service = cache.get('showrooms_with_service')
+    if not showrooms_with_service:
+        showrooms_with_service = list(
+            Showroom.objects.filter(has_service_center=True, is_active=True)
+        )
+        cache.set('showrooms_with_service', showrooms_with_service, timeout=60 * 30)
+
     return render(request, 'core/book_service.html', {
         'form':                   form,
-        'service_stations':       ServiceStation.objects.filter(is_active=True),
-        'showrooms_with_service': Showroom.objects.filter(has_service_center=True, is_active=True),
+        'service_stations':       service_stations,
+        'showrooms_with_service': showrooms_with_service,
     })
 
 
@@ -501,7 +546,14 @@ def exchange_success(request):
 # ── contact ───────────────────────────────────────────────────────────────────
 
 def contact(request):
+    showrooms = _get_all_showrooms()
+
+    service_stations = cache.get('service_stations')
+    if not service_stations:
+        service_stations = list(ServiceStation.objects.filter(is_active=True))
+        cache.set('service_stations', service_stations, timeout=60 * 30)
+
     return render(request, 'core/contact.html', {
-        'showrooms':        Showroom.objects.filter(is_active=True),
-        'service_stations': ServiceStation.objects.filter(is_active=True),
+        'showrooms':        showrooms,
+        'service_stations': service_stations,
     })

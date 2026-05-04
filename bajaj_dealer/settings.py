@@ -139,6 +139,19 @@ else:
             'NAME':   BASE_DIR / 'db.sqlite3',
         }
     }
+# --- CACHE (Redis) ---
+REDIS_URL = config('REDIS_URL', default='redis://127.0.0.1:6379/1')
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "TIMEOUT": 60 * 15,
+    }
+}
 
 # --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [

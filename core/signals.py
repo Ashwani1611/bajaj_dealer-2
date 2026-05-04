@@ -1,10 +1,14 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.core.mail import send_mail
+from django.core.cache import cache
 from django.conf import settings
 import urllib.parse
 
-from .models import Enquiry, ServiceBooking, ExchangeRequest
+from .models import (
+    Enquiry, ServiceBooking, ExchangeRequest,
+    Bike, Showroom, BikeCategory, YouTubeVideo, ServiceStation,
+)
 
 
 def _master_email():
@@ -28,6 +32,10 @@ def _send_notification(subject, message, to_emails):
     except Exception:
         pass
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# EMAIL NOTIFICATIONS  (existing — unchanged)
+# ══════════════════════════════════════════════════════════════════════════════
 
 # ── Enquiry ───────────────────────────────────────────────────────────────────
 
@@ -123,3 +131,43 @@ def notify_new_exchange(sender, instance, created, **kwargs):
         message=message,
         to_emails=to_emails,
     )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CACHE INVALIDATION  (new)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@receiver(post_save, sender=Bike)
+@receiver(post_delete, sender=Bike)
+def clear_bike_cache(sender, instance, **kwargs):
+    cache.delete('featured_bikes')
+    cache.delete('home_all_bikes')
+    cache.delete(f'bike_{instance.slug}')
+    cache.delete(f'related_bikes_{instance.slug}')
+    cache.delete_pattern('bike_list_*')
+
+
+@receiver(post_save, sender=Showroom)
+@receiver(post_delete, sender=Showroom)
+def clear_showroom_cache(sender, **kwargs):
+    cache.delete('all_showrooms')
+    cache.delete('showrooms_with_service')
+
+
+@receiver(post_save, sender=BikeCategory)
+@receiver(post_delete, sender=BikeCategory)
+def clear_category_cache(sender, **kwargs):
+    cache.delete('all_categories')
+    cache.delete_pattern('bike_list_*')
+
+
+@receiver(post_save, sender=YouTubeVideo)
+@receiver(post_delete, sender=YouTubeVideo)
+def clear_video_cache(sender, **kwargs):
+    cache.delete('home_videos')
+
+
+@receiver(post_save, sender=ServiceStation)
+@receiver(post_delete, sender=ServiceStation)
+def clear_service_station_cache(sender, **kwargs):
+    cache.delete('service_stations')
