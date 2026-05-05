@@ -209,51 +209,6 @@
         border-radius: 20px; margin-bottom: 6px;
     }
 
-    /* ══ Alternating Showcase ══ */
-    .showcase-section {
-        display: flex; align-items: stretch; min-height: 480px; overflow: hidden;
-    }
-    .showcase-section .showcase-img-side {
-        flex: 1; position: relative; min-height: 380px; overflow: hidden; cursor: pointer;
-    }
-    .showcase-section .showcase-img-side img {
-        position: absolute; inset: 0; width: 100%; height: 100%;
-        object-fit: cover; transition: transform .6s ease;
-    }
-    .showcase-section .showcase-img-side:hover img { transform: scale(1.05); }
-    .showcase-section .showcase-img-side .showcase-img-overlay {
-        position: absolute; inset: 0;
-        background: linear-gradient(135deg, rgba(0,24,72,.55) 0%, rgba(0,48,135,.15) 60%, transparent 100%);
-        z-index: 1; transition: opacity .3s;
-    }
-    .showcase-section .showcase-img-side:hover .showcase-img-overlay { opacity: .7; }
-    .showcase-section .showcase-img-side .img-corner-badge {
-        position: absolute; top: 20px; left: 20px; z-index: 2;
-        background: rgba(255,255,255,.15); backdrop-filter: blur(8px);
-        color: #fff; font-size: .7rem; font-weight: 700;
-        letter-spacing: 1.2px; text-transform: uppercase;
-        padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,.25);
-    }
-    .showcase-section .showcase-img-side .img-view-btn {
-        position: absolute; bottom: 24px; left: 24px; z-index: 2;
-        background: rgba(255,255,255,.92); color: var(--blue);
-        font-weight: 700; font-size: .85rem;
-        padding: 8px 20px; border-radius: 8px;
-        text-decoration: none; display: flex; align-items: center; gap: 6px;
-        transform: translateY(8px); opacity: 0; transition: opacity .3s, transform .3s;
-    }
-    .showcase-section .showcase-img-side:hover .img-view-btn { opacity: 1; transform: translateY(0); }
-    .showcase-section .showcase-cta-side {
-        flex: 0 0 400px; padding: 3.5rem;
-        display: flex; flex-direction: column; justify-content: center; background: #fff;
-    }
-    .showcase-section.alt .showcase-cta-side { background: #f8faff; }
-    @media (max-width: 900px) {
-        .showcase-section { flex-direction: column !important; }
-        .showcase-section .showcase-img-side { min-height: 260px; flex: none; }
-        .showcase-section .showcase-cta-side { flex: none; padding: 2rem; }
-    }
-
     /* ══ Gallery ══ */
     .gallery-section { background: #0d1f4a; }
     .gallery-strip-wrap {
@@ -472,7 +427,7 @@
                 </div>
                 <div class="d-flex gap-4 flex-wrap">
                     <div>
-                        <div class="fw-bold text-white" style="font-size:1.6rem;">{{ all_showrooms.count }}+</div>
+                        <div class="fw-bold text-white" style="font-size:1.6rem;">{{ all_showrooms|length }}+</div>
                         <div style="color:rgba(255,255,255,.55); font-size:.78rem;">Showrooms</div>
                     </div>
                     <div class="stat-divider">
@@ -538,55 +493,6 @@
         </div>
     </div>
 </section>
-{% endif %}
-
-
-<!-- ══ ALTERNATING SHOWCASE ══ -->
-{% if featured_bikes %}
-{% for bike in featured_bikes|slice:":4" %}
-{% with img_url=bike.get_primary_image_url colors=bike.colors.all %}
-<section class="showcase-section {% if not forloop.first %}alt{% endif %} {% if forloop.counter|divisibleby:2 %}flex-row-reverse{% endif %}">
-    <a href="{% url 'bike_detail' bike.slug %}" class="showcase-img-side" style="text-decoration:none;">
-        {% if img_url %}<img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
-        {% else %}<img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">{% endif %}
-        <div class="showcase-img-overlay"></div>
-        <span class="img-corner-badge">{{ bike.category.name }}</span>
-        <span class="img-view-btn"><i class="bi bi-eye-fill"></i> View Details</span>
-    </a>
-    <div class="showcase-cta-side">
-        <span class="section-badge mb-2">
-            {% if forloop.first %}Top Pick{% elif forloop.counter == 2 %}Most Popular{% elif forloop.counter == 3 %}New Arrival{% else %}Fan Favourite{% endif %}
-        </span>
-        <h2 class="fw-bold mb-2" style="font-family:'Rajdhani',sans-serif;color:#001a4d;font-size:2rem;">{{ bike.name }}</h2>
-        <p class="fw-bold mb-1" style="color:var(--blue);font-size:1.2rem;">{{ bike.formatted_price }}</p>
-        <div class="d-flex gap-3 flex-wrap mb-3" style="font-size:.8rem;color:#6b7a99;">
-            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>{% endif %}
-            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>{% endif %}
-        </div>
-        {% if colors %}
-        <div class="d-flex gap-2 flex-wrap mb-3">
-            {% for color in colors %}{% with cimg=color.first_image_url %}{% if cimg %}
-            <a href="{% url 'bike_detail' bike.slug %}" title="{{ color.name }}"
-               style="width:48px;height:36px;border-radius:6px;overflow:hidden;border:2px solid #d0dff5;display:block;text-decoration:none;">
-                <img src="{{ cimg }}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;" alt="{{ color.name }}">
-            </a>
-            {% endif %}{% endwith %}{% endfor %}
-        </div>
-        {% endif %}
-        <div class="d-flex gap-2 flex-wrap">
-            <a href="{% url 'bike_detail' bike.slug %}" class="btn fw-semibold"
-               style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:10px 24px;">
-                <i class="bi bi-eye-fill me-2"></i>View Details
-            </a>
-            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}" class="btn fw-semibold"
-               style="background:var(--accent);color:var(--blue);border:1px solid var(--border);border-radius:8px;padding:10px 24px;">
-                <i class="bi bi-calendar-check me-2"></i>Book Ride
-            </a>
-        </div>
-    </div>
-</section>
-{% endwith %}
-{% endfor %}
 {% endif %}
 
 
@@ -732,7 +638,7 @@
                     <div class="quick-action-card p-4 bg-white h-100">
                         <i class="bi bi-geo-alt-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
                         <h6 class="fw-bold" style="color:#111;">Find Showroom</h6>
-                        <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">{{ all_showrooms.count }} outlets near you</p>
+                        <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">{{ all_showrooms|length }} outlets near you</p>
                     </div>
                 </a>
             </div>
