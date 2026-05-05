@@ -563,3 +563,16 @@ class ExchangeRequest(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.current_bike} exchange'
+    
+class Offer(models.Model):
+    title     = models.CharField(max_length=200)
+    image     = models.ImageField(upload_to='offers/')
+    link      = models.URLField(blank=True)
+    is_active = models.BooleanField(default=True)
+    order     = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title

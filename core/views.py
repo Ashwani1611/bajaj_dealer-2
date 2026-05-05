@@ -12,6 +12,7 @@ from django.conf import settings
 from django.utils.html import strip_tags
 from django.urls import reverse
 from django.core.cache import cache
+from .models import Bike, BikeCategory, BikeColor, BikeImage, Showroom, ServiceStation, YouTubeVideo, Offer
 
 from .models import (
     Bike, BikeCategory, BikeColor, BikeImage,
@@ -206,7 +207,7 @@ def home(request):
         'nav_categories': categories,          # navbar dropdown
         'categories':     categories,          # category strip
         'videos':         videos,
-        'offers':         [],
+        'offers': Offer.objects.filter(is_active=True),
         'enquiry_form':   form,
         'showroom_count': len(all_showrooms),
     })

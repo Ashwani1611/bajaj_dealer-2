@@ -46,7 +46,6 @@
         );
         z-index: 1;
     }
-    /* Bottom caption on full-screen image */
     .fullscreen-bike-caption {
         position: absolute;
         bottom: 0; left: 0; right: 0;
@@ -87,7 +86,6 @@
         border: 1px solid rgba(255,255,255,.25);
         margin-bottom: 8px;
     }
-    /* Dot indicators on fullscreen */
     .fullscreen-dots {
         position: absolute;
         bottom: 28px;
@@ -109,7 +107,6 @@
         background: #fff;
         transform: scale(1.4);
     }
-    /* Scroll hint arrow */
     .scroll-hint {
         position: absolute;
         bottom: 24px; right: 32px;
@@ -129,7 +126,6 @@
         0%, 100% { transform: translateY(0); }
         50%       { transform: translateY(6px); }
     }
-    /* Slide nav arrows on fullscreen */
     .fullscreen-nav {
         position: absolute;
         top: 50%; transform: translateY(-50%);
@@ -149,29 +145,24 @@
     .fullscreen-nav.prev { left: 20px; }
     .fullscreen-nav.next { right: 20px; }
 
-    /* ══ SECTION 2 — Hero text (Authorized dealer, stats) ══ */
+    @media (max-width: 767px) {
+        .fullscreen-bike {
+            height: 60vh;
+            min-height: 320px;
+        }
+        .fullscreen-bike img {
+            object-fit: contain;
+            object-position: center center;
+        }
+    }
+
+    /* ══ SECTION 2 — Hero text ══ */
     .hero-text-section {
         background: linear-gradient(135deg, #001a4d 0%, #003087 60%, #0055b3 100%);
         padding: 4rem 0 3.5rem;
         position: relative;
         overflow: hidden;
     }
-
-    /* @media (max-width: 767px) {
-    .fullscreen-bike img {
-        object-position: center 30%; 
-    }
-    } */
-    @media (max-width: 767px) {
-    .fullscreen-bike {
-        height: 60vh;
-        min-height: 320px;
-    }
-    .fullscreen-bike img {
-        object-fit: contain;
-        object-position: center center;
-    }
-}
     .hero-text-section::before {
         content: '';
         position: absolute;
@@ -199,105 +190,6 @@
         margin-bottom: 1.2rem;
     }
     .stat-divider { border-left: 1px solid rgba(255,255,255,.15); padding-left: 1.2rem; }
-
-    /* ══ SECTION 3 — Bike Carousel (after hero text) ══ */
-    .bike-hero-carousel {
-        position: relative;
-        width: 100%;
-        min-height: 500px;
-        background: #000d24;
-    }
-    .bike-hero-carousel .carousel-inner { min-height: 500px; }
-    .bike-hero-carousel .carousel-item  { min-height: 500px; }
-    .hero-slide {
-        width: 100%; min-height: 500px;
-        display: flex; align-items: flex-end;
-        position: relative; overflow: hidden;
-    }
-    .hero-slide img {
-        position: absolute; inset: 0;
-        width: 100%; height: 100%;
-        object-fit: cover; object-position: center 60%;
-        transition: transform 6s ease;
-    }
-    .carousel-item.active .hero-slide img { transform: scale(1.04); }
-    .hero-slide-overlay {
-        position: absolute; inset: 0;
-        background: linear-gradient(to top,
-            rgba(0,24,72,.88) 0%,
-            rgba(0,48,135,.35) 45%,
-            rgba(0,48,135,.06) 100%);
-        z-index: 1;
-    }
-    .hero-slide-caption {
-        position: relative; z-index: 2;
-        width: 100%; padding: 2rem 2.5rem 2.5rem;
-    }
-    .bike-category-tag {
-        display: inline-block;
-        background: rgba(255,255,255,.18); color: #fff;
-        font-size: .7rem; font-weight: 700; letter-spacing: 1.2px;
-        text-transform: uppercase; padding: 3px 12px;
-        border-radius: 12px; margin-bottom: .5rem;
-    }
-    .hero-slide-caption h2 {
-        color: #fff; font-family: 'Rajdhani', sans-serif;
-        font-size: clamp(1.8rem, 4vw, 3rem);
-        font-weight: 700; margin: 0 0 .3rem; line-height: 1.1;
-    }
-    .hero-slide-caption .price-tag {
-        color: #7eb3ff; font-size: 1.15rem; font-weight: 700;
-        margin-bottom: 1rem; display: block;
-    }
-    .btn-slide-detail {
-        background: #fff; color: #003087;
-        font-weight: 700; border: none; border-radius: 7px;
-        padding: 9px 22px; font-size: .88rem;
-        text-decoration: none; display: inline-flex;
-        align-items: center; gap: 6px;
-        transition: background .15s, transform .15s;
-    }
-    .btn-slide-detail:hover { background: #e8f0fb; transform: translateY(-1px); }
-    .btn-slide-ride {
-        background: transparent; color: #fff;
-        font-weight: 600; border: 1.5px solid rgba(255,255,255,.5);
-        border-radius: 7px; padding: 9px 20px; font-size: .88rem;
-        text-decoration: none; display: inline-flex;
-        align-items: center; gap: 6px;
-        transition: background .15s;
-    }
-    .btn-slide-ride:hover { background: rgba(255,255,255,.12); color: #fff; }
-    .bike-hero-carousel .carousel-control-prev,
-    .bike-hero-carousel .carousel-control-next {
-        width: 48px; height: 48px;
-        background: rgba(255,255,255,.18); border-radius: 50%;
-        top: 50%; transform: translateY(-50%);
-        margin: 0 12px; opacity: 1; transition: background .15s;
-    }
-    .bike-hero-carousel .carousel-control-prev:hover,
-    .bike-hero-carousel .carousel-control-next:hover { background: rgba(255,255,255,.32); }
-    .bike-hero-carousel .carousel-indicators { bottom: 14px; margin-bottom: 0; }
-    .bike-hero-carousel .carousel-indicators [data-bs-slide-to] {
-        width: 8px; height: 8px; border-radius: 50%;
-        background: rgba(255,255,255,.4); border: none; opacity: 1;
-    }
-    .bike-hero-carousel .carousel-indicators .active {
-        background: #fff; transform: scale(1.3);
-    }
-    /* Thumbnail strip */
-    .hero-thumb-strip {
-        position: absolute; right: 16px; top: 50%;
-        transform: translateY(-50%);
-        display: flex; flex-direction: column; gap: 8px; z-index: 10;
-    }
-    .hero-thumb {
-        width: 64px; height: 48px; border-radius: 8px; overflow: hidden;
-        border: 2px solid rgba(255,255,255,.25);
-        cursor: pointer; transition: border-color .15s, transform .15s;
-    }
-    .hero-thumb img { width: 100%; height: 100%; object-fit: cover; }
-    .hero-thumb.active { border-color: #fff; transform: scale(1.1); }
-    @media (max-width: 767px) { .hero-thumb-strip { display: none; } }
 
     /* ══ Category Strip ══ */
     .cat-strip { background: var(--blue); padding: 14px 0; }
@@ -464,13 +356,20 @@
 
     /* ══ Offers ══ */
     .offers-section { background: #fff9f0; border-top: 3px solid var(--gold); border-bottom: 3px solid var(--gold); }
-    .offer-slide-img { width: 100%; aspect-ratio: 16/5; object-fit: cover; border-radius: 12px; cursor: pointer; transition: transform .3s; }
+    .offer-slide-img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform .3s;
+    }
     .offer-slide-img:hover { transform: scale(1.01); }
 </style>
 
 
 <!-- ══════════════════════════════════════════════════════════════
-     SECTION 1 — FULL SCREEN BIKE IMAGE (first thing visitor sees)
+     SECTION 1 — FULL SCREEN BIKE IMAGE
 ══════════════════════════════════════════════════════════════ -->
 {% if featured_bikes %}
 <div class="fullscreen-bike" id="fullscreenSlider">
@@ -594,86 +493,6 @@
         </div>
     </div>
 </section>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     SECTION 3 — BIKE CAROUSEL (below hero text)
-══════════════════════════════════════════════════════════════ -->
-{% if featured_bikes %}
-<div id="bikeHeroCarousel"
-     class="carousel slide bike-hero-carousel"
-     data-bs-ride="carousel"
-     data-bs-interval="4000">
-
-    <div class="carousel-indicators">
-        {% for bike in featured_bikes %}
-        <button type="button"
-                data-bs-target="#bikeHeroCarousel"
-                data-bs-slide-to="{{ forloop.counter0 }}"
-                {% if forloop.first %}class="active" aria-current="true"{% endif %}>
-        </button>
-        {% endfor %}
-    </div>
-
-    <div class="carousel-inner">
-        {% for bike in featured_bikes %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-            <a href="{% url 'bike_detail' bike.slug %}" class="hero-slide" style="text-decoration:none;">
-                {% with img_url=bike.get_primary_image_url %}
-                {% if img_url %}
-                    <img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
-                {% else %}
-                    <img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">
-                {% endif %}
-                {% endwith %}
-                <div class="hero-slide-overlay"></div>
-                <div class="hero-slide-caption">
-                    <span class="bike-category-tag">{{ bike.category.name }}</span>
-                    <h2>{{ bike.name }}</h2>
-                    <span class="price-tag">{{ bike.formatted_price }}</span>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <span class="btn-slide-detail">
-                            <i class="bi bi-eye-fill"></i> View Details
-                        </span>
-                        <a href="{% url 'enquiry' %}?bike={{ bike.pk }}"
-                           class="btn-slide-ride"
-                           onclick="event.stopPropagation();event.preventDefault();window.location='{% url 'enquiry' %}?bike={{ bike.pk }}';">
-                            <i class="bi bi-calendar-check"></i> Book Ride
-                        </a>
-                    </div>
-                </div>
-            </a>
-        </div>
-        {% endfor %}
-    </div>
-
-    <button class="carousel-control-prev" type="button"
-            data-bs-target="#bikeHeroCarousel" data-bs-slide="prev"
-            onclick="event.stopPropagation();">
-        <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button"
-            data-bs-target="#bikeHeroCarousel" data-bs-slide="next"
-            onclick="event.stopPropagation();">
-        <span class="carousel-control-next-icon"></span>
-    </button>
-
-    <div class="hero-thumb-strip" id="heroThumbStrip">
-        {% for bike in featured_bikes %}
-        <div class="hero-thumb {% if forloop.first %}active{% endif %}"
-             data-slide-to="{{ forloop.counter0 }}">
-            {% with thumb=bike.get_primary_image_url %}
-            {% if thumb %}
-                <img src="{{ thumb }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
-            {% else %}
-                <img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">
-            {% endif %}
-            {% endwith %}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
 
 
 <!-- CATEGORY STRIP -->
@@ -1019,51 +838,30 @@
 
     function fullscreenGoTo(idx) {
         if (!fsSlides.length) return;
-        // hide current
-        fsSlides[fsCurrent].style.opacity  = '0';
-        fsSlides[fsCurrent].style.zIndex   = '0';
+        fsSlides[fsCurrent].style.opacity   = '0';
+        fsSlides[fsCurrent].style.zIndex    = '0';
         fsCaptions[fsCurrent].style.display = 'none';
         fsDots[fsCurrent].classList.remove('active');
-        // show next
         fsCurrent = (idx + fsSlides.length) % fsSlides.length;
-        fsSlides[fsCurrent].style.opacity  = '1';
-        fsSlides[fsCurrent].style.zIndex   = '1';
+        fsSlides[fsCurrent].style.opacity   = '1';
+        fsSlides[fsCurrent].style.zIndex    = '1';
         fsCaptions[fsCurrent].style.display = 'block';
         fsDots[fsCurrent].classList.add('active');
-        // update buttons
         var db = document.getElementById('fullscreenDetailBtn');
         var rb = document.getElementById('fullscreenRideBtn');
         if (db && fsBikes[fsCurrent]) db.href = fsBikes[fsCurrent].detailUrl;
         if (rb && fsBikes[fsCurrent]) rb.href = fsBikes[fsCurrent].rideUrl;
-        // restart timer
         clearInterval(fsTimer);
         fsTimer = setInterval(function () { fullscreenGoTo(fsCurrent + 1); }, 5000);
     }
 
     function fullscreenSlide(dir) { fullscreenGoTo(fsCurrent + dir); }
 
-    // expose to inline onclick
     window.fullscreenGoTo  = fullscreenGoTo;
     window.fullscreenSlide = fullscreenSlide;
 
-    // auto-play
     if (fsSlides.length > 1) {
         fsTimer = setInterval(function () { fullscreenGoTo(fsCurrent + 1); }, 5000);
-    }
-
-    /* ══ HERO CAROUSEL THUMBNAILS ══ */
-    var carousel = document.getElementById('bikeHeroCarousel');
-    if (carousel) {
-        var thumbs = document.querySelectorAll('.hero-thumb');
-        thumbs.forEach(function (thumb) {
-            thumb.addEventListener('click', function () {
-                bootstrap.Carousel.getOrCreateInstance(carousel)
-                    .to(parseInt(thumb.getAttribute('data-slide-to'), 10));
-            });
-        });
-        carousel.addEventListener('slide.bs.carousel', function (e) {
-            thumbs.forEach(function (t, i) { t.classList.toggle('active', i === e.to); });
-        });
     }
 
     /* ══ GALLERY STRIP DRAG SCROLL ══ */

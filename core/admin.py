@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.html import format_html
 from django.http import HttpResponse
 import csv
+from .models import Offer
 
 from .models import (
     BikeCategory, Bike, BikeColor, BikeImage,
@@ -570,3 +571,10 @@ class ExchangeRequestAdmin(admin.ModelAdmin):
 # ── Custom admin site template ────────────────────────────────────────────────
 
 admin.site.index_template = 'admin/custom_index.html'
+
+
+
+@admin.register(Offer)
+class OfferAdmin(admin.ModelAdmin):
+    list_display = ['title', 'is_active', 'order']
+    list_editable = ['is_active', 'order']
