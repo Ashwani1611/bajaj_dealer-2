@@ -33,8 +33,30 @@ def _send_notification(subject, message, to_emails):
         pass
 
 
+def _delete_bike_list_cache():
+    """
+    Delete all bike_list_* cache keys.
+    LocMemCache doesn't support delete_pattern(), so we delete known keys manually.
+    On Redis (production) we use delete_pattern() for safety.
+    """
+    try:
+        # Redis (production) — delete_pattern is available
+        cache.delete_pattern('bike_list_*')
+    except AttributeError:
+        # LocMemCache (local dev) — delete known keys manually
+        from django.core.cache import caches
+        from core.models import BikeCategory
+        cache.delete('bike_list_all')
+        try:
+            slugs = BikeCategory.objects.values_list('slug', flat=True)
+            for slug in slugs:
+                cache.delete(f'bike_list_{slug}')
+        except Exception:
+            pass
+
+
 # ══════════════════════════════════════════════════════════════════════════════
-# EMAIL NOTIFICATIONS  (existing — unchanged)
+# EMAIL NOTIFICATIONS
 # ══════════════════════════════════════════════════════════════════════════════
 
 # ── Enquiry ───────────────────────────────────────────────────────────────────
@@ -134,7 +156,7 @@ def notify_new_exchange(sender, instance, created, **kwargs):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# CACHE INVALIDATION  (new)
+# CACHE INVALIDATION
 # ══════════════════════════════════════════════════════════════════════════════
 
 @receiver(post_save, sender=Bike)
@@ -142,9 +164,10 @@ def notify_new_exchange(sender, instance, created, **kwargs):
 def clear_bike_cache(sender, instance, **kwargs):
     cache.delete('featured_bikes')
     cache.delete('home_all_bikes')
+    cache.delete('chetak_bikes')
     cache.delete(f'bike_{instance.slug}')
     cache.delete(f'related_bikes_{instance.slug}')
-    cache.delete_pattern('bike_list_*')
+    _delete_bike_list_cache()
 
 
 @receiver(post_save, sender=Showroom)
@@ -158,7 +181,7 @@ def clear_showroom_cache(sender, **kwargs):
 @receiver(post_delete, sender=BikeCategory)
 def clear_category_cache(sender, **kwargs):
     cache.delete('all_categories')
-    cache.delete_pattern('bike_list_*')
+    _delete_bike_list_cache()
 
 
 @receiver(post_save, sender=YouTubeVideo)

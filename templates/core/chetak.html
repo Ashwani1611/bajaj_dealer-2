@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% block title %}Bajaj Chetak Electric Scooter{% endblock %}
+
+{% block content %}
+
+<style>
+    /* ── reuse exact same styles from bike_list.html ── */
+    .bike-carousel-list {
+        height: 220px;
+        overflow: hidden;
+        background: #f5f7fc;
+    }
+    .bike-carousel-list .carousel-inner,
+    .bike-carousel-list .carousel-item { height: 100%; }
+    .bike-carousel-list img,
+    .bike-carousel-list video          { width:100%; height:100%; object-fit:cover; }
+    .bike-carousel-list iframe         { width:100%; height:100%; border:0; }
+
+    .carousel-indicators [data-bs-slide-to] {
+        width:6px; height:6px; border-radius:50%;
+        background:#003087; opacity:.35;
+    }
+    .carousel-indicators .active { opacity:1; }
+
+    .bike-carousel-list .carousel-control-prev-icon,
+    .bike-carousel-list .carousel-control-next-icon {
+        background-color: #003087;
+        border-radius: 50%;
+        padding: 12px;
+        background-size: 55%;
+    }
+
+    .list-swatch-btn {
+        width: 28px; height: 28px;
+        border: none; padding: 0;
+        border-radius: 50%; overflow: hidden;
+        cursor: pointer; flex-shrink: 0;
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+        transition: outline-color .15s;
+    }
+    .list-swatch-btn img         { width:100%; height:100%; object-fit:cover; }
+    .list-swatch-btn.swatch-active { outline-color: #003087; }
+    .swatch-fill { display:block; width:100%; height:100%; }
+
+    .bike-card {
+        border: 1px solid #d0dff5 !important;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: box-shadow .2s, transform .2s;
+    }
+    .bike-card:hover {
+        box-shadow: 0 6px 24px rgba(0,48,135,.13);
+        transform: translateY(-2px);
+    }
+
+    .list-color-gallery.hidden { display: none; }
+
+    /* ── Chetak-specific ── */
+    .chetak-hero {
+        background: linear-gradient(135deg, #001a40 0%, #003087 55%, #00517a 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    .chetak-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 75% 50%, rgba(0,195,255,.15) 0%, transparent 55%),
+            radial-gradient(circle at 15% 80%, rgba(0,48,135,.5) 0%, transparent 50%);
+    }
+    .chetak-electric-badge {
+        background: #00c3ff;
+        color: #001a40;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        padding: 4px 10px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+</style>
+
+<!-- ── HERO ─────────────────────────────────────────────── -->
+<section class="chetak-hero py-5">
+    <div class="container py-3 position-relative" style="z-index:1;">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <span class="chetak-electric-badge mb-3">
+                    <i class="bi bi-lightning-charge-fill"></i> ELECTRIC SCOOTER
+                </span>
+                <h1 class="display-4 fw-bold text-white mt-2 mb-3">
+                    Bajaj <span style="color:#00c3ff;">Chetak</span>
+                </h1>
+                <p class="text-white-50 mb-4" style="font-size:1rem; max-width:480px;">
+                    Zero fuel. Zero fuss. India's most trusted electric scooter — available at our showroom.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'enquiry' %}" class="btn btn-warning fw-bold px-4">
+                        <i class="bi bi-calendar-check me-2"></i>Book Test Ride
+                    </a>
+                    <a href="#chetak-models" class="btn btn-outline-light px-4">View Models</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── HIGHLIGHTS STRIP ──────────────────────────────────── -->
+<section class="bg-dark text-white py-3 border-bottom border-secondary">
+    <div class="container">
+        <div class="row g-2 text-center">
+            <div class="col-6 col-md-3">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-lightning-charge-fill text-warning fs-5"></i>
+                    <div class="text-start">
+                        <div class="fw-semibold" style="font-size:.88rem;">Electric</div>
+                        <div class="text-white-50" style="font-size:.73rem;">Zero Fuel Cost</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-speedometer2 text-info fs-5"></i>
+                    <div class="text-start">
+                        <div class="fw-semibold" style="font-size:.88rem;">108+ km</div>
+                        <div class="text-white-50" style="font-size:.73rem;">Range Per Charge</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-shield-check text-success fs-5"></i>
+                    <div class="text-start">
+                        <div class="fw-semibold" style="font-size:.88rem;">IP67 Rated</div>
+                        <div class="text-white-50" style="font-size:.73rem;">Water Resistant</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-phone text-primary fs-5"></i>
+                    <div class="text-start">
+                        <div class="fw-semibold" style="font-size:.88rem;">Connected</div>
+                        <div class="text-white-50" style="font-size:.73rem;">Smart App Control</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── MODELS GRID ───────────────────────────────────────── -->
+<section id="chetak-models" class="py-5" style="background:#f8faff; min-height:60vh;">
+<div class="container">
+
+    <h2 class="fw-bold mb-1" style="color:#003087;">Chetak Models</h2>
+    <p class="text-muted mb-4" style="font-size:.92rem;">Choose your Bajaj Chetak electric scooter</p>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for bike in bikes %}
+        <div class="col">
+            <div class="card h-100 border-0 bike-card">
+
+                <div class="position-relative">
+                    <span class="position-absolute top-0 end-0 m-2 chetak-electric-badge"
+                          style="z-index:2; font-size:.65rem;">
+                        <i class="bi bi-lightning-charge-fill"></i> ELECTRIC
+                    </span>
+                </div>
+
+                <!-- Media (exact same as bike_list.html) -->
+                {% with colors=bike.colors.all %}
+                {% if colors %}
+                    {% for color in colors %}
+                    <div id="list-gallery-{{ bike.pk }}-{{ color.pk }}"
+                         class="list-color-gallery {% if not forloop.first %}hidden{% endif %}">
+                        {% with imgs=color.images.all %}
+                        {% if imgs %}
+                        <div id="list-carousel-{{ bike.pk }}-{{ color.pk }}"
+                             class="carousel slide bike-carousel-list"
+                             data-bs-ride="false">
+                            {% if imgs|length > 1 %}
+                            <div class="carousel-indicators">
+                                {% for item in imgs %}
+                                <button type="button"
+                                        data-bs-target="#list-carousel-{{ bike.pk }}-{{ color.pk }}"
+                                        data-bs-slide-to="{{ forloop.counter0 }}"
+                                        {% if forloop.first %}class="active" aria-current="true"{% endif %}>
+                                </button>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="carousel-inner">
+                                {% for item in imgs %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    {% if item.is_image %}
+                                        {% if item.image_file %}
+                                            <img src="{{ item.image_file.url }}" alt="{{ bike.name }} {{ color.name }}">
+                                        {% elif item.media_link %}
+                                            <img src="{{ item.get_display_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }} {{ color.name }}">
+                                        {% endif %}
+                                    {% elif item.is_youtube %}
+                                        <iframe src="{{ item.get_display_url }}" title="{{ bike.name }}" allowfullscreen loading="lazy"></iframe>
+                                    {% elif item.is_video %}
+                                        <video controls preload="metadata"><source src="{{ item.get_display_url }}"></video>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if imgs|length > 1 %}
+                            <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#list-carousel-{{ bike.pk }}-{{ color.pk }}"
+                                    data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                    data-bs-target="#list-carousel-{{ bike.pk }}-{{ color.pk }}"
+                                    data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="bike-carousel-list d-flex align-items-center justify-content-center bg-light">
+                            <i class="bi bi-bicycle text-secondary" style="font-size:3.5rem; opacity:.25;"></i>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% endfor %}
+
+                {% elif bike.image %}
+                    <img src="{{ bike.image.url }}"
+                         class="bike-carousel-list"
+                         style="object-fit:cover; width:100%;"
+                         alt="{{ bike.name }}">
+                {% else %}
+                    <div class="bike-carousel-list d-flex align-items-center justify-content-center bg-light">
+                        <i class="bi bi-bicycle text-secondary" style="font-size:3.5rem; opacity:.25;"></i>
+                    </div>
+                {% endif %}
+                {% endwith %}
+
+                <!-- Card body -->
+                <div class="card-body pt-2 pb-1">
+                    {% with colors=bike.colors.all %}
+                    {% if colors %}
+                    <div class="d-flex gap-1 flex-wrap align-items-center mb-2">
+                        {% for color in colors %}
+                        <button type="button"
+                                class="list-swatch-btn {% if forloop.first %}swatch-active{% endif %}"
+                                data-bike-id="{{ bike.pk }}"
+                                data-color-id="{{ color.pk }}"
+                                data-color-name="{{ color.name }}"
+                                data-hex="{{ color.color_hex }}"
+                                title="{{ color.name }}">
+                            {% with thumb=color.first_image_url %}
+                            {% if thumb %}
+                                <img src="{{ thumb }}" referrerpolicy="no-referrer" alt="{{ color.name }}">
+                            {% else %}
+                                <span class="swatch-fill" data-apply-hex="1"></span>
+                            {% endif %}
+                            {% endwith %}
+                        </button>
+                        {% endfor %}
+                        <span class="small ms-1" id="color-label-{{ bike.pk }}"
+                              style="color:#5a6a8a; font-size:.75rem;">
+                            {{ colors.first.name }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <span class="badge px-2 py-1 mb-1"
+                          style="background:#e0f7ff; color:#00517a; font-size:.72rem;">
+                        {{ bike.category.name }}
+                    </span>
+                    <h5 class="fw-bold mb-1" style="color:#111;">{{ bike.name }}</h5>
+                    <p class="fw-bold mb-2" style="color:#003087;">{{ bike.formatted_price }}</p>
+
+                    <div class="d-flex gap-3 flex-wrap" style="font-size:.8rem; color:#6b7a99;">
+                        {% if bike.engine_cc %}
+                        <span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>
+                        {% endif %}
+                        {% if bike.mileage %}
+                        <span><i class="bi bi-battery-charging me-1"></i>{{ bike.mileage }}</span>
+                        {% endif %}
+                        {% if bike.fuel_type %}
+                        <span><i class="bi bi-lightning me-1"></i>{{ bike.fuel_type }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Card footer -->
+                <div class="card-footer bg-white border-0 pb-3 pt-2">
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'bike_detail' bike.slug %}"
+                           class="btn btn-sm flex-fill fw-semibold"
+                           style="background:#003087; color:#fff; border:none;">
+                            Details
+                        </a>
+                        <a href="{% url 'enquiry' %}?bike={{ bike.pk }}"
+                           class="btn btn-sm flex-fill fw-semibold"
+                           style="background:#e8f0fb; color:#003087; border:1px solid #d0dff5;">
+                            Book Ride
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {% empty %}
+        <div class="col-12 text-center py-5" style="color:#8a9abb;">
+            <i class="bi bi-bicycle d-block mb-3" style="font-size:3rem;"></i>
+            <p class="mb-1 fw-semibold">Chetak models coming soon!</p>
+            <p class="mb-3" style="font-size:.88rem;">
+                Go to <strong>Admin → Bikes → Add Bike</strong> and tick
+                <strong>✅ Is Chetak</strong> to display here.
+            </p>
+            <a href="{% url 'enquiry' %}" class="btn btn-primary">Register Your Interest</a>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+</section>
+
+<!-- ── CTA ──────────────────────────────────────────────── -->
+<section class="py-5 text-white text-center" style="background:#003087;">
+    <div class="container">
+        <h2 class="fw-bold mb-2">Ready to Go Electric?</h2>
+        <p class="text-white-50 mb-4">Book a free Chetak test ride at your nearest showroom.</p>
+        <div class="d-flex justify-content-center flex-wrap gap-3">
+            <a href="{% url 'enquiry' %}" class="btn btn-warning btn-lg fw-bold px-5">
+                <i class="bi bi-calendar-check me-2"></i>Book Test Ride
+            </a>
+            <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg px-5">
+                <i class="bi bi-geo-alt me-2"></i>Find Showroom
+            </a>
+        </div>
+        {% if showrooms %}
+        <div class="mt-4 d-flex justify-content-center flex-wrap gap-4">
+            {% for showroom in showrooms %}
+            <div class="text-white-50 small">
+                <i class="bi bi-telephone me-1"></i>
+                <strong class="text-white">{{ showroom.name }}:</strong>
+                <a href="tel:{{ showroom.phone }}" class="text-white-50 text-decoration-none ms-1">
+                    {{ showroom.phone }}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    document.querySelectorAll('.list-swatch-btn').forEach(function (btn) {
+        var hex  = btn.getAttribute('data-hex');
+        var span = btn.querySelector('[data-apply-hex]');
+        if (span && hex) { span.style.background = hex; }
+    });
+
+    document.querySelectorAll('.list-swatch-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var bikeId  = btn.getAttribute('data-bike-id');
+            var colorId = btn.getAttribute('data-color-id');
+            var name    = btn.getAttribute('data-color-name');
+
+            document.querySelectorAll('[id^="list-gallery-' + bikeId + '-"]')
+                    .forEach(function (el) { el.classList.add('hidden'); });
+
+            var target = document.getElementById('list-gallery-' + bikeId + '-' + colorId);
+            if (target) { target.classList.remove('hidden'); }
+
+            btn.closest('.card').querySelectorAll('.list-swatch-btn')
+               .forEach(function (b) { b.classList.remove('swatch-active'); });
+            btn.classList.add('swatch-active');
+
+            var label = document.getElementById('color-label-' + bikeId);
+            if (label) { label.textContent = name; }
+        });
+    });
+}());
+</script>
+{% endblock %}

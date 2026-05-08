@@ -160,24 +160,24 @@ def home(request):
     else:
         form = EnquiryForm()
 
-    # ── featured bikes ────────────────────────────────────────────
+    # ── featured bikes (exclude Chetak) ──────────────────────────
     featured_bikes = cache.get('featured_bikes')
     if not featured_bikes:
         featured_bikes = list(
             Bike.objects
-            .filter(is_featured=True, is_active=True)
+            .filter(is_featured=True, is_active=True, is_chetak=False)   # ← CHANGED
             .select_related('category')
             .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
             .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
         )
         cache.set('featured_bikes', featured_bikes, timeout=60 * 15)
 
-    # ── all bikes (home strip, capped at 24) ──────────────────────
+    # ── all bikes home strip, exclude Chetak ──────────────────────
     home_bikes = cache.get('home_all_bikes')
     if not home_bikes:
         home_bikes = list(
             Bike.objects
-            .filter(is_active=True)
+            .filter(is_active=True, is_chetak=False)                      # ← CHANGED
             .select_related('category')
             .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
             .only('id', 'name', 'slug', 'price', 'category')
@@ -203,9 +203,9 @@ def home(request):
         'featured_bikes': featured_bikes,
         'all_bikes':      home_bikes,
         'all_showrooms':  all_showrooms,
-        'showrooms':      all_showrooms,       # showroom badge strip
-        'nav_categories': categories,          # navbar dropdown
-        'categories':     categories,          # category strip
+        'showrooms':      all_showrooms,
+        'nav_categories': categories,
+        'categories':     categories,
         'videos':         videos,
         'offers': Offer.objects.filter(is_active=True),
         'enquiry_form':   form,
@@ -220,14 +220,12 @@ def bike_list(request):
 
     categories = _get_all_categories()
 
-    # Different cache key per category filter so /bikes/?category=sports
-    # doesn't serve the same data as /bikes/
     cache_key = f'bike_list_{selected_category or "all"}'
     bikes = cache.get(cache_key)
     if not bikes:
         bikes_qs = (
             Bike.objects
-            .filter(is_active=True)
+            .filter(is_active=True, is_chetak=False)                      # ← CHANGED
             .select_related('category')
             .prefetch_related(
                 _color_prefetch(images_qs=_media_images_qs())
@@ -273,7 +271,7 @@ def bike_detail(request, slug):
     if not related_bikes:
         related_bikes = list(
             Bike.objects
-            .filter(category=bike.category, is_active=True)
+            .filter(category=bike.category, is_active=True, is_chetak=False)  # ← CHANGED
             .exclude(pk=bike.pk)
             .select_related('category')
             .prefetch_related(
@@ -437,7 +435,6 @@ def book_service(request):
     else:
         form = ServiceBookingForm()
 
-    # ── cached for GET requests ───────────────────────────────────
     service_stations = cache.get('service_stations')
     if not service_stations:
         service_stations = list(ServiceStation.objects.filter(is_active=True))
@@ -557,4 +554,32 @@ def contact(request):
     return render(request, 'core/contact.html', {
         'showrooms':        showrooms,
         'service_stations': service_stations,
+    })
+
+
+# ── chetak ────────────────────────────────────────────────────────────────────
+
+def chetak(request):
+    """Dedicated page for Bajaj Chetak electric scooters."""
+    cache_key = 'chetak_bikes'
+    bikes = cache.get(cache_key)
+    if not bikes:
+        bikes = list(
+            Bike.objects
+            .filter(is_active=True, is_chetak=True)                       # ← only Chetak bikes
+            .select_related('category')
+            .prefetch_related(
+                _color_prefetch(images_qs=_media_images_qs())
+            )
+            .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage',
+                  'power', 'torque', 'fuel_type', 'description', 'category')
+        )
+        cache.set(cache_key, bikes, timeout=60 * 15)
+
+    showrooms = _get_all_showrooms()
+
+    return render(request, 'core/chetak.html', {
+        'bikes':        bikes,
+        'showrooms':    showrooms,
+        'enquiry_form': EnquiryForm(),
     })

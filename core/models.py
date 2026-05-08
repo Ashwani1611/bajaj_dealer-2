@@ -61,6 +61,10 @@ class Bike(models.Model):
 
     is_featured = models.BooleanField(default=False)
     is_active   = models.BooleanField(default=True)
+    is_chetak   = models.BooleanField(
+        default=False,
+        help_text='Check for Chetak electric scooters — shown on Chetak page only, hidden from main bikes list'
+    )
     created_at  = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -73,16 +77,12 @@ class Bike(models.Model):
         if self.price:
             return f'₹{self.price:,.0f}'
         return 'On Request'
-    formatted_price.short_description = 'Price' 
-
-
+    formatted_price.short_description = 'Price'
 
     def get_primary_image_url(self):
         # 1. Try to get the first available color image
-        # Note: .all() uses the prefetch_related if you called it in your view
         for color in self.colors.all():
             if color.is_available:
-                # Ensure we are calling this correctly based on your Color model
                 try:
                     url = color.first_image_url() if callable(color.first_image_url) else color.first_image_url
                     if url:
@@ -93,15 +93,17 @@ class Bike(models.Model):
         # 2. Fallback to the main Bike image
         if self.image:
             try:
-                return self.image.url
+                url = self.image.url
+                # Optimize if served from Cloudinary
+                if 'res.cloudinary.com' in url:
+                    url = url.replace('/upload/', '/upload/q_auto:best,f_auto/')
+                return url
             except AttributeError:
                 return ''
 
-        # 3. Final Fallback: Return a default placeholder so the UI doesn't break
-        # Make sure this file exists in your static/images folder
+        # 3. Final Fallback: Return a default placeholder
         from django.templatetags.static import static
         return static('images/bike-placeholder.jpg')
-
 
 
 # ── BikeColor ─────────────────────────────────────────────────────────────────
@@ -158,7 +160,6 @@ class BikeImage(models.Model):
         ('youtube',      '▶  YouTube Link'),
     ]
 
-    # Both FKs allow null; bike is auto-filled from color in save() if missing
     bike  = models.ForeignKey(
         Bike, on_delete=models.CASCADE,
         related_name='all_media', null=True, blank=True,
@@ -197,8 +198,6 @@ class BikeImage(models.Model):
         owner = self.color if self.color else self.bike
         return f'{owner} — {self.get_media_type_display()} (#{self.order})'
 
-    # ── type helpers ──────────────────────────────────────────────────────────
-
     def is_image(self):
         return self.media_type in ('image_upload', 'image_url', 'gif_upload')
 
@@ -211,16 +210,7 @@ class BikeImage(models.Model):
     def is_drive_link(self):
         return bool(self.media_link and 'drive.google.com' in self.media_link)
 
-    # ── URL helpers ───────────────────────────────────────────────────────────
-
     def get_drive_direct_url(self, url):
-        """
-        Converts Google Drive share links to direct stream/view URLs.
-        Supports:
-          https://drive.google.com/file/d/<ID>/view
-          https://drive.google.com/open?id=<ID>
-          https://drive.google.com/uc?id=<ID>
-        """
         try:
             if 'id=' in url:
                 drive_id = url.split('id=')[-1].split('&')[0]
@@ -232,76 +222,63 @@ class BikeImage(models.Model):
             return url
 
     def get_youtube_embed_url(self):
-        """Returns the YouTube embed URL using the stored video ID."""
         return f'https://www.youtube.com/embed/{self.media_link}'
 
     def get_youtube_thumbnail_url(self):
-        """Returns the HQ thumbnail URL for the YouTube video."""
         return f'https://img.youtube.com/vi/{self.media_link}/hqdefault.jpg'
 
-    def get_display_url(self):
+    # ── NEW: Cloudinary optimizer ─────────────────────────────────────────────
+    def _optimize_cloudinary_url(self, url):
         """
-        Returns the correct URL for display/embedding depending on media_type:
-          - image_upload / gif_upload  → uploaded file URL
-          - video_upload               → uploaded video URL
-          - image_url / video_url      → raw URL, or Drive direct link if Drive
-          - youtube                    → YouTube embed URL
+        Serve best-quality images from Cloudinary.
+        - q_auto:best  → highest quality, still removes invisible metadata
+        - f_auto       → serves WebP/AVIF to modern browsers (smaller, crisp)
+        No width cap — full resolution is preserved.
         """
-        if self.media_type in ('image_upload', 'gif_upload'):
-            return self.image_file.url if self.image_file else ''
+        if not url or 'res.cloudinary.com' not in url:
+            return url
+        # Avoid double-inserting transforms if already present
+        if '/upload/q_auto' in url or '/upload/f_auto' in url:
+            return url
+        return url.replace('/upload/', '/upload/q_auto:best,f_auto/')
+    # ─────────────────────────────────────────────────────────────────────────
 
+    def get_display_url(self):
+        if self.media_type in ('image_upload', 'gif_upload'):
+            url = self.image_file.url if self.image_file else ''
+            return self._optimize_cloudinary_url(url)          # ← optimized
         elif self.media_type == 'video_upload':
             return self.video_file.url if self.video_file else ''
-
         elif self.media_type in ('image_url', 'video_url'):
             url = self.media_link or ''
             if 'drive.google.com' in url:
                 return self.get_drive_direct_url(url)
-            return url
-
+            return self._optimize_cloudinary_url(url)          # ← optimized
         elif self.media_type == 'youtube':
             return self.get_youtube_embed_url()
-
         return ''
 
-    # ── save logic ────────────────────────────────────────────────────────────
-
     def save(self, *args, **kwargs):
-        # 1. AUTO-FILL BIKE: derive bike from color if bike not explicitly set
         if self.color_id and not self.bike_id:
             self.bike = self.color.bike
-
-        # 2. VALIDATE: at least one of bike or color must be set
-        # if not self.bike_id and not self.color_id:
-        #     raise ValidationError('BikeImage must be linked to a Bike or a BikeColor.')
         if not self.bike_id and not self.color_id:
             raise ValueError('BikeImage must be linked to a Bike or a BikeColor.')
-
-        # 3. AUTO-SET MEDIA TYPE from uploaded file extension
         if self.image_file and self.media_type == 'image_upload':
             ext = os.path.splitext(self.image_file.name)[1].lower()
             self.media_type = 'gif_upload' if ext == '.gif' else 'image_upload'
-
         if self.video_file and self.media_type == 'image_upload':
             self.media_type = 'video_upload'
-
-        # 4. YOUTUBE: extract and store only the video ID from any YouTube URL
         if self.media_type == 'youtube' and self.media_link:
-            # Handles: youtu.be/<ID>, ?v=<ID>, /embed/<ID>, /shorts/<ID>
             pattern = r'(?:v=|\/embed\/|\/v\/|\/shorts\/|youtu\.be\/)([a-zA-Z0-9_-]{11})'
             match = re.search(pattern, self.media_link)
             if match:
                 self.media_link = match.group(1)
-
         super().save(*args, **kwargs)
 
-    #         )
     def clean(self):
-    # Skip validation for empty extra inline forms
         has_data = self.image_file or self.video_file or self.media_link
         if not has_data:
             return
-
         if self.media_type in ('image_url', 'video_url') and not self.media_link:
             raise ValidationError({'media_link': 'Please provide a URL for this media type.'})
         if self.media_type == 'youtube' and not self.media_link:
@@ -463,14 +440,12 @@ class ServiceBooking(models.Model):
     bike_model          = models.CharField(max_length=200)
     registration_number = models.CharField(max_length=20, blank=True)
 
-    # Only showrooms that have a service center are shown here
     showroom = models.ForeignKey(
         Showroom, on_delete=models.SET_NULL, null=True, blank=True,
         limit_choices_to={'has_service_center': True},
         related_name='service_bookings',
         help_text='Select a showroom that provides service (leave blank if using a service station)'
     )
-    # Optional standalone service station
     service_station = models.ForeignKey(
         ServiceStation, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='service_bookings',
@@ -493,7 +468,6 @@ class ServiceBooking(models.Model):
         return f'{self.name} - {self.bike_model} - {self.preferred_date}'
 
     def clean(self):
-        """Ensure at least one service location is selected."""
         if not self.showroom and not self.service_station:
             raise ValidationError(
                 'Please select either a showroom with service center or a service station.'
@@ -504,7 +478,6 @@ class ServiceBooking(models.Model):
             )
 
     def get_location(self):
-        """Returns whichever location is assigned to this booking."""
         return self.service_station or self.showroom
 
     def get_location_name(self):
@@ -563,7 +536,8 @@ class ExchangeRequest(models.Model):
 
     def __str__(self):
         return f'{self.name} - {self.current_bike} exchange'
-    
+
+
 class Offer(models.Model):
     title     = models.CharField(max_length=200)
     image     = models.ImageField(upload_to='offers/')

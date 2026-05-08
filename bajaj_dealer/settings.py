@@ -142,16 +142,30 @@ else:
 # --- CACHE (Redis) ---
 REDIS_URL = config('REDIS_URL', default='redis://127.0.0.1:6379/1')
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_URL,
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        },
-        "TIMEOUT": 60 * 15,
+
+if DEBUG:
+    # Local dev: use fast in-memory cache (no network calls)
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "skyline-bajaj-cache",
+        }
     }
-}
+else:
+    # Production on Railway: use Redis
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_URL,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "SOCKET_CONNECT_TIMEOUT": 5,
+                "SOCKET_TIMEOUT": 5,
+                "IGNORE_EXCEPTIONS": True,  # ← if Redis fails, don't crash
+            },
+            "TIMEOUT": 60 * 15,
+        }
+    }
 
 # --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [

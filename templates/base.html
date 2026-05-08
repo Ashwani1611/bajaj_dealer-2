@@ -52,6 +52,19 @@
             background: var(--bajaj-accent);
         }
 
+        /* ── Chetak nav link special style ── */
+        .chetak-nav-link {
+            color: #00517a !important;
+            font-weight: 600 !important;
+        }
+        .chetak-nav-link:hover {
+            background: #e0f7ff !important;
+            color: #003087 !important;
+        }
+        .chetak-nav-link .chetak-bolt {
+            color: #00c3ff;
+        }
+
         /* ── Brand logo ── */
         .brand-logo-wrap {
             display: flex;
@@ -245,6 +258,14 @@
                         <li><a class="dropdown-item" href="{% url 'bike_list' %}">All Bikes</a></li>
                     </ul>
                 </li>
+
+                <!-- ── Chetak nav link (NEW) ── -->
+                <li class="nav-item">
+                    <a class="nav-link chetak-nav-link" href="{% url 'chetak' %}">
+                        <i class="bi bi-lightning-charge-fill chetak-bolt me-1"></i>Chetak
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'book_service' %}">Service</a>
                 </li>
@@ -294,7 +315,6 @@
                     <img src="{% static 'images/logo.png' %}"
                          alt="{{ SITE_NAME }}"
                          class="brand-skyline-logo">
-                         <!-- style="filter:brightness(0) invert(1);"> -->
 
                     <div class="brand-divider"
                          style="background:#2a3a5a;"></div>
@@ -351,6 +371,12 @@
                         </a>
                     </li>
                     {% endfor %}
+                    <!-- ── Chetak footer link (NEW) ── -->
+                    <li>
+                        <a href="{% url 'chetak' %}">
+                            <i class="bi bi-lightning-charge-fill" style="color:#00c3ff; font-size:.6rem;"></i> Chetak Electric
+                        </a>
+                    </li>
                 </ul>
             </div>
 
@@ -398,7 +424,6 @@
                     </div>
                 </a>
                 {% empty %}
-                <!-- Fallback if footer_showrooms not in context -->
                 <a href="{% url 'contact' %}" class="footer-showroom-item">
                     <i class="bi bi-geo-alt-fill geo-icon"></i>
                     <div>
@@ -422,11 +447,6 @@
                     <div class="footer-hours-label">Mon – Sun</div>
                     <div class="footer-hours-time">10:00 AM – 7:00 PM</div>
                 </div>
-                <!-- <div class="mb-3 d-flex align-items-center gap-2">
-                    <span class="badge" style="background:#3a1a1a; color:#ff6b6b; font-size:.7rem; font-weight:600; padding:4px 8px; border-radius:4px;">
-                        <i class="bi bi-x-circle me-1"></i>Closed Tuesdays
-                    </span>
-                </div> -->
                 <a href="https://wa.me/{{ WHATSAPP_NUMBER }}"
                 class="btn btn-sm w-100"
                 style="background:#25d366; color:#fff; font-size:.78rem;"
