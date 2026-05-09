@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load skyline_tags %}
 {% block title %}Home{% endblock %}
 
 {% block content %}
@@ -155,8 +156,6 @@
             object-fit: contain;
             object-position: center center;
         }
-
-        /* shrink caption so image breathes */
         .fullscreen-bike-caption {
             padding: 1rem 1rem 1.5rem;
             gap: .6rem;
@@ -176,14 +175,10 @@
             padding: 2px 8px;
             margin-bottom: 3px;
         }
-
-        /* smaller buttons */
         .fullscreen-bike-caption .btn {
             font-size: .75rem !important;
             padding: 5px 12px !important;
         }
-
-        /* gradient starts transparent until 45% — top of image stays clean */
         .fullscreen-bike-overlay {
             background: linear-gradient(
                 to bottom,
@@ -193,14 +188,8 @@
                 rgba(0,13,36,.88) 100%
             );
         }
-
-        /* hide scroll hint on mobile */
         .scroll-hint { display: none; }
-
-        /* pull dots up above the caption */
         .fullscreen-dots { bottom: 56px; }
-
-        /* smaller nav arrows */
         .fullscreen-nav { width: 36px; height: 36px; font-size: .9rem; }
         .fullscreen-nav.prev { left: 10px; }
         .fullscreen-nav.next { right: 10px; }
@@ -384,7 +373,7 @@
          style="position:absolute;inset:0;opacity:{% if forloop.first %}1{% else %}0{% endif %};transition:opacity .8s ease;z-index:{% if forloop.first %}1{% else %}0{% endif %};">
         {% with img_url=bike.get_primary_image_url %}
         {% if img_url %}
-            <img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+            <img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
         {% else %}
             <img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">
         {% endif %}
@@ -564,7 +553,7 @@
             <div class="gallery-strip" id="galleryStrip">
                 {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
                 <a href="{% url 'bike_detail' bike.slug %}" class="gallery-thumb" title="{{ bike.name }}" style="text-decoration:none;">
-                    {% if img_url %}<img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+                    {% if img_url %}<img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
                     {% else %}<img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">{% endif %}
                     <div class="gallery-thumb-label">{{ bike.name }}</div>
                 </a>
@@ -575,7 +564,7 @@
             {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
             <a href="{% url 'bike_detail' bike.slug %}"
                class="big-gallery-item {% if forloop.counter == 1 or forloop.counter == 6 %}large{% endif %}">
-                {% if img_url %}<img src="{{ img_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+                {% if img_url %}<img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
                 {% else %}<img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">{% endif %}
                 <div class="item-overlay"></div>
                 <div class="item-info">
@@ -614,7 +603,7 @@
                     <div class="bike-img-wrap">
                         {% with first_img=bike.get_primary_image_url %}
                         {% if first_img %}
-                            <img src="{{ first_img }}" class="bike-img" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+                            <img src="{{ first_img|with_logo }}" class="bike-img" referrerpolicy="no-referrer" alt="{{ bike.name }}">
                         {% else %}
                             <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
                                 <i class="bi bi-bicycle text-secondary" style="font-size:4rem;opacity:.3;"></i>

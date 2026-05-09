@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load skyline_tags %}
 {% block title %}Bajaj Chetak Electric Scooter{% endblock %}
 
 {% block content %}
@@ -206,7 +207,7 @@
                                         {% if item.image_file %}
                                             <img src="{{ item.image_file.url }}" alt="{{ bike.name }} {{ color.name }}">
                                         {% elif item.media_link %}
-                                            <img src="{{ item.get_display_url }}" referrerpolicy="no-referrer" alt="{{ bike.name }} {{ color.name }}">
+                                            <img src="{{ item.get_display_url|with_logo }}" referrerpolicy="no-referrer" alt="{{ bike.name }} {{ color.name }}">
                                         {% endif %}
                                     {% elif item.is_youtube %}
                                         <iframe src="{{ item.get_display_url }}" title="{{ bike.name }}" allowfullscreen loading="lazy"></iframe>
@@ -265,7 +266,7 @@
                                 title="{{ color.name }}">
                             {% with thumb=color.first_image_url %}
                             {% if thumb %}
-                                <img src="{{ thumb }}" referrerpolicy="no-referrer" alt="{{ color.name }}">
+                                <img src="{{ thumb|with_logo }}" referrerpolicy="no-referrer" alt="{{ color.name }}">
                             {% else %}
                                 <span class="swatch-fill" data-apply-hex="1"></span>
                             {% endif %}

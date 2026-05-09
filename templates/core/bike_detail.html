@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load skyline_tags %}
 {% block title %}{{ bike.name }}{% endblock %}
 
 {% block content %}
@@ -147,12 +148,10 @@
                                             <img src="{{ item.image_file.url }}"
                                                 alt="{{ bike.name }} {{ color.name }}">
                                         {% elif item.media_link %}
-                                            {# This triggers if there is no physical file, but a URL exists #}
-                                            <img src="{{ item.get_display_url }}"
+                                            <img src="{{ item.get_display_url|with_logo }}"
                                                 referrerpolicy="no-referrer"
                                                 alt="{{ bike.name }} {{ color.name }}">
                                         {% else %}
-                                            {# Fallback icon if both are empty #}
                                             <div class="d-flex align-items-center justify-content-center bg-light h-100">
                                                 <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
                                             </div>
@@ -203,12 +202,11 @@
                                     {% if item.image_file %}
                                         <img src="{{ item.image_file.url }}" alt="thumb">
                                     {% elif item.media_link %}
-                                        <img src="{{ item.get_display_url }}"
+                                        <img src="{{ item.get_display_url|with_logo }}"
                                              referrerpolicy="no-referrer" alt="thumb">
                                     {% endif %}
 
                                 {% elif item.is_youtube %}
-                                    <!-- FIX: was item.get_youtube_thumbnail (wrong), now item.get_youtube_thumbnail_url -->
                                     <div class="w-100 h-100 bg-dark position-relative d-flex align-items-center justify-content-center">
                                         <img src="{{ item.get_youtube_thumbnail_url }}"
                                              style="width:100%; height:100%; object-fit:cover; opacity:.7;"
@@ -252,7 +250,7 @@
                             data-hex="{{ color.color_hex }}">
                         {% with thumb=color.first_image_url %}
                         {% if thumb %}
-                            <img src="{{ thumb }}"
+                            <img src="{{ thumb|with_logo }}"
                                  referrerpolicy="no-referrer"
                                  alt="{{ color.name }}">
                         {% else %}
@@ -279,7 +277,7 @@
                         <i class="bi bi-bicycle text-secondary" style="font-size:5rem; opacity:.25;"></i>
                     </div>
                 {% endif %}
-                
+
             {% endif %}
             {% endwith %}
         </div>
@@ -354,7 +352,7 @@
                 {% if rb_colors %}
                     {% with thumb=rb_colors.first.first_image_url %}
                     {% if thumb %}
-                        <img src="{{ thumb }}"
+                        <img src="{{ thumb|with_logo }}"
                              class="card-img-top"
                              referrerpolicy="no-referrer"
                              alt="{{ rb.name }}">
