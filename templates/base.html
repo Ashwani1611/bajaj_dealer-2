@@ -249,10 +249,12 @@
                     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Motorcycles</a>
                     <ul class="dropdown-menu">
                         {% for cat in nav_categories %}
-                        <li>
-                            <a class="dropdown-item"
-                               href="{% url 'bike_list' %}?category={{ cat.slug }}">{{ cat.name }}</a>
-                        </li>
+                            {% if cat.slug != 'chetak' %}
+                            <li>
+                                <a class="dropdown-item"
+                                href="{% url 'bike_list' %}?category={{ cat.slug }}">{{ cat.name }}</a>
+                            </li>
+                            {% endif %}
                         {% endfor %}
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'bike_list' %}">All Bikes</a></li>
@@ -365,11 +367,13 @@
                         </a>
                     </li>
                     {% for cat in nav_categories %}
-                    <li>
-                        <a href="{% url 'bike_list' %}?category={{ cat.slug }}">
-                            <i class="bi bi-chevron-right"></i> {{ cat.name }}
-                        </a>
-                    </li>
+                        {% if cat.slug != 'chetak' %}
+                        <li>
+                            <a href="{% url 'bike_list' %}?category={{ cat.slug }}">
+                                <i class="bi bi-chevron-right"></i> {{ cat.name }}
+                            </a>
+                        </li>
+                        {% endif %}
                     {% endfor %}
                     <!-- ── Chetak footer link (NEW) ── -->
                     <li>

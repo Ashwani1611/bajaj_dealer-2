@@ -451,7 +451,7 @@
 
 
 <!-- CATEGORY STRIP -->
-<section class="cat-strip">
+<!-- <section class="cat-strip">
     <div class="container">
         <div class="d-flex gap-2 flex-wrap justify-content-center">
             {% for cat in categories %}
@@ -459,6 +459,22 @@
                 {{ cat.name }}
             </a>
             {% endfor %}
+        </div>
+    </div>
+</section> -->
+<section class="cat-strip">
+    <div class="container">
+        <div class="d-flex gap-2 flex-wrap justify-content-center">
+            {% for cat in categories %}
+                {% if cat.slug != 'chetak' %}
+                <a href="{% url 'bike_list' %}?category={{ cat.slug }}" class="cat-btn">
+                    {{ cat.name }}
+                </a>
+                {% endif %}
+            {% endfor %}
+            <a href="{% url 'chetak' %}" class="cat-btn" style="background:rgba(0,195,255,.2); border-color:rgba(0,195,255,.4);">
+                <i class="bi bi-lightning-charge-fill" style="color:#00c3ff;"></i> Chetak
+            </a>
         </div>
     </div>
 </section>

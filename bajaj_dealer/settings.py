@@ -1,6 +1,7 @@
 from pathlib import Path
 from decouple import config
 import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -120,23 +121,41 @@ TEMPLATES = [
 WSGI_APPLICATION = 'bajaj_dealer.wsgi.application'
 
 # --- DATABASE ---
-_db_name = config('DB_NAME', default='')
-if _db_name:
+# _db_name = config('DB_NAME', default='')
+# if _db_name:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE':   'django.db.backends.postgresql',
+#             'NAME':     _db_name,
+#             'USER':     config('DB_USER',     default='postgres'),
+#             'PASSWORD': config('DB_PASSWORD', default=''),
+#             'HOST':     config('DB_HOST',     default='localhost'),
+#             'PORT':     config('DB_PORT',     default='5432'),
+#             'CONN_MAX_AGE': 60,
+#         }
+#     }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME':   BASE_DIR / 'db.sqlite3',
+#             'CONN_MAX_AGE': 60,
+#         }
+#     }
+_db_url = config('DATABASE_URL', default='')
+if _db_url:
     DATABASES = {
-        'default': {
-            'ENGINE':   'django.db.backends.postgresql',
-            'NAME':     _db_name,
-            'USER':     config('DB_USER',     default='postgres'),
-            'PASSWORD': config('DB_PASSWORD', default=''),
-            'HOST':     config('DB_HOST',     default='localhost'),
-            'PORT':     config('DB_PORT',     default='5432'),
-        }
+        'default': dj_database_url.config(
+            default=_db_url,
+            conn_max_age=60
+        )
     }
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME':   BASE_DIR / 'db.sqlite3',
+            'CONN_MAX_AGE': 60,
         }
     }
 # --- CACHE (Redis) ---
@@ -220,4 +239,6 @@ if not DEBUG:
     SESSION_COOKIE_SECURE          = True
     CSRF_COOKIE_SECURE             = True
     X_FRAME_OPTIONS                = 'DENY'
+
+import time
     

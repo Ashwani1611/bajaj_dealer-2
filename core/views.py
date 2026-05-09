@@ -165,7 +165,8 @@ def home(request):
     if not featured_bikes:
         featured_bikes = list(
             Bike.objects
-            .filter(is_featured=True, is_active=True, is_chetak=False)   # ← CHANGED
+            # .filter(is_featured=True, is_active=True, is_chetak=False)   # ← CHANGED
+            .filter(is_featured=True, is_active=True)
             .select_related('category')
             .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
             .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
@@ -177,7 +178,8 @@ def home(request):
     if not home_bikes:
         home_bikes = list(
             Bike.objects
-            .filter(is_active=True, is_chetak=False)                      # ← CHANGED
+            # .filter(is_active=True, is_chetak=False)                      # ← CHANGED
+            .filter(is_active=True)  
             .select_related('category')
             .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
             .only('id', 'name', 'slug', 'price', 'category')
@@ -199,6 +201,12 @@ def home(request):
     all_showrooms = _get_all_showrooms()
     categories    = _get_all_categories()
 
+    # ── offers (cached) ───────────────────────────────────────────
+    offers = cache.get('home_offers')
+    if not offers:
+        offers = list(Offer.objects.filter(is_active=True).order_by('order'))
+        cache.set('home_offers', offers, timeout=60 * 30)
+
     return render(request, 'core/home.html', {
         'featured_bikes': featured_bikes,
         'all_bikes':      home_bikes,
@@ -207,11 +215,10 @@ def home(request):
         'nav_categories': categories,
         'categories':     categories,
         'videos':         videos,
-        'offers': Offer.objects.filter(is_active=True),
+        'offers':         offers,          # ← now uses the cached variable
         'enquiry_form':   form,
         'showroom_count': len(all_showrooms),
     })
-
 
 # ── bike list ─────────────────────────────────────────────────────────────────
 

@@ -85,10 +85,12 @@
             All
         </a>
         {% for cat in categories %}
-        <a href="?category={{ cat.slug }}"
-           class="btn btn-sm {% if selected_category == cat.slug %}filter-btn-active{% else %}filter-btn{% endif %}">
-            {{ cat.name }}
-        </a>
+            {% if cat.slug != 'chetak' %}
+            <a href="?category={{ cat.slug }}"
+            class="btn btn-sm {% if selected_category == cat.slug %}filter-btn-active{% else %}filter-btn{% endif %}">
+                {{ cat.name }}
+            </a>
+            {% endif %}
         {% endfor %}
     </div>
 
