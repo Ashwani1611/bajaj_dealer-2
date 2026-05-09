@@ -23,4 +23,5 @@ def site_globals(request):
         'FACEBOOK_URL':     getattr(settings, 'FACEBOOK_URL', ''),
         'INSTAGRAM_URL':    getattr(settings, 'INSTAGRAM_URL', ''),
         'YOUTUBE_URL':      getattr(settings, 'YOUTUBE_URL', ''),
+        "GOOGLE_TAG_ID":    getattr(settings, "GOOGLE_TAG_ID", ""),
     }

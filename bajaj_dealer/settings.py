@@ -224,6 +224,8 @@ DEALER_MASTER_EMAIL = config('DEALER_MASTER_EMAIL', default='')
 # --- WHATSAPP ---
 WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='')
 
+GOOGLE_TAG_ID = config("GOOGLE_TAG_ID", "")
+
 # --- SOCIAL LINKS (used by core.context_processors.site_globals) ---
 FACEBOOK_URL  = config('FACEBOOK_URL',  default='')
 INSTAGRAM_URL = config('INSTAGRAM_URL', default='')
