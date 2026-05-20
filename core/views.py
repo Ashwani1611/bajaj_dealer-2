@@ -22,6 +22,13 @@ from .forms import EnquiryForm, ServiceBookingForm, ExchangeForm
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# SITE CONFIG
+# ══════════════════════════════════════════════════════════════════════════════
+
+SITE_URL = 'https://skylinewheels.in'
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -120,7 +127,6 @@ def _collect_emails(*locations):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _get_all_showrooms():
-    """Cached showroom list. Shared across home, bike_detail, contact."""
     showrooms = cache.get('all_showrooms')
     if not showrooms:
         showrooms = list(Showroom.objects.filter(is_active=True).order_by('order'))
@@ -129,7 +135,6 @@ def _get_all_showrooms():
 
 
 def _get_all_categories():
-    """Cached category list. Shared across home, bike_list."""
     categories = cache.get('all_categories')
     if not categories:
         categories = list(BikeCategory.objects.all().order_by('order'))
@@ -150,7 +155,6 @@ def _media_images_qs():
 # ── home ──────────────────────────────────────────────────────────────────────
 
 def home(request):
-    # Handle POST before cache — cache_page never caches POST requests
     if request.method == 'POST':
         form = EnquiryForm(request.POST)
         if form.is_valid():
@@ -160,12 +164,10 @@ def home(request):
     else:
         form = EnquiryForm()
 
-    # ── featured bikes (exclude Chetak) ──────────────────────────
     featured_bikes = cache.get('featured_bikes')
     if not featured_bikes:
         featured_bikes = list(
             Bike.objects
-            # .filter(is_featured=True, is_active=True, is_chetak=False)   # ← CHANGED
             .filter(is_featured=True, is_active=True)
             .select_related('category')
             .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
@@ -173,13 +175,11 @@ def home(request):
         )
         cache.set('featured_bikes', featured_bikes, timeout=60 * 15)
 
-    # ── all bikes home strip, exclude Chetak ──────────────────────
     home_bikes = cache.get('home_all_bikes')
     if not home_bikes:
         home_bikes = list(
             Bike.objects
-            # .filter(is_active=True, is_chetak=False)                      # ← CHANGED
-            .filter(is_active=True)  
+            .filter(is_active=True)
             .select_related('category')
             .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
             .only('id', 'name', 'slug', 'price', 'category')
@@ -187,7 +187,6 @@ def home(request):
         )
         cache.set('home_all_bikes', home_bikes, timeout=60 * 15)
 
-    # ── videos ────────────────────────────────────────────────────
     videos = cache.get('home_videos')
     if not videos:
         videos = list(
@@ -197,11 +196,9 @@ def home(request):
         )
         cache.set('home_videos', videos, timeout=60 * 30)
 
-    # ── shared cached data ────────────────────────────────────────
     all_showrooms = _get_all_showrooms()
     categories    = _get_all_categories()
 
-    # ── offers (cached) ───────────────────────────────────────────
     offers = cache.get('home_offers')
     if not offers:
         offers = list(Offer.objects.filter(is_active=True).order_by('order'))
@@ -212,19 +209,27 @@ def home(request):
         'all_bikes':      home_bikes,
         'all_showrooms':  all_showrooms,
         'showrooms':      all_showrooms,
+        'footer_showrooms': all_showrooms,
         'nav_categories': categories,
         'categories':     categories,
         'videos':         videos,
-        'offers':         offers,          # ← now uses the cached variable
+        'offers':         offers,
         'enquiry_form':   form,
         'showroom_count': len(all_showrooms),
+        # ── SEO ──
+        'canonical_url':  SITE_URL + '/',
+        'seo_title':      'Bajaj Showroom in Noida | Bhangel | Greater Noida | Skyline Bajaj',
+        'seo_description': (
+            'Skyline Bajaj – Authorized Bajaj & Chetak dealer in Noida, Bhangel, '
+            'Greater Noida and Sector 10. New bikes, test rides, EMI, exchange and service.'
+        ),
     })
+
 
 # ── bike list ─────────────────────────────────────────────────────────────────
 
 def bike_list(request):
     selected_category = request.GET.get('category', '')
-
     categories = _get_all_categories()
 
     cache_key = f'bike_list_{selected_category or "all"}'
@@ -232,11 +237,9 @@ def bike_list(request):
     if not bikes:
         bikes_qs = (
             Bike.objects
-            .filter(is_active=True, is_chetak=False)                      # ← CHANGED
+            .filter(is_active=True, is_chetak=False)
             .select_related('category')
-            .prefetch_related(
-                _color_prefetch(images_qs=_media_images_qs())
-            )
+            .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
             .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
         )
         if selected_category:
@@ -244,10 +247,30 @@ def bike_list(request):
         bikes = list(bikes_qs)
         cache.set(cache_key, bikes, timeout=60 * 15)
 
+    active_cat = next((c for c in categories if c.slug == selected_category), None)
+    if active_cat:
+        seo_title       = f'Bajaj {active_cat.name} Bikes in Noida | Skyline Bajaj Dealer'
+        seo_description = (
+            f'Buy Bajaj {active_cat.name} bikes in Noida at Skyline Bajaj. '
+            f'Best price, EMI options, test ride at our Noida showrooms.'
+        )
+        canonical_url   = f'{SITE_URL}/bikes/?category={selected_category}'
+    else:
+        seo_title       = 'All Bajaj Bikes in Noida | Pulsar, Platina, CT, Dominar | Skyline Bajaj'
+        seo_description = (
+            'Explore all Bajaj bikes available at Skyline Bajaj showrooms in Noida, '
+            'Bhangel and Greater Noida. Best price, EMI, exchange and test ride.'
+        )
+        canonical_url   = f'{SITE_URL}/bikes/'
+
     return render(request, 'core/bike_list.html', {
         'bikes':             bikes,
         'categories':        categories,
         'selected_category': selected_category,
+        # ── SEO ──
+        'canonical_url':     canonical_url,
+        'seo_title':         seo_title,
+        'seo_description':   seo_description,
     })
 
 
@@ -278,12 +301,10 @@ def bike_detail(request, slug):
     if not related_bikes:
         related_bikes = list(
             Bike.objects
-            .filter(category=bike.category, is_active=True, is_chetak=False)  # ← CHANGED
+            .filter(category=bike.category, is_active=True, is_chetak=False)
             .exclude(pk=bike.pk)
             .select_related('category')
-            .prefetch_related(
-                _color_prefetch(images_qs=_media_images_qs())
-            )
+            .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
             .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
             [:4]
         )
@@ -291,12 +312,32 @@ def bike_detail(request, slug):
 
     showrooms = _get_all_showrooms()
 
+    # ── SEO — use custom meta fields if set, else auto-generate ───
+    price_str = f'₹{bike.price:,.0f}' if bike.price else 'On Request'
+
+    seo_title = bike.meta_title if bike.meta_title else (
+        f'{bike.name} Price in Noida – {price_str} | Skyline Bajaj Dealer'
+    )
+    seo_desc = bike.meta_description if bike.meta_description else (
+        f'Buy {bike.name} in Noida at Skyline Bajaj. '
+        f'Price {price_str}. '
+        + (f'Engine {bike.engine_cc}, mileage {bike.mileage}. ' if bike.engine_cc else '')
+        + 'Book test ride at Bhangel, Sector 10, Sector 58 or Greater Noida showroom.'
+    )
+    canonical_url = f'{SITE_URL}/bikes/{bike.slug}/'
+    og_image = bike.get_primary_image_url() if callable(bike.get_primary_image_url) else bike.get_primary_image_url
+
     return render(request, 'core/bike_detail.html', {
         'bike':             bike,
         'related_bikes':    related_bikes,
         'enquiry_form':     EnquiryForm(initial={'bike': bike}),
         'showrooms':        showrooms,
         'primary_showroom': showrooms[0] if showrooms else None,
+        # ── SEO ──
+        'canonical_url':    canonical_url,
+        'seo_title':        seo_title,
+        'seo_description':  seo_desc,
+        'og_image_url':     og_image,
     })
 
 
@@ -369,7 +410,16 @@ def enquiry(request):
         bike_pk = request.GET.get('bike')
         form    = EnquiryForm(initial={'bike': bike_pk} if bike_pk else {})
 
-    return render(request, 'core/enquiry.html', {'form': form})
+    return render(request, 'core/enquiry.html', {
+        'form': form,
+        # ── SEO ──
+        'canonical_url':  f'{SITE_URL}/enquiry/',
+        'seo_title':      'Book Test Ride | Bajaj Bike Enquiry Noida | Skyline Bajaj',
+        'seo_description': (
+            'Book a Bajaj bike test ride or send an enquiry at Skyline Bajaj Noida. '
+            'Available at Bhangel, Sector 58, Sector 10 and Greater Noida showrooms.'
+        ),
+    })
 
 
 def enquiry_success(request):
@@ -458,6 +508,13 @@ def book_service(request):
         'form':                   form,
         'service_stations':       service_stations,
         'showrooms_with_service': showrooms_with_service,
+        # ── SEO ──
+        'canonical_url':  f'{SITE_URL}/service/',
+        'seo_title':      'Bajaj Bike Service Booking Noida | Skyline Bajaj Service Centre',
+        'seo_description': (
+            'Book Bajaj bike service at Skyline Bajaj service centres in Noida, Bhangel '
+            'and Greater Noida. Expert mechanics, genuine spare parts, free pickup.'
+        ),
     })
 
 
@@ -527,7 +584,16 @@ def exchange_bike(request):
     else:
         form = ExchangeForm()
 
-    return render(request, 'core/exchange.html', {'form': form})
+    return render(request, 'core/exchange.html', {
+        'form': form,
+        # ── SEO ──
+        'canonical_url':  f'{SITE_URL}/exchange/',
+        'seo_title':      'Exchange Old Bike for New Bajaj | Best Exchange Value | Skyline Bajaj Noida',
+        'seo_description': (
+            'Exchange your old bike for a new Bajaj at Skyline Bajaj Noida. '
+            'Best exchange value, instant evaluation, easy EMI on new bike.'
+        ),
+    })
 
 
 def exchange_success(request):
@@ -561,23 +627,27 @@ def contact(request):
     return render(request, 'core/contact.html', {
         'showrooms':        showrooms,
         'service_stations': service_stations,
+        # ── SEO ──
+        'canonical_url':  f'{SITE_URL}/contact/',
+        'seo_title':      'Bajaj Showroom Locations Noida | Skyline Bajaj Dealer Address',
+        'seo_description': (
+            'Find all Skyline Bajaj showroom addresses in Noida, Bhangel, Sector 10, '
+            'Sector 58 and Greater Noida. Contact numbers, directions and working hours.'
+        ),
     })
 
 
 # ── chetak ────────────────────────────────────────────────────────────────────
 
 def chetak(request):
-    """Dedicated page for Bajaj Chetak electric scooters."""
     cache_key = 'chetak_bikes'
     bikes = cache.get(cache_key)
     if not bikes:
         bikes = list(
             Bike.objects
-            .filter(is_active=True, is_chetak=True)                       # ← only Chetak bikes
+            .filter(is_active=True, is_chetak=True)
             .select_related('category')
-            .prefetch_related(
-                _color_prefetch(images_qs=_media_images_qs())
-            )
+            .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
             .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage',
                   'power', 'torque', 'fuel_type', 'description', 'category')
         )
@@ -589,4 +659,11 @@ def chetak(request):
         'bikes':        bikes,
         'showrooms':    showrooms,
         'enquiry_form': EnquiryForm(),
+        # ── SEO ──
+        'canonical_url':  f'{SITE_URL}/chetak/',
+        'seo_title':      'Bajaj Chetak Electric Scooter Dealer Noida | Skyline Chetak Greater Noida',
+        'seo_description': (
+            'Buy Bajaj Chetak electric scooter in Greater Noida at Skyline Bajaj. '
+            'Authorized Chetak EV dealer at Site 4, Greater Noida. Test ride available, EMI options.'
+        ),
     })

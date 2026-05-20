@@ -1,6 +1,68 @@
 {% extends 'base.html' %}
 {% load skyline_tags %}
-{% block title %}{{ bike.name }}{% endblock %}
+
+{# ══════════════════════════════════════════════════════════════ #}
+{# SEO BLOCKS — per-bike title, description, canonical, schema   #}
+{# ══════════════════════════════════════════════════════════════ #}
+
+{% block seo_title %}{{ bike.name }} Price in Noida{% if bike.price %} – ₹{{ bike.price|floatformat:"0g" }}{% endif %} | Buy {{ bike.name }} | Skyline Bajaj{% endblock %}
+
+{% block seo_description %}Buy {{ bike.name }} in Noida at Skyline Bajaj – Authorized Bajaj dealer.{% if bike.price %} On-road price ₹{{ bike.price|floatformat:"0g" }}.{% endif %}{% if bike.engine_cc %} Engine {{ bike.engine_cc }}{% if bike.mileage %}, mileage {{ bike.mileage }}{% endif %}.{% endif %} Book a test ride at our Bhangel, Sector 10, Sector 58 or Greater Noida showroom today.{% endblock %}
+
+{% block canonical_url %}https://skylinewheels.in/bikes/{{ bike.slug }}/{% endblock %}
+
+{% block og_title %}{{ bike.name }}{% if bike.price %} – ₹{{ bike.price|floatformat:"0g" }}{% endif %} | Skyline Bajaj Noida{% endblock %}
+{% block og_description %}{{ bike.name }} available at Skyline Bajaj Noida.{% if bike.engine_cc %} {{ bike.engine_cc }}{% endif %}{% if bike.mileage %}, {{ bike.mileage }} mileage{% endif %}. Book test ride today.{% endblock %}
+{% block og_image %}{{ og_image_url }}{% endblock %}
+{% block og_url %}https://skylinewheels.in/bikes/{{ bike.slug }}/{% endblock %}
+
+{% block schema_markup %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ bike.name }}",
+  "description": "{% if bike.description %}{{ bike.description|truncatechars:200|striptags }}{% else %}{{ bike.name }} – available at Skyline Bajaj, authorized Bajaj dealer in Noida.{% endif %}",
+  "image": "{{ og_image_url }}",
+  "brand": { "@type": "Brand", "name": "Bajaj Auto" },
+  "url": "https://skylinewheels.in/bikes/{{ bike.slug }}/",
+  "additionalProperty": [
+    {% if bike.engine_cc %}{"@type":"PropertyValue","name":"Engine","value":"{{ bike.engine_cc }}"}{% if bike.mileage or bike.power or bike.torque %},{% endif %}{% endif %}
+    {% if bike.mileage %}{"@type":"PropertyValue","name":"Mileage","value":"{{ bike.mileage }}"}{% if bike.power or bike.torque %},{% endif %}{% endif %}
+    {% if bike.power %}{"@type":"PropertyValue","name":"Power","value":"{{ bike.power }}"}{% if bike.torque %},{% endif %}{% endif %}
+    {% if bike.torque %}{"@type":"PropertyValue","name":"Torque","value":"{{ bike.torque }}"}{% endif %}
+  ]{% if bike.price %},
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ bike.price }}",
+    "priceCurrency": "INR",
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition",
+    "seller": {
+      "@type": "AutoDealer",
+      "name": "Skyline Bajaj",
+      "url": "https://skylinewheels.in"
+    }
+  }{% endif %}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://skylinewheels.in"},
+    {"@type":"ListItem","position":2,"name":"All Bikes","item":"https://skylinewheels.in/bikes/"},
+    {"@type":"ListItem","position":3,"name":"{{ bike.category.name }}","item":"https://skylinewheels.in/bikes/?category={{ bike.category.slug }}"},
+    {"@type":"ListItem","position":4,"name":"{{ bike.name }}","item":"https://skylinewheels.in/bikes/{{ bike.slug }}/"}
+  ]
+}
+</script>
+{% endblock %}
+
+{# ══════════════════════════════════════════════════════════════ #}
+{# PAGE CONTENT — original unchanged                             #}
+{# ══════════════════════════════════════════════════════════════ #}
 
 {% block content %}
 
@@ -146,11 +208,13 @@
                                     {% if item.is_image %}
                                         {% if item.image_file %}
                                             <img src="{{ item.image_file.url }}"
-                                                alt="{{ bike.name }} {{ color.name }}">
+                                                alt="{{ bike.name }} {{ color.name }} price Noida"
+                                                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
                                         {% elif item.media_link %}
                                             <img src="{{ item.get_display_url|with_logo }}"
                                                 referrerpolicy="no-referrer"
-                                                alt="{{ bike.name }} {{ color.name }}">
+                                                alt="{{ bike.name }} {{ color.name }} Skyline Bajaj Noida"
+                                                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
                                         {% else %}
                                             <div class="d-flex align-items-center justify-content-center bg-light h-100">
                                                 <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
@@ -159,7 +223,7 @@
 
                                     {% elif item.is_youtube %}
                                         <iframe src="{{ item.get_display_url }}"
-                                                title="{{ bike.name }} video"
+                                                title="{{ bike.name }} – Skyline Bajaj Noida"
                                                 allowfullscreen
                                                 loading="lazy">
                                         </iframe>
@@ -177,12 +241,14 @@
                             {% if imgs|length > 1 %}
                             <button class="carousel-control-prev" type="button"
                                     data-bs-target="#detail-carousel-{{ color.pk }}"
-                                    data-bs-slide="prev">
+                                    data-bs-slide="prev"
+                                    aria-label="Previous image">
                                 <span class="carousel-control-prev-icon"></span>
                             </button>
                             <button class="carousel-control-next" type="button"
                                     data-bs-target="#detail-carousel-{{ color.pk }}"
-                                    data-bs-slide="next">
+                                    data-bs-slide="next"
+                                    aria-label="Next image">
                                 <span class="carousel-control-next-icon"></span>
                             </button>
                             {% endif %}
@@ -200,17 +266,22 @@
 
                                 {% if item.is_image %}
                                     {% if item.image_file %}
-                                        <img src="{{ item.image_file.url }}" alt="thumb">
+                                        <img src="{{ item.image_file.url }}"
+                                             alt="{{ bike.name }} thumbnail {{ forloop.counter }}"
+                                             loading="lazy">
                                     {% elif item.media_link %}
                                         <img src="{{ item.get_display_url|with_logo }}"
-                                             referrerpolicy="no-referrer" alt="thumb">
+                                             referrerpolicy="no-referrer"
+                                             alt="{{ bike.name }} thumbnail {{ forloop.counter }}"
+                                             loading="lazy">
                                     {% endif %}
 
                                 {% elif item.is_youtube %}
                                     <div class="w-100 h-100 bg-dark position-relative d-flex align-items-center justify-content-center">
                                         <img src="{{ item.get_youtube_thumbnail_url }}"
                                              style="width:100%; height:100%; object-fit:cover; opacity:.7;"
-                                             alt="video thumb">
+                                             alt="{{ bike.name }} video thumbnail"
+                                             loading="lazy">
                                         <i class="bi bi-play-circle-fill text-white position-absolute"
                                            style="font-size:1.3rem;"></i>
                                     </div>
@@ -247,12 +318,14 @@
                             class="detail-swatch-btn {% if forloop.first %}swatch-active{% endif %}"
                             data-color-id="{{ color.pk }}"
                             data-color-name="{{ color.name }}"
-                            data-hex="{{ color.color_hex }}">
+                            data-hex="{{ color.color_hex }}"
+                            aria-label="Select color {{ color.name }}">
                         {% with thumb=color.first_image_url %}
                         {% if thumb %}
                             <img src="{{ thumb|with_logo }}"
                                  referrerpolicy="no-referrer"
-                                 alt="{{ color.name }}">
+                                 alt="{{ bike.name }} {{ color.name }}"
+                                 loading="lazy">
                         {% else %}
                             <span class="swatch-color-fill" data-apply-hex="1"></span>
                         {% endif %}
@@ -271,7 +344,10 @@
 
             {% else %}
                 {% if bike.image %}
-                    <img src="{{ bike.image.url }}" class="img-fluid rounded shadow" alt="{{ bike.name }}">
+                    <img src="{{ bike.image.url }}"
+                         class="img-fluid rounded shadow"
+                         alt="{{ bike.name }} price Noida – Skyline Bajaj"
+                         loading="eager">
                 {% else %}
                     <div class="bike-carousel d-flex align-items-center justify-content-center bg-light">
                         <i class="bi bi-bicycle text-secondary" style="font-size:5rem; opacity:.25;"></i>
@@ -330,7 +406,7 @@
                 <a href="https://wa.me/{{ primary_showroom.get_whatsapp_number }}?text=Hi%2C%20I%27m%20interested%20in%20{{ bike.name|urlencode }}"
                    class="btn btn-success btn-lg"
                    target="_blank"
-                   title="WhatsApp">
+                   title="WhatsApp Skyline Bajaj about {{ bike.name }}">
                     <i class="bi bi-whatsapp"></i>
                 </a>
             </div>
@@ -342,7 +418,7 @@
     <!-- Related Bikes -->
     {% if related_bikes %}
     <hr class="my-5" style="border-color:#d0dff5;">
-    <h5 class="fw-bold mb-4" style="color:#003087;">More in {{ bike.category.name }}</h5>
+    <h2 class="fw-bold mb-4" style="color:#003087; font-size:1.2rem;">More {{ bike.category.name }} Bikes in Noida</h2>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
         {% for rb in related_bikes %}
         <div class="col">
@@ -355,7 +431,8 @@
                         <img src="{{ thumb|with_logo }}"
                              class="card-img-top"
                              referrerpolicy="no-referrer"
-                             alt="{{ rb.name }}">
+                             alt="{{ rb.name }} price Noida – Skyline Bajaj"
+                             loading="lazy">
                     {% else %}
                         <div class="d-flex align-items-center justify-content-center bg-light"
                              style="height:150px;">
@@ -365,7 +442,10 @@
                     {% endif %}
                     {% endwith %}
                 {% elif rb.image %}
-                    <img src="{{ rb.image.url }}" class="card-img-top" alt="{{ rb.name }}">
+                    <img src="{{ rb.image.url }}"
+                         class="card-img-top"
+                         alt="{{ rb.name }} Noida – Skyline Bajaj"
+                         loading="lazy">
                 {% else %}
                     <div class="d-flex align-items-center justify-content-center bg-light"
                          style="height:150px;">

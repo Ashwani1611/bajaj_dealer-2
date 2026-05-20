@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'drf_spectacular',
     'cloudinary',
+    'django.contrib.sitemaps',
 ]
 
 WEBPUSH_SETTINGS = {

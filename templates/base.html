@@ -4,13 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{% block meta_description %}Authorized Bajaj Dealer — Bikes, Scooters, CNG & Electric{% endblock %}">
-    <title>{% block title %}{{ SITE_NAME }}{% endblock %} | Authorized Bajaj Dealer</title>
+
+    {# ══════════════════════════════════════════════════════════════ #}
+    {# SEO — Title & Meta                                            #}
+    {# Per-page: pass seo_title / seo_description from views.py     #}
+    {# OR override {% block seo_title %} in the child template       #}
+    {# ══════════════════════════════════════════════════════════════ #}
+    <title>{% block seo_title %}{{ seo_title|default:"Bajaj Showroom in Noida | Bhangel | Greater Noida | Skyline Bajaj" }}{% endblock %}</title>
+
+    <meta name="description" content="{% block seo_description %}{{ seo_description|default:"Skyline Bajaj – Authorized Bajaj &amp; Chetak dealer in Noida, Bhangel, Greater Noida and Sector 10. New bikes, test rides, EMI, exchange and service. Visit your nearest showroom today." }}{% endblock %}">
+
+    <meta name="keywords" content="Bajaj showroom Noida, Bajaj dealer Bhangel, Bajaj showroom near me, Bajaj bike dealer Greater Noida, Bajaj showroom Sector 10 Noida, Skyline Bajaj, Chetak scooter dealer Noida, authorized Bajaj dealer Noida, Bajaj Pulsar Noida, Bajaj Platina Noida">
+
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Skyline Bajaj">
+
+    {# Canonical — per-page URL passed from view context or overridden in child template #}
+    <link rel="canonical" href="{% block canonical_url %}{{ canonical_url|default:"https://skylinewheels.in/" }}{% endblock %}">
+
+    {# ── Open Graph ── controls WhatsApp / Facebook link previews #}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}{{ seo_title|default:"Bajaj Showroom in Noida | Bhangel | Greater Noida | Skyline Bajaj" }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ seo_description|default:"Authorized Bajaj &amp; Chetak dealer. New bikes, test rides, EMI, exchange, service. 4 showrooms across Noida and Greater Noida." }}{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ canonical_url|default:"https://skylinewheels.in/" }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% if og_image_url %}{{ og_image_url }}{% else %}{% static 'images/logo.png' %}{% endif %}{% endblock %}">
+    <meta property="og:site_name" content="Skyline Bajaj">
+    <meta property="og:locale" content="en_IN">
+
+    {# ── Twitter Card #}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ seo_title|default:'Skyline Bajaj – Authorized Bajaj Dealer Noida' }}">
+    <meta name="twitter:description" content="{{ seo_description|default:'Authorized Bajaj dealer in Noida. New bikes, test rides, EMI, exchange, service.' }}">
+    <meta name="twitter:image" content="{% if og_image_url %}{{ og_image_url }}{% else %}{% static 'images/logo.png' %}{% endif %}">
+
+    {# ── Geo tags — helps Google local search #}
+    <meta name="geo.region" content="IN-UP">
+    <meta name="geo.placename" content="Noida, Uttar Pradesh">
+    <meta name="geo.position" content="28.608669;77.354608">
+    <meta name="ICBM" content="28.608669, 77.354608">
+
+    {# ══════════════════════════════════════════════════════════════ #}
+    {# Schema Markup — all 9 locations (JSON-LD)                     #}
+    {# File: templates/seo/schema_markup.html                        #}
+    {# ══════════════════════════════════════════════════════════════ #}
+    {% include 'seo/schema_markup.html' %}
+
+    {# ── Extra schema injected by child templates (e.g. bike_detail) #}
+    {% block schema_markup %}{% endblock %}
+
     <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
     <link rel="apple-touch-icon" href="{% static 'images/logo.png' %}">
     <link rel="shortcut icon" href="{% static 'images/logo.png' %}">
 
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -209,6 +254,7 @@
             color: #fff;
         }
     </style>
+
     {% if GOOGLE_TAG_ID %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_TAG_ID }}"></script>
     <script>
@@ -220,7 +266,7 @@
     {% endif %}
 
     {% block extra_css %}{% endblock %}
-    
+
 </head>
 <body>
 
@@ -230,7 +276,7 @@
 
         <a class="brand-logo-wrap" href="{% url 'home' %}">
             <img src="{% static 'images/logo.png' %}"
-                 alt="{{ SITE_NAME }} Logo"
+                 alt="{{ SITE_NAME }} – Authorized Bajaj Dealer Noida"
                  class="brand-skyline-logo">
 
             <div class="brand-divider d-none d-md-block"></div>
@@ -242,12 +288,13 @@
 
             <div class="brand-divider d-none d-lg-block"></div>
             <img src="https://cdn.bajajauto.com/-/media/assets/bajajauto/global/bajaj-logo2.png"
-                 alt="Bajaj"
+                 alt="Bajaj Auto"
                  class="brand-bajaj-logo d-none d-lg-block">
         </a>
 
         <button class="navbar-toggler border-0" type="button"
-                data-bs-toggle="collapse" data-bs-target="#navMenu">
+                data-bs-toggle="collapse" data-bs-target="#navMenu"
+                aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -272,7 +319,6 @@
                     </ul>
                 </li>
 
-                <!-- ── Chetak nav link (NEW) ── -->
                 <li class="nav-item">
                     <a class="nav-link chetak-nav-link" href="{% url 'chetak' %}">
                         <i class="bi bi-lightning-charge-fill chetak-bolt me-1"></i>Chetak
@@ -326,7 +372,7 @@
                 <a class="brand-logo-wrap mb-3" href="{% url 'home' %}"
                    style="text-decoration:none;">
                     <img src="{% static 'images/logo.png' %}"
-                         alt="{{ SITE_NAME }}"
+                         alt="{{ SITE_NAME }} Bajaj Dealer Noida"
                          class="brand-skyline-logo">
 
                     <div class="brand-divider"
@@ -341,7 +387,7 @@
                          style="background:#2a3a5a;"></div>
 
                     <img src="https://cdn.bajajauto.com/-/media/assets/bajajauto/global/bajaj-logo2.png"
-                         alt="Bajaj"
+                         alt="Bajaj Auto"
                          class="brand-bajaj-logo"
                          style="filter:brightness(0) invert(1);">
                 </a>
@@ -352,11 +398,11 @@
 
                 <!-- Social -->
                 <div class="d-flex gap-3 mt-3" style="font-size:1.25rem;">
-                    <a href="https://www.facebook.com/{{ FACEBOOK_URL }}" title="Facebook" target="_blank" rel="noopener noreferrer"><i class="bi bi-facebook"></i></a>
-                    <a href="https://www.instagram.com/{{ INSTAGRAM_URL }}" title="Instagram" target="_blank" rel="noopener noreferrer"><i class="bi bi-instagram"></i></a>
-                    <a href="#" title="YouTube"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.facebook.com/{{ FACEBOOK_URL }}" title="Skyline Bajaj on Facebook" target="_blank" rel="noopener noreferrer"><i class="bi bi-facebook"></i></a>
+                    <a href="https://www.instagram.com/{{ INSTAGRAM_URL }}" title="Skyline Bajaj on Instagram" target="_blank" rel="noopener noreferrer"><i class="bi bi-instagram"></i></a>
+                    <a href="#" title="Skyline Bajaj on YouTube"><i class="bi bi-youtube"></i></a>
                     <a href="https://wa.me/{{ WHATSAPP_NUMBER }}"
-                       title="WhatsApp"
+                       title="WhatsApp Skyline Bajaj"
                        target="_blank">
                         <i class="bi bi-whatsapp" style="color:#25d366;"></i>
                     </a>
@@ -386,7 +432,6 @@
                         </li>
                         {% endif %}
                     {% endfor %}
-                    <!-- ── Chetak footer link (NEW) ── -->
                     <li>
                         <a href="{% url 'chetak' %}">
                             <i class="bi bi-lightning-charge-fill" style="color:#00c3ff; font-size:.6rem;"></i> Chetak Electric
@@ -504,7 +549,7 @@
     <a href="https://wa.me/{{ WHATSAPP_NUMBER }}"
        class="whatsapp-float"
        target="_blank"
-       title="Chat on WhatsApp">
+       title="Chat on WhatsApp with Skyline Bajaj">
         <i class="bi bi-whatsapp"></i>
     </a>
 </div>
@@ -519,5 +564,3 @@
 {% block extra_js %}{% endblock %}
 </body>
 </html>
-
-

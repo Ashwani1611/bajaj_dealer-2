@@ -1,5 +1,21 @@
 {% extends 'base.html' %}
-{% block title %}Our Showrooms & Service Stations{% endblock %}
+
+{# ══════════════════════════════════════════════════════════════ #}
+{# SEO BLOCKS — FIX: these were missing, so view context values  #}
+{# were never rendered. base.html defaults were used instead.    #}
+{# ══════════════════════════════════════════════════════════════ #}
+
+{% block seo_title %}{{ seo_title|default:"Bajaj Showroom Locations Noida | Skyline Bajaj Dealer Address" }}{% endblock %}
+
+{% block seo_description %}{{ seo_description|default:"Find all Skyline Bajaj showroom addresses in Noida, Bhangel, Sector 10, Sector 58 and Greater Noida. Contact numbers, directions and working hours." }}{% endblock %}
+
+{% block canonical_url %}{{ canonical_url|default:"https://skylinewheels.in/contact/" }}{% endblock %}
+
+{% block og_title %}{{ seo_title|default:"Bajaj Showroom Locations Noida | Skyline Bajaj" }}{% endblock %}
+
+{% block og_description %}{{ seo_description|default:"Find all Skyline Bajaj showroom addresses in Noida, Bhangel, Sector 10, Sector 58 and Greater Noida." }}{% endblock %}
+
+{% block og_url %}{{ canonical_url|default:"https://skylinewheels.in/contact/" }}{% endblock %}
 
 {% block content %}
 <style>
@@ -95,14 +111,14 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
-            <li class="breadcrumb-item active">Showrooms & Service</li>
+            <li class="breadcrumb-item active">Showrooms &amp; Service</li>
         </ol>
     </nav>
 
     <!-- SHOWROOMS -->
     <div class="text-center mb-5">
         <span class="section-badge">Authorized Dealer</span>
-        <h2 class="fw-bold mb-1" style="color:#003087;">Our Showrooms</h2>
+        <h1 class="fw-bold mb-1" style="color:#003087;">Our Showrooms</h1>
         <p style="color:#5a6a8a;">
             Visit any of our showrooms — test ride, purchase, and exchange.
         </p>
@@ -110,7 +126,7 @@
 
     <div class="row g-4">
         {% for showroom in showrooms %}
-        <div class="col-lg-6">
+        <div class="col-lg-6" id="{{ showroom.slug }}">
             <div class="location-card">
 
                 {% if showroom.google_maps_embed %}
@@ -198,7 +214,7 @@
 
     <div class="row g-4">
         {% for station in service_stations %}
-        <div class="col-lg-6">
+        <div class="col-lg-6" id="{{ station.slug }}">
             <div class="location-card">
 
                 {% if station.google_maps_embed %}

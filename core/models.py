@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils.text import slugify
 import re
 import os
 from django.contrib.auth.models import User
@@ -59,6 +60,16 @@ class Bike(models.Model):
     fuel_type   = models.CharField(max_length=50, default='Petrol')
     mileage     = models.CharField(max_length=50, blank=True)
 
+    # ── SEO fields (optional — overrides auto-generated meta) ─────
+    meta_title       = models.CharField(
+        max_length=70, blank=True,
+        help_text='Optional. Custom SEO title (max 70 chars). Leave blank to auto-generate.'
+    )
+    meta_description = models.CharField(
+        max_length=160, blank=True,
+        help_text='Optional. Custom SEO description (max 160 chars). Leave blank to auto-generate.'
+    )
+
     is_featured = models.BooleanField(default=False)
     is_active   = models.BooleanField(default=True)
     is_chetak   = models.BooleanField(
@@ -94,14 +105,13 @@ class Bike(models.Model):
         if self.image:
             try:
                 url = self.image.url
-                # Optimize if served from Cloudinary
                 if 'res.cloudinary.com' in url:
                     url = url.replace('/upload/', '/upload/q_auto:best,f_auto/')
                 return url
             except AttributeError:
                 return ''
 
-        # 3. Final Fallback: Return a default placeholder
+        # 3. Final fallback
         from django.templatetags.static import static
         return static('images/bike-placeholder.jpg')
 
@@ -125,7 +135,6 @@ class BikeColor(models.Model):
         return f'{self.bike.name} — {self.name}'
 
     def first_image_url(self):
-        """Returns the display URL of the first image assigned to this color."""
         first = self.images.filter(
             media_type__in=['image_upload', 'image_url', 'gif_upload']
         ).order_by('order').first()
@@ -134,7 +143,6 @@ class BikeColor(models.Model):
         return ''
 
     def all_image_urls(self):
-        """Returns a list of display URLs for all images of this color."""
         return [
             m.get_display_url()
             for m in self.images.filter(
@@ -144,7 +152,6 @@ class BikeColor(models.Model):
         ]
 
     def all_media_items(self):
-        """Returns all media (images + videos) for this color, ordered."""
         return self.images.all().order_by('order')
 
 
@@ -227,33 +234,24 @@ class BikeImage(models.Model):
     def get_youtube_thumbnail_url(self):
         return f'https://img.youtube.com/vi/{self.media_link}/hqdefault.jpg'
 
-    # ── NEW: Cloudinary optimizer ─────────────────────────────────────────────
     def _optimize_cloudinary_url(self, url):
-        """
-        Serve best-quality images from Cloudinary.
-        - q_auto:best  → highest quality, still removes invisible metadata
-        - f_auto       → serves WebP/AVIF to modern browsers (smaller, crisp)
-        No width cap — full resolution is preserved.
-        """
         if not url or 'res.cloudinary.com' not in url:
             return url
-        # Avoid double-inserting transforms if already present
         if '/upload/q_auto' in url or '/upload/f_auto' in url:
             return url
         return url.replace('/upload/', '/upload/q_auto:best,f_auto/')
-    # ─────────────────────────────────────────────────────────────────────────
 
     def get_display_url(self):
         if self.media_type in ('image_upload', 'gif_upload'):
             url = self.image_file.url if self.image_file else ''
-            return self._optimize_cloudinary_url(url)          # ← optimized
+            return self._optimize_cloudinary_url(url)
         elif self.media_type == 'video_upload':
             return self.video_file.url if self.video_file else ''
         elif self.media_type in ('image_url', 'video_url'):
             url = self.media_link or ''
             if 'drive.google.com' in url:
                 return self.get_drive_direct_url(url)
-            return self._optimize_cloudinary_url(url)          # ← optimized
+            return self._optimize_cloudinary_url(url)
         elif self.media_type == 'youtube':
             return self.get_youtube_embed_url()
         return ''
@@ -293,7 +291,16 @@ class BikeImage(models.Model):
 
 class Showroom(models.Model):
     name               = models.CharField(max_length=200)
+    # FIX: slug field added — was missing, caused AttributeError in templates
+    slug               = models.SlugField(
+        unique=True, blank=True,
+        help_text='Auto-filled from name if left blank. Used in anchor links on contact page.'
+    )
     address            = models.TextField()
+    city               = models.CharField(
+        max_length=100, blank=True,
+        help_text='City name shown in footer showroom list e.g. Noida, Greater Noida'
+    )
     phone              = models.CharField(max_length=20, help_text='Primary contact number')
     phone2             = models.CharField(max_length=20, blank=True,
                                           help_text='Secondary number (optional)')
@@ -326,6 +333,12 @@ class Showroom(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        # Auto-generate slug from name if not set
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
     def get_whatsapp_number(self):
         num = (self.whatsapp_number or self.phone).replace(' ', '').replace('-', '').replace('+', '')
         if num and not num.startswith('91'):
@@ -344,7 +357,16 @@ class Showroom(models.Model):
 
 class ServiceStation(models.Model):
     name              = models.CharField(max_length=200)
+    # FIX: slug field added — future-proofing for dedicated service station pages
+    slug              = models.SlugField(
+        unique=True, blank=True,
+        help_text='Auto-filled from name if left blank.'
+    )
     address           = models.TextField()
+    city              = models.CharField(
+        max_length=100, blank=True,
+        help_text='City name e.g. Noida, Greater Noida'
+    )
     phone             = models.CharField(max_length=20)
     phone2            = models.CharField(max_length=20, blank=True)
     whatsapp_number   = models.CharField(
@@ -375,6 +397,12 @@ class ServiceStation(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        # Auto-generate slug from name if not set
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
     def get_whatsapp_number(self):
         num = (self.whatsapp_number or self.phone).replace(' ', '').replace('-', '').replace('+', '')
@@ -550,7 +578,3 @@ class Offer(models.Model):
 
     def __str__(self):
         return self.title
-    
-
-
-    

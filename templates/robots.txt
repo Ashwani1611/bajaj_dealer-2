@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /media/delete/
+Disallow: /enquiry/success/
+Disallow: /service/success/
+Disallow: /exchange/success/
+
+Sitemap: https://skylinewheels.in/sitemap.xml

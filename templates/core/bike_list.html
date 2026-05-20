@@ -1,6 +1,35 @@
 {% extends 'base.html' %}
 {% load skyline_tags %}
-{% block title %}All Bikes{% endblock %}
+
+{# ══════════════════════════════════════════════════════════════ #}
+{# SEO BLOCKS                                                     #}
+{# ══════════════════════════════════════════════════════════════ #}
+
+{% block seo_title %}{{ seo_title|default:"All Bajaj Bikes in Noida | Pulsar, Platina, CT, Dominar | Skyline Bajaj" }}{% endblock %}
+
+{% block seo_description %}{{ seo_description|default:"Explore all Bajaj bikes at Skyline Bajaj showrooms in Noida, Bhangel and Greater Noida. Best price, EMI, exchange and test ride available." }}{% endblock %}
+
+{% block canonical_url %}{{ canonical_url|default:"https://skylinewheels.in/bikes/" }}{% endblock %}
+
+{% block og_title %}{{ seo_title|default:"All Bajaj Bikes in Noida | Skyline Bajaj" }}{% endblock %}
+{% block og_url %}{{ canonical_url|default:"https://skylinewheels.in/bikes/" }}{% endblock %}
+
+{% block schema_markup %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://skylinewheels.in"},
+    {"@type":"ListItem","position":2,"name":"{% if selected_category %}{{ selected_category|title }} Bikes{% else %}All Bikes{% endif %}","item":"{{ canonical_url|default:'https://skylinewheels.in/bikes/' }}"}
+  ]
+}
+</script>
+{% endblock %}
+
+{# ══════════════════════════════════════════════════════════════ #}
+{# PAGE CONTENT                                                   #}
+{# ══════════════════════════════════════════════════════════════ #}
 
 {% block content %}
 
@@ -74,9 +103,25 @@
 <section class="py-5" style="background:#f8faff; min-height:80vh;">
 <div class="container">
 
-    <h2 class="fw-bold mb-1" style="color:#003087;">Explore Bikes</h2>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" style="color:#0055b3;">Home</a></li>
+            <li class="breadcrumb-item active" style="color:#003087; font-weight:600;">
+                {% if selected_category %}{{ selected_category|title }} Bikes{% else %}All Bikes{% endif %}
+            </li>
+        </ol>
+    </nav>
+
+    <h1 class="fw-bold mb-1" style="color:#003087; font-size:1.6rem;">
+        {% if selected_category %}
+            Bajaj {{ selected_category|title }} Bikes in Noida
+        {% else %}
+            All Bajaj Bikes in Noida
+        {% endif %}
+    </h1>
     <p class="text-muted mb-4" style="font-size:.92rem;">
-        Choose from our full range of Bajaj motorcycles
+        Available at Skyline Bajaj showrooms – Noida, Bhangel &amp; Greater Noida
     </p>
 
     <!-- Category Filter -->
@@ -133,15 +178,17 @@
                                     {% if item.is_image %}
                                         {% if item.image_file %}
                                             <img src="{{ item.image_file.url }}"
-                                                 alt="{{ bike.name }} {{ color.name }}">
+                                                 alt="{{ bike.name }} {{ color.name }} price Noida"
+                                                 loading="lazy">
                                         {% elif item.media_link %}
                                             <img src="{{ item.get_display_url|with_logo }}"
                                                  referrerpolicy="no-referrer"
-                                                 alt="{{ bike.name }} {{ color.name }}">
+                                                 alt="{{ bike.name }} {{ color.name }} Skyline Bajaj"
+                                                 loading="lazy">
                                         {% endif %}
                                     {% elif item.is_youtube %}
                                         <iframe src="{{ item.get_display_url }}"
-                                                title="{{ bike.name }}"
+                                                title="{{ bike.name }} Noida"
                                                 allowfullscreen loading="lazy">
                                         </iframe>
                                     {% elif item.is_video %}
@@ -156,12 +203,14 @@
                             {% if imgs|length > 1 %}
                             <button class="carousel-control-prev" type="button"
                                     data-bs-target="#list-carousel-{{ bike.pk }}-{{ color.pk }}"
-                                    data-bs-slide="prev">
+                                    data-bs-slide="prev"
+                                    aria-label="Previous">
                                 <span class="carousel-control-prev-icon"></span>
                             </button>
                             <button class="carousel-control-next" type="button"
                                     data-bs-target="#list-carousel-{{ bike.pk }}-{{ color.pk }}"
-                                    data-bs-slide="next">
+                                    data-bs-slide="next"
+                                    aria-label="Next">
                                 <span class="carousel-control-next-icon"></span>
                             </button>
                             {% endif %}
@@ -183,7 +232,8 @@
                     <img src="{{ bike.image.url }}"
                          class="bike-carousel-list"
                          style="object-fit:cover; width:100%;"
-                         alt="{{ bike.name }}">
+                         alt="{{ bike.name }} price Noida – Skyline Bajaj"
+                         loading="lazy">
                 {% else %}
                     <div class="bike-carousel-list d-flex align-items-center justify-content-center bg-light">
                         <i class="bi bi-bicycle text-secondary"
@@ -205,12 +255,14 @@
                                 data-color-id="{{ color.pk }}"
                                 data-color-name="{{ color.name }}"
                                 data-hex="{{ color.color_hex }}"
-                                title="{{ color.name }}">
+                                title="{{ color.name }}"
+                                aria-label="Select {{ color.name }} color">
                             {% with thumb=color.first_image_url %}
                             {% if thumb %}
                                 <img src="{{ thumb|with_logo }}"
                                      referrerpolicy="no-referrer"
-                                     alt="{{ color.name }}">
+                                     alt="{{ color.name }}"
+                                     loading="lazy">
                             {% else %}
                                 <span class="swatch-fill" data-apply-hex="1"></span>
                             {% endif %}
@@ -230,7 +282,7 @@
                           style="background:#e8f0fb; color:#003087; font-size:.72rem;">
                         {{ bike.category.name }}
                     </span>
-                    <h5 class="fw-bold mb-1" style="color:#111;">{{ bike.name }}</h5>
+                    <h2 class="fw-bold mb-1" style="color:#111; font-size:1rem;">{{ bike.name }}</h2>
                     <p class="fw-bold mb-2" style="color:#003087;">{{ bike.formatted_price }}</p>
 
                     <div class="d-flex gap-3 flex-wrap" style="font-size:.8rem; color:#6b7a99;">
