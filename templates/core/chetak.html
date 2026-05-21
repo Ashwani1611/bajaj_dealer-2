@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load skyline_tags %}
-{% block title %}Bajaj Chetak Electric Scooter{% endblock %}
+
+{% block seo_title %}Bajaj Chetak Electric Scooter Dealer in Noida & Greater Noida | Skyline Bajaj{% endblock %}
+
+{% block seo_description %}Buy Bajaj Chetak electric scooter in Noida and Greater Noida at Skyline Bajaj. Authorized Chetak EV dealer — test ride, EMI, home delivery available. Visit our showroom today.{% endblock %}
 
 {% block content %}
 
@@ -93,8 +96,9 @@
                 <span class="chetak-electric-badge mb-3">
                     <i class="bi bi-lightning-charge-fill"></i> ELECTRIC SCOOTER
                 </span>
+                {# ── CHANGED: H1 is now keyword-rich for local SEO ── #}
                 <h1 class="display-4 fw-bold text-white mt-2 mb-3">
-                    Bajaj <span style="color:#00c3ff;">Chetak</span>
+                    Bajaj <span style="color:#00c3ff;">Chetak</span> EV Dealer in Noida &amp; Greater Noida
                 </h1>
                 <p class="text-white-50 mb-4" style="font-size:1rem; max-width:480px;">
                     Zero fuel. Zero fuss. India's most trusted electric scooter — available at our showroom.
@@ -205,9 +209,16 @@
                                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                     {% if item.is_image %}
                                         {% if item.image_file %}
-                                            <img src="{{ item.image_file.url }}" alt="{{ bike.name }} {{ color.name }}">
+                                            {# ── CHANGED: loading="lazy" + keyword alt text ── #}
+                                            <img src="{{ item.image_file.url }}"
+                                                 loading="lazy"
+                                                 alt="{{ bike.name }} {{ color.name }} price in Noida">
                                         {% elif item.media_link %}
-                                            <img src="{{ item.get_display_url|with_logo }}" referrerpolicy="no-referrer" alt="{{ bike.name }} {{ color.name }}">
+                                            {# ── CHANGED: loading="lazy" + keyword alt text ── #}
+                                            <img src="{{ item.get_display_url|with_logo }}"
+                                                 referrerpolicy="no-referrer"
+                                                 loading="lazy"
+                                                 alt="{{ bike.name }} {{ color.name }} price in Noida">
                                         {% endif %}
                                     {% elif item.is_youtube %}
                                         <iframe src="{{ item.get_display_url }}" title="{{ bike.name }}" allowfullscreen loading="lazy"></iframe>
@@ -240,10 +251,12 @@
                     {% endfor %}
 
                 {% elif bike.image %}
+                    {# ── CHANGED: loading="lazy" + keyword alt text ── #}
                     <img src="{{ bike.image.url }}"
                          class="bike-carousel-list"
                          style="object-fit:cover; width:100%;"
-                         alt="{{ bike.name }}">
+                         loading="lazy"
+                         alt="{{ bike.name }} electric scooter price in Noida">
                 {% else %}
                     <div class="bike-carousel-list d-flex align-items-center justify-content-center bg-light">
                         <i class="bi bi-bicycle text-secondary" style="font-size:3.5rem; opacity:.25;"></i>
@@ -399,4 +412,3 @@
 }());
 </script>
 {% endblock %}
-

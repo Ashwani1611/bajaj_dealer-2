@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load skyline_tags %}
-{% block title %}Home{% endblock %}
+
+{% block seo_title %}Authorized Bajaj Dealer in Noida & Greater Noida | Skyline Bajaj{% endblock %}
+
+{% block seo_description %}Buy new Bajaj bikes at Skyline Bajaj — authorized dealer in Noida, Bhangel, Sector 10 & Greater Noida. Pulsar, Dominar, Platina, CT100, Chetak EV. EMI, exchange, test ride available.{% endblock %}
 
 {% block content %}
 <style>
@@ -373,9 +376,11 @@
          style="position:absolute;inset:0;opacity:{% if forloop.first %}1{% else %}0{% endif %};transition:opacity .8s ease;z-index:{% if forloop.first %}1{% else %}0{% endif %};">
         {% with img_url=bike.get_primary_image_url %}
         {% if img_url %}
-            <img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+            <img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer"
+                 alt="{{ bike.name }} – Bajaj dealer Noida">
         {% else %}
-            <img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">
+            <img src="{% static 'images/bike-placeholder.jpg' %}"
+                 alt="{{ bike.name }} – Bajaj dealer Noida">
         {% endif %}
         {% endwith %}
     </div>
@@ -444,13 +449,14 @@
                 <span class="hero-badge">
                     <i class="bi bi-patch-check-fill me-1"></i>Authorized Dealer
                 </span>
-                <h1 class="display-4 fw-bold mb-3 text-white"
+                {# ── CHANGED: H1 is now keyword-rich for local SEO ── #}
+                <h1 class="display-4 fw-bold mb-2 text-white"
                     style="line-height:1.15; font-family:'Rajdhani',sans-serif;">
-                    Ride the <span style="color:#7eb3ff;">Thrill</span>.<br>Own a Bajaj.
+                    Authorized Bajaj Dealer in <span style="color:#7eb3ff;">Noida</span> &amp; Greater Noida
                 </h1>
                 <p class="mb-4"
                    style="color:rgba(255,255,255,.7); font-size:1.05rem; line-height:1.7; max-width:520px;">
-                    From Pulsar to Chetak EV — explore the full range at your nearest showroom.
+                    Ride the Thrill. Own a Bajaj. — From Pulsar to Chetak EV, explore the full range at your nearest showroom.
                 </p>
                 <div class="d-flex gap-3 flex-wrap mb-4">
                     <a href="{% url 'bike_list' %}"
@@ -529,7 +535,8 @@
                 {% for offer in offers %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                     {% if offer.link %}<a href="{{ offer.link }}" target="_blank">{% endif %}
-                    <img src="{{ offer.image.url }}" class="offer-slide-img" alt="{{ offer.title }}">
+                    <img src="{{ offer.image.url }}" class="offer-slide-img"
+                         loading="lazy" alt="{{ offer.title }}">
                     {% if offer.link %}</a>{% endif %}
                 </div>
                 {% endfor %}
@@ -553,8 +560,14 @@
             <div class="gallery-strip" id="galleryStrip">
                 {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
                 <a href="{% url 'bike_detail' bike.slug %}" class="gallery-thumb" title="{{ bike.name }}" style="text-decoration:none;">
-                    {% if img_url %}<img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
-                    {% else %}<img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">{% endif %}
+                    {# ── CHANGED: loading="lazy" + keyword alt text ── #}
+                    {% if img_url %}
+                        <img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer"
+                             loading="lazy" alt="{{ bike.name }} price in Noida">
+                    {% else %}
+                        <img src="{% static 'images/bike-placeholder.jpg' %}"
+                             loading="lazy" alt="{{ bike.name }} price in Noida">
+                    {% endif %}
                     <div class="gallery-thumb-label">{{ bike.name }}</div>
                 </a>
                 {% endwith %}{% endfor %}
@@ -564,8 +577,14 @@
             {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
             <a href="{% url 'bike_detail' bike.slug %}"
                class="big-gallery-item {% if forloop.counter == 1 or forloop.counter == 6 %}large{% endif %}">
-                {% if img_url %}<img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer" alt="{{ bike.name }}">
-                {% else %}<img src="{% static 'images/bike-placeholder.jpg' %}" alt="{{ bike.name }}">{% endif %}
+                {# ── CHANGED: loading="lazy" + keyword alt text ── #}
+                {% if img_url %}
+                    <img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer"
+                         loading="lazy" alt="{{ bike.name }} – Bajaj dealer Noida">
+                {% else %}
+                    <img src="{% static 'images/bike-placeholder.jpg' %}"
+                         loading="lazy" alt="{{ bike.name }} – Bajaj dealer Noida">
+                {% endif %}
                 <div class="item-overlay"></div>
                 <div class="item-info">
                     <div class="item-name">{{ bike.name }}</div>
@@ -603,7 +622,11 @@
                     <div class="bike-img-wrap">
                         {% with first_img=bike.get_primary_image_url %}
                         {% if first_img %}
-                            <img src="{{ first_img|with_logo }}" class="bike-img" referrerpolicy="no-referrer" alt="{{ bike.name }}">
+                            {# ── CHANGED: loading="lazy" + keyword alt text ── #}
+                            <img src="{{ first_img|with_logo }}" class="bike-img"
+                                 referrerpolicy="no-referrer"
+                                 loading="lazy"
+                                 alt="{{ bike.name }} price in Noida">
                         {% else %}
                             <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
                                 <i class="bi bi-bicycle text-secondary" style="font-size:4rem;opacity:.3;"></i>
