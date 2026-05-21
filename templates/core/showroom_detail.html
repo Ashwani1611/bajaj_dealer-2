@@ -132,6 +132,17 @@
         border-radius: 20px; margin-bottom: 6px;
     }
 
+    /* ── About section ── */
+    .about-section { background: #fff; }
+    .about-section h2 { color: #003087; }
+    .about-section p { color: #4a5568; line-height: 1.8; font-size: .97rem; }
+    .about-section ul { color: #4a5568; line-height: 2; font-size: .95rem; padding-left: 1.2rem; }
+    .about-section ul li::marker { color: #003087; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 1rem 0; }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q { font-weight: 700; color: #003087; font-size: .97rem; margin-bottom: .3rem; }
+    .faq-a { color: #4a5568; font-size: .9rem; line-height: 1.7; }
+
     /* ── Enquiry form ── */
     .enquiry-section { background: linear-gradient(135deg, #001a4d 0%, #003087 100%); }
     .enquiry-section .form-control,
@@ -161,6 +172,19 @@
             </ol>
         </nav>
 
+        {% if is_chetak_showroom %}
+        <span class="hero-badge">
+            <i class="bi bi-lightning-charge-fill me-1"></i>Authorized Chetak EV Dealer
+        </span>
+        <h1 class="display-5 fw-bold text-white mb-2"
+            style="font-family:'Rajdhani',sans-serif; line-height:1.15;">
+            Chetak Electric Scooter in <span style="color:#7eb3ff;">Greater Noida</span>
+        </h1>
+        <p style="color:rgba(255,255,255,.7); font-size:1rem; max-width:540px;" class="mb-4">
+            {{ showroom.name }} — authorized Bajaj Chetak EV dealer in Greater Noida.
+            Test ride available. EMI &amp; home delivery options.
+        </p>
+        {% else %}
         <span class="hero-badge">
             <i class="bi bi-patch-check-fill me-1"></i>Authorized Bajaj Dealer
         </span>
@@ -172,6 +196,8 @@
             {{ showroom.name }} — your authorized Bajaj showroom in {{ showroom.city }}.
             New bikes, test rides, EMI &amp; exchange available.
         </p>
+        {% endif %}
+
         <div class="d-flex gap-3 flex-wrap">
             <a href="{% url 'enquiry' %}?showroom={{ showroom.pk }}"
                class="btn btn-lg fw-bold"
@@ -328,10 +354,17 @@
     <div class="container">
         <div class="text-center mb-4">
             <span class="section-badge">Available Now</span>
+            {% if is_chetak_showroom %}
+            <h2 class="fw-bold mb-1" style="color:#003087;">
+                Chetak Electric Scooters Available in Greater Noida
+            </h2>
+            <p style="color:#5a6a8a;">All Chetak EV variants available at {{ showroom.name }}</p>
+            {% else %}
             <h2 class="fw-bold mb-1" style="color:#003087;">
                 Bajaj Bikes Available in {{ showroom.city }}
             </h2>
             <p style="color:#5a6a8a;">All models available at {{ showroom.name }} showroom</p>
+            {% endif %}
         </div>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -388,14 +421,156 @@
 </section>
 
 
+<!-- ══ ABOUT THIS SHOWROOM — SEO CONTENT SECTION ══ -->
+<section class="about-section py-5">
+    <div class="container">
+        <div class="row g-5">
+
+            <!-- Left: About text -->
+            <div class="col-lg-7">
+                <span class="section-badge">About This Showroom</span>
+
+                {% if is_chetak_showroom %}
+                <h2 class="fw-bold mt-2 mb-3">
+                    Bajaj Chetak Electric Scooter Dealer in Greater Noida
+                </h2>
+                <p>
+                    <strong>{{ showroom.name }}</strong> is the authorized Bajaj Chetak electric scooter
+                    dealership in Greater Noida. Located at {{ showroom.address }}, we are the go-to
+                    destination for anyone looking to buy a Chetak EV in Greater Noida, Pari Chowk,
+                    Alpha, Beta, Knowledge Park, Surajpur, and Kasna areas.
+                </p>
+                <p>
+                    The Bajaj Chetak is India's most popular electric scooter — known for its retro
+                    design, smooth ride, and low running cost. At our Greater Noida showroom you can
+                    see every Chetak colour and variant in person, take a free test ride, and get
+                    the best on-road price with easy EMI options.
+                </p>
+                <h3 class="fw-bold mt-4 mb-2" style="color:#003087;font-size:1.1rem;">
+                    Why Buy Chetak from {{ showroom.name }}?
+                </h3>
+                <ul>
+                    <li>Authorized Bajaj Chetak dealer — official warranty &amp; service</li>
+                    <li>All Chetak variants and colours on display</li>
+                    <li>Free test ride at our Greater Noida showroom</li>
+                    <li>Easy EMI starting from ₹2,999/month</li>
+                    <li>Government subsidy guidance and FAME-II benefits</li>
+                    <li>Home delivery available across Greater Noida</li>
+                    <li>Exchange your old scooter or bike</li>
+                </ul>
+
+                {% else %}
+                <h2 class="fw-bold mt-2 mb-3">
+                    Bajaj Bikes Showroom in {{ showroom.city }} — {{ showroom.name }}
+                </h2>
+                <p>
+                    <strong>{{ showroom.name }}</strong> is an authorized Bajaj Auto dealership
+                    serving customers in {{ showroom.city }} and nearby areas including
+                    {% for area in areas_served %}{{ area }}{% if not forloop.last %}, {% endif %}{% endfor %}.
+                    Our showroom is located at {{ showroom.address }}, easily accessible from all
+                    parts of {{ showroom.city }}.
+                </p>
+                <p>
+                    We stock the complete range of Bajaj motorcycles and scooters — from the
+                    fuel-efficient Platina and CT100 to the performance-oriented Pulsar NS200,
+                    Pulsar RS200, Dominar 400, and the adventure-ready Avenger series. Whether
+                    you are a first-time buyer or upgrading your ride, our trained sales team
+                    will help you find the right Bajaj bike for your budget and needs.
+                </p>
+                <h3 class="fw-bold mt-4 mb-2" style="color:#003087;font-size:1.1rem;">
+                    Why Buy Your Bajaj Bike from {{ showroom.name }}?
+                </h3>
+                <ul>
+                    <li>Authorized Bajaj Auto dealership — official warranty &amp; genuine parts</li>
+                    <li>Complete range of Bajaj bikes on display and available for test ride</li>
+                    <li>Best on-road price in {{ showroom.city }} — no hidden charges</li>
+                    <li>Easy EMI options starting ₹999/month with all major banks</li>
+                    <li>Instant exchange evaluation for your old bike</li>
+                    <li>Fast RTO registration &amp; insurance at showroom</li>
+                    {% if showroom.has_service_center %}<li>In-house Bajaj-certified service center</li>{% endif %}
+                    <li>Serving {{ showroom.city }} customers since years — trusted local dealer</li>
+                </ul>
+                {% endif %}
+            </div>
+
+            <!-- Right: FAQ — keyword-rich Q&A that Google loves -->
+            <div class="col-lg-5">
+                <span class="section-badge">FAQ</span>
+                {% if is_chetak_showroom %}
+                <h2 class="fw-bold mt-2 mb-3" style="font-size:1.2rem;">
+                    Chetak EV Showroom — Frequently Asked Questions
+                </h2>
+                <div class="faq-item">
+                    <div class="faq-q">Where is the Chetak showroom in Greater Noida?</div>
+                    <div class="faq-a">{{ showroom.name }} is located at {{ showroom.address }}. Call {{ showroom.phone }} for directions.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">What is the price of Bajaj Chetak in Greater Noida?</div>
+                    <div class="faq-a">The Bajaj Chetak on-road price in Greater Noida varies by variant. Visit our showroom or call {{ showroom.phone }} for the latest price including registration and insurance.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Can I test ride the Chetak at your Greater Noida showroom?</div>
+                    <div class="faq-a">Yes, free Chetak test rides are available at {{ showroom.name }}. Book online or walk in during working hours: {{ showroom.working_hours }}.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Is EMI available on Chetak in Greater Noida?</div>
+                    <div class="faq-a">Yes, easy EMI options are available starting from ₹2,999/month with all major banks and NBFCs. Our finance team will find the best rate for you.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">What areas near Greater Noida do you serve?</div>
+                    <div class="faq-a">We serve customers from Greater Noida, Pari Chowk, Alpha, Beta, Knowledge Park, Surajpur, Kasna, and surrounding areas.</div>
+                </div>
+
+                {% else %}
+                <h2 class="fw-bold mt-2 mb-3" style="font-size:1.2rem;">
+                    Bajaj Showroom {{ showroom.city }} — Frequently Asked Questions
+                </h2>
+                <div class="faq-item">
+                    <div class="faq-q">Where is the Bajaj showroom in {{ showroom.city }}?</div>
+                    <div class="faq-a">{{ showroom.name }} is located at {{ showroom.address }}. Open {{ showroom.working_hours }}. Call {{ showroom.phone }} for directions.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Which Bajaj bikes are available in {{ showroom.city }}?</div>
+                    <div class="faq-a">We stock all Bajaj models including Pulsar NS125, NS160, NS200, RS200, Dominar 250, Dominar 400, Platina 100, CT100, Avenger 160, and more. Visit our {{ showroom.city }} showroom to see every model.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Can I book a test ride at the {{ showroom.city }} showroom?</div>
+                    <div class="faq-a">Yes, free test rides are available for all Bajaj bikes at {{ showroom.name }}. Book online or call {{ showroom.phone }} to schedule your ride.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Is EMI available on Bajaj bikes in {{ showroom.city }}?</div>
+                    <div class="faq-a">Yes, easy bike loan EMI is available from ₹999/month with all major banks. Our in-house finance team offers same-day approval.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Can I exchange my old bike at this showroom?</div>
+                    <div class="faq-a">Yes, we offer instant exchange evaluation for all brands. Get the best exchange value and upgrade to a new Bajaj bike at {{ showroom.name }}.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">What areas near {{ showroom.city }} do you serve?</div>
+                    <div class="faq-a">We serve customers from {% for area in areas_served %}{{ area }}{% if not forloop.last %}, {% endif %}{% endfor %} and surrounding areas.</div>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
 <!-- ══ WHY VISIT THIS SHOWROOM ══ -->
-<section class="py-5" style="background:#fff;">
+<section class="py-5" style="background:#f8faff;">
     <div class="container">
         <div class="text-center mb-4">
             <span class="section-badge">Why Choose Us</span>
+            {% if is_chetak_showroom %}
+            <h2 class="fw-bold mb-1" style="color:#003087;">
+                Why Buy Chetak from {{ showroom.name }}?
+            </h2>
+            {% else %}
             <h2 class="fw-bold mb-1" style="color:#003087;">
                 Why Buy Your Bajaj Bike from {{ showroom.name }}?
             </h2>
+            {% endif %}
         </div>
         <div class="row g-4 text-center">
             <div class="col-md-3 col-6">
@@ -409,9 +584,14 @@
                 <div class="p-3">
                     <i class="bi bi-currency-rupee fs-2 mb-2 d-block" style="color:#003087;"></i>
                     <h6 class="fw-bold" style="color:#111;">Best EMI Options</h6>
+                    {% if is_chetak_showroom %}
+                    <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Easy finance from ₹2,999/month</p>
+                    {% else %}
                     <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Easy finance starting ₹999/month</p>
+                    {% endif %}
                 </div>
             </div>
+            {% if not is_chetak_showroom %}
             <div class="col-md-3 col-6">
                 <div class="p-3">
                     <i class="bi bi-arrow-left-right fs-2 mb-2 d-block" style="color:#003087;"></i>
@@ -419,6 +599,15 @@
                     <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Best exchange value guaranteed</p>
                 </div>
             </div>
+            {% else %}
+            <div class="col-md-3 col-6">
+                <div class="p-3">
+                    <i class="bi bi-lightning-charge-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
+                    <h6 class="fw-bold" style="color:#111;">EV Subsidy Help</h6>
+                    <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">FAME-II &amp; UP EV policy benefits</p>
+                </div>
+            </div>
+            {% endif %}
             <div class="col-md-3 col-6">
                 <div class="p-3">
                     <i class="bi bi-calendar-check-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
