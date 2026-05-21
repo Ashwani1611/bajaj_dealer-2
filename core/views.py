@@ -27,6 +27,9 @@ from .forms import EnquiryForm, ServiceBookingForm, ExchangeForm
 
 SITE_URL = 'https://skylinewheels.in'
 
+# Slug of the Chetak-only showroom
+CHETAK_SHOWROOM_SLUG = 'skyline-chetak-greater-noida'
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # HELPERS
@@ -205,17 +208,17 @@ def home(request):
         cache.set('home_offers', offers, timeout=60 * 30)
 
     return render(request, 'core/home.html', {
-        'featured_bikes': featured_bikes,
-        'all_bikes':      home_bikes,
-        'all_showrooms':  all_showrooms,
-        'showrooms':      all_showrooms,
+        'featured_bikes':   featured_bikes,
+        'all_bikes':        home_bikes,
+        'all_showrooms':    all_showrooms,
+        'showrooms':        all_showrooms,
         'footer_showrooms': all_showrooms,
-        'nav_categories': categories,
-        'categories':     categories,
-        'videos':         videos,
-        'offers':         offers,
-        'enquiry_form':   form,
-        'showroom_count': len(all_showrooms),
+        'nav_categories':   categories,
+        'categories':       categories,
+        'videos':           videos,
+        'offers':           offers,
+        'enquiry_form':     form,
+        'showroom_count':   len(all_showrooms),
         # ── SEO ──
         'canonical_url':  SITE_URL + '/',
         'seo_title':      'Bajaj Showroom in Noida | Bhangel | Greater Noida | Skyline Bajaj',
@@ -674,56 +677,84 @@ def chetak(request):
 def showroom_detail(request, slug):
     showroom = get_object_or_404(Showroom, slug=slug, is_active=True)
 
-    bikes = list(
-        Bike.objects
-        .filter(is_active=True, is_chetak=False)
-        .select_related('category')
-        .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
-        .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
-    )
+    is_chetak_showroom = (showroom.slug == CHETAK_SHOWROOM_SLUG)
+
+    # ── Chetak showroom: only Chetak bikes. All others: only Bajaj bikes ──
+    if is_chetak_showroom:
+        bikes = list(
+            Bike.objects
+            .filter(is_active=True, is_chetak=True)
+            .select_related('category')
+            .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
+            .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
+        )
+    else:
+        bikes = list(
+            Bike.objects
+            .filter(is_active=True, is_chetak=False)
+            .select_related('category')
+            .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
+            .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
+        )
 
     other_showrooms = Showroom.objects.filter(
         is_active=True
     ).exclude(slug=slug).order_by('order')
 
     # ── Areas served per showroom ─────────────────────────────────
-    # Keys must match your actual showroom slugs.
-    # Run: python manage.py shell -c "from core.models import Showroom; [print(s.slug) for s in Showroom.objects.all()]"
-    # to confirm your slugs, then update the keys below.
     areas_map = {
-        'skyline-bajaj-sector-58': [
-            'Sector 58 Noida', 'Bishanpura', 'Sector 57 Noida',
-            'Sector 59 Noida', 'Sector 62 Noida', 'Sector 63 Noida',
-        ],
-        'skyline-bajaj-bhangel': [
+        'skyline-bajaj-bhangel-noida': [
             'Bhangel', 'Noida Extension', 'Greater Noida West',
             'Sector 93 Noida', 'Sector 121 Noida', 'Gaur City',
         ],
         'skyline-bajaj-greater-noida': [
             'Greater Noida', 'Site 4', 'Gamma 1', 'Gamma 2',
-            'Alpha 1', 'Alpha 2', 'Beta 1', 'Beta 2',
+            'Alpha 1', 'Alpha 2', 'Pari Chowk', 'Surajpur',
         ],
-        'skyline-bajaj-sector-10': [
+        'skyline-bajaj-sector-10-noida': [
             'Sector 10 Noida', 'Sector 12 Noida', 'Sector 15 Noida',
             'Sector 18 Noida', 'Sector 16 Noida', 'Sector 20 Noida',
+        ],
+        'skyline-bajaj-sector-58-bishanpura': [
+            'Sector 58 Noida', 'Bishanpura', 'Sector 57 Noida',
+            'Sector 62 Noida', 'Sector 63 Noida', 'Noida Phase 2',
+        ],
+        'skyline-chetak-greater-noida': [
+            'Greater Noida', 'Pari Chowk', 'Alpha', 'Beta',
+            'Knowledge Park', 'Surajpur', 'Kasna',
         ],
     }
     areas_served = areas_map.get(showroom.slug, [showroom.city or showroom.name])
 
     city = showroom.city or showroom.name
 
-    return render(request, 'core/showroom_detail.html', {
-        'showroom':        showroom,
-        'bikes':           bikes,
-        'other_showrooms': other_showrooms,
-        'areas_served':    areas_served,
-        'enquiry_form':    EnquiryForm(initial={'showroom': showroom}),
-        # ── SEO ──
-        'canonical_url':   f'https://www.skylinewheels.in/showroom/{showroom.slug}/',
-        'seo_title':       f'Bajaj Bikes in {city} | {showroom.name} | Skyline Bajaj',
-        'seo_description': (
+    # ── SEO: Chetak showroom gets Chetak-specific title/description ──
+    if is_chetak_showroom:
+        seo_title = (
+            f'Chetak Electric Scooter Dealer Greater Noida | {showroom.name}'
+        )
+        seo_description = (
+            f'Buy Bajaj Chetak electric scooter at {showroom.name}, Greater Noida. '
+            f'Authorized Chetak EV dealer. Test ride, EMI, home delivery available. '
+            f'Call {showroom.phone}.'
+        )
+    else:
+        seo_title = f'Bajaj Bikes in {city} | {showroom.name} | Skyline Bajaj'
+        seo_description = (
             f'Buy Bajaj bikes at {showroom.name} – authorized Bajaj dealer in {city}. '
             f'Pulsar, Dominar, Platina, CT100 and more. '
             f'EMI, exchange, test ride available. Call {showroom.phone}.'
-        ),
+        )
+
+    return render(request, 'core/showroom_detail.html', {
+        'showroom':           showroom,
+        'bikes':              bikes,
+        'other_showrooms':    other_showrooms,
+        'areas_served':       areas_served,
+        'is_chetak_showroom': is_chetak_showroom,
+        'enquiry_form':       EnquiryForm(initial={'showroom': showroom}),
+        # ── SEO ──
+        'canonical_url':    f'https://www.skylinewheels.in/showroom/{showroom.slug}/',
+        'seo_title':        seo_title,
+        'seo_description':  seo_description,
     })
