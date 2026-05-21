@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
 {# ══════════════════════════════════════════════════════════════ #}
-{# SEO BLOCKS — FIX: these were missing, so view context values  #}
-{# were never rendered. base.html defaults were used instead.    #}
+{# SEO BLOCKS                                                     #}
 {# ══════════════════════════════════════════════════════════════ #}
 
 {% block seo_title %}{{ seo_title|default:"Bajaj Showroom Locations Noida | Skyline Bajaj Dealer Address" }}{% endblock %}
@@ -74,6 +73,14 @@
         text-decoration: none;
     }
     .btn-wa-sm:hover { background: #1ebe5d; color: #fff; }
+    .btn-view-showroom {
+        background: #003087; color: #fff; border: none;
+        font-size: .82rem; font-weight: 600;
+        border-radius: 7px; padding: 6px 14px;
+        text-decoration: none;
+        display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn-view-showroom:hover { background: #0055b3; color: #fff; }
 
     .section-badge {
         display: inline-block;
@@ -164,7 +171,14 @@
                         <i class="bi bi-clock"></i>
                         {{ showroom.working_hours }}
                     </div>
+
+                    <!-- Action buttons -->
                     <div class="d-flex gap-2 flex-wrap">
+                        <!-- ★ NEW: links to dedicated showroom landing page -->
+                        <a href="{% url 'showroom_detail' showroom.slug %}"
+                           class="btn-view-showroom btn btn-sm">
+                            <i class="bi bi-shop"></i>View Showroom
+                        </a>
                         {% if showroom.google_maps_url %}
                         <a href="{{ showroom.google_maps_url }}" target="_blank"
                            class="btn btn-sm btn-directions">
@@ -269,7 +283,7 @@
                         </a>
                         <a href="{% url 'book_service' %}"
                            class="btn btn-sm"
-                           style="background:#003087;color:#fff;border:none;
+                           style="background:#856404;color:#fff;border:none;
                                   font-size:.82rem;font-weight:600;border-radius:7px;padding:6px 14px;">
                             <i class="bi bi-calendar-check me-1"></i>Book Service
                         </a>
