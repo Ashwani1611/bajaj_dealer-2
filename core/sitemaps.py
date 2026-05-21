@@ -2,16 +2,12 @@
 core/sitemaps.py
 ─────────────────────────────────────────────────────────────────────────────
 Django XML sitemap for Skyline Wheels / Skyline Bajaj.
-
-SETUP STEPS:
-1. Add 'django.contrib.sitemaps' to INSTALLED_APPS in settings.py
-2. Wire up in bajaj_dealer/urls.py  (see bottom of this file)
 ─────────────────────────────────────────────────────────────────────────────
 """
 
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import Bike, BikeCategory,Showroom
+from .models import Bike, BikeCategory, Showroom
 
 
 # ── Individual bike pages ──────────────────────────────────────────────────
@@ -62,6 +58,20 @@ class CategorySitemap(Sitemap):
         return f'/bikes/?category={cat.slug}'
 
 
+# ── Showroom location pages ────────────────────────────────────────────────
+
+class ShowroomSitemap(Sitemap):
+    changefreq = 'monthly'
+    priority   = 0.95          # ← higher than bikes — local pages are key
+    protocol   = 'https'
+
+    def items(self):
+        return Showroom.objects.filter(is_active=True).order_by('order')
+
+    def location(self, obj):
+        return f'/showroom/{obj.slug}/'
+
+
 # ── Static pages ───────────────────────────────────────────────────────────
 
 class StaticSitemap(Sitemap):
@@ -73,7 +83,7 @@ class StaticSitemap(Sitemap):
         ('home',          1.0),
         ('bike_list',     0.9),
         ('chetak',        0.9),
-        ('contact',       0.8),
+        ('contact',       0.85),
         ('enquiry',       0.8),
         ('book_service',  0.8),
         ('exchange_bike', 0.7),
@@ -87,38 +97,3 @@ class StaticSitemap(Sitemap):
 
     def priority(self, item):
         return item[1]
-
-
-class ShowroomSitemap(Sitemap):
-    changefreq = 'monthly'
-    priority   = 0.9
-    protocol   = 'https'
-
-    def items(self):
-        return Showroom.objects.filter(is_active=True).order_by('order')
-
-    def location(self, obj):
-        return f'/showroom/{obj.slug}/'
-
-# ═══════════════════════════════════════════════════════════════════════════
-# HOW TO WIRE UP IN bajaj_dealer/urls.py
-# ═══════════════════════════════════════════════════════════════════════════
-#
-# from django.contrib.sitemaps.views import sitemap
-# from core.sitemaps import BikeSitemap, ChetakBikeSitemap, CategorySitemap, StaticSitemap
-#
-# sitemaps = {
-#     'bikes':    BikeSitemap,
-#     'chetak':   ChetakBikeSitemap,
-#     'category': CategorySitemap,
-#     'static':   StaticSitemap,
-# }
-#
-# urlpatterns = [
-#     ...
-#     path('sitemap.xml', sitemap, {'sitemaps': sitemaps},
-#          name='django.contrib.sitemaps.views.sitemap'),
-# ]
-#
-# Also add to INSTALLED_APPS in settings.py:
-#   'django.contrib.sitemaps',
