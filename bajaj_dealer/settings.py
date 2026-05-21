@@ -245,6 +245,5 @@ if not DEBUG:
 
 import time
     
+SITE_ID = 1
 
-
-    
