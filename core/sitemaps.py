@@ -59,10 +59,13 @@ class CategorySitemap(Sitemap):
 
 
 # ── Showroom location pages ────────────────────────────────────────────────
+# Priority 0.95 — highest after home page.
+# These local pages are the most important for ranking
+# "bikes bhangel", "bikes sector 10 noida", "bikes greater noida" etc.
 
 class ShowroomSitemap(Sitemap):
     changefreq = 'monthly'
-    priority   = 0.95          # ← higher than bikes — local pages are key
+    priority   = 0.95
     protocol   = 'https'
 
     def items(self):
