@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from django.contrib.sitemaps.views import sitemap
+from core.sitemaps import BikeSitemap, ChetakBikeSitemap, CategorySitemap, StaticSitemap, ShowroomSitemap
 
 from core import admin_views
 from core.sitemaps import (
@@ -19,6 +20,7 @@ sitemaps = {
     'chetak':   ChetakBikeSitemap,
     'category': CategorySitemap,
     'static':   StaticSitemap,
+    'showroom': ShowroomSitemap,
 }
 
 urlpatterns = [

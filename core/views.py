@@ -667,3 +667,63 @@ def chetak(request):
             'Authorized Chetak EV dealer at Site 4, Greater Noida. Test ride available, EMI options.'
         ),
     })
+
+
+# ── showroom detail ───────────────────────────────────────────────────────────
+
+def showroom_detail(request, slug):
+    showroom = get_object_or_404(Showroom, slug=slug, is_active=True)
+
+    bikes = list(
+        Bike.objects
+        .filter(is_active=True, is_chetak=False)
+        .select_related('category')
+        .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
+        .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
+    )
+
+    other_showrooms = Showroom.objects.filter(
+        is_active=True
+    ).exclude(slug=slug).order_by('order')
+
+    # ── Areas served per showroom ─────────────────────────────────
+    # Keys must match your actual showroom slugs.
+    # Run: python manage.py shell -c "from core.models import Showroom; [print(s.slug) for s in Showroom.objects.all()]"
+    # to confirm your slugs, then update the keys below.
+    areas_map = {
+        'skyline-bajaj-sector-58': [
+            'Sector 58 Noida', 'Bishanpura', 'Sector 57 Noida',
+            'Sector 59 Noida', 'Sector 62 Noida', 'Sector 63 Noida',
+        ],
+        'skyline-bajaj-bhangel': [
+            'Bhangel', 'Noida Extension', 'Greater Noida West',
+            'Sector 93 Noida', 'Sector 121 Noida', 'Gaur City',
+        ],
+        'skyline-bajaj-greater-noida': [
+            'Greater Noida', 'Site 4', 'Gamma 1', 'Gamma 2',
+            'Alpha 1', 'Alpha 2', 'Beta 1', 'Beta 2',
+        ],
+        'skyline-bajaj-sector-10': [
+            'Sector 10 Noida', 'Sector 12 Noida', 'Sector 15 Noida',
+            'Sector 18 Noida', 'Sector 16 Noida', 'Sector 20 Noida',
+        ],
+    }
+    areas_served = areas_map.get(showroom.slug, [showroom.city or showroom.name])
+
+    city = showroom.city or showroom.name
+
+    return render(request, 'core/showroom_detail.html', {
+        'showroom':        showroom,
+        'bikes':           bikes,
+        'other_showrooms': other_showrooms,
+        'areas_served':    areas_served,
+        'enquiry_form':    EnquiryForm(initial={'showroom': showroom}),
+        # ── SEO ──
+        'canonical_url':   f'https://www.skylinewheels.in/showroom/{showroom.slug}/',
+        'seo_title':       f'Bajaj Bikes in {city} | {showroom.name} | Skyline Bajaj',
+        'seo_description': (
+            f'Buy Bajaj bikes at {showroom.name} – authorized Bajaj dealer in {city}. '
+            f'Pulsar, Dominar, Platina, CT100 and more. '
+            f'EMI, exchange, test ride available. Call {showroom.phone}.'
+        ),
+    })

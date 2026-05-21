@@ -11,7 +11,7 @@ SETUP STEPS:
 
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import Bike, BikeCategory
+from .models import Bike, BikeCategory,Showroom
 
 
 # ── Individual bike pages ──────────────────────────────────────────────────
@@ -88,6 +88,17 @@ class StaticSitemap(Sitemap):
     def priority(self, item):
         return item[1]
 
+
+class ShowroomSitemap(Sitemap):
+    changefreq = 'monthly'
+    priority   = 0.9
+    protocol   = 'https'
+
+    def items(self):
+        return Showroom.objects.filter(is_active=True).order_by('order')
+
+    def location(self, obj):
+        return f'/showroom/{obj.slug}/'
 
 # ═══════════════════════════════════════════════════════════════════════════
 # HOW TO WIRE UP IN bajaj_dealer/urls.py

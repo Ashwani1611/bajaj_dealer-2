@@ -1,0 +1,504 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load skyline_tags %}
+
+{% block seo_title %}{{ seo_title }}{% endblock %}
+{% block seo_description %}{{ seo_description }}{% endblock %}
+{% block canonical_url %}{{ canonical_url }}{% endblock %}
+{% block og_title %}{{ seo_title }}{% endblock %}
+{% block og_description %}{{ seo_description }}{% endblock %}
+{% block og_url %}{{ canonical_url }}{% endblock %}
+
+{% block schema_markup %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AutoDealer",
+  "name": "{{ showroom.name }}",
+  "url": "{{ canonical_url }}",
+  "logo": "https://www.skylinewheels.in/static/images/logo.png",
+  "description": "{{ seo_description }}",
+  "telephone": "{{ showroom.phone }}",
+  {% if showroom.email %}"email": "{{ showroom.email }}",{% endif %}
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ showroom.address|striptags }}",
+    "addressLocality": "{{ showroom.city }}",
+    "addressRegion": "Uttar Pradesh",
+    "addressCountry": "IN"
+  },
+  "openingHours": "{{ showroom.working_hours }}",
+  "areaServed": [{% for area in areas_served %}"{{ area }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+  "brand": { "@type": "Brand", "name": "Bajaj Auto" },
+  "hasMap": "{{ showroom.google_maps_url }}"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://www.skylinewheels.in/"},
+    {"@type":"ListItem","position":2,"name":"Showrooms","item":"https://www.skylinewheels.in/contact/"},
+    {"@type":"ListItem","position":3,"name":"{{ showroom.name }}","item":"{{ canonical_url }}"}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --blue:   #003087;
+        --blue2:  #0055b3;
+        --accent: #e8f0fb;
+        --border: #d0dff5;
+        --gold:   #f5a623;
+    }
+
+    /* ── Hero ── */
+    .showroom-hero {
+        background: linear-gradient(135deg, #001a4d 0%, #003087 60%, #0055b3 100%);
+        padding: 3.5rem 0 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .showroom-hero::before {
+        content: '';
+        position: absolute;
+        right: -100px; top: -100px;
+        width: 400px; height: 400px;
+        background: rgba(255,255,255,.03);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .hero-badge {
+        display: inline-block;
+        background: rgba(255,255,255,.15); color: #fff;
+        font-size: .75rem; font-weight: 700; letter-spacing: 1.5px;
+        text-transform: uppercase; padding: 5px 14px;
+        border-radius: 20px; border: 1px solid rgba(255,255,255,.25);
+        margin-bottom: 1rem;
+    }
+
+    /* ── Info card ── */
+    .info-card {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: #fff;
+        padding: 1.5rem;
+    }
+    .info-row {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row i { color: var(--blue); font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+    .info-row .info-label { font-size: .72rem; color: #8a9abb; text-transform: uppercase; letter-spacing: .8px; }
+    .info-row .info-value { font-size: .9rem; color: #1a1a2e; font-weight: 500; }
+
+    /* ── Areas served ── */
+    .area-tag {
+        display: inline-block;
+        background: var(--accent);
+        color: var(--blue);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        font-size: .8rem;
+        font-weight: 600;
+        padding: 4px 14px;
+    }
+
+    /* ── Bike cards ── */
+    .bike-card {
+        border: 1px solid var(--border) !important;
+        border-radius: 14px;
+        overflow: hidden;
+        transition: box-shadow .2s, transform .2s;
+    }
+    .bike-card:hover { box-shadow: 0 8px 28px rgba(0,48,135,.14); transform: translateY(-3px); }
+    .bike-img { height: 200px; object-fit: cover; width: 100%; transition: transform .4s; }
+    .bike-card:hover .bike-img { transform: scale(1.04); }
+    .bike-img-wrap { overflow: hidden; }
+
+    /* ── Section badge ── */
+    .section-badge {
+        display: inline-block; background: var(--accent); color: var(--blue);
+        font-size: .72rem; font-weight: 700; letter-spacing: 1px;
+        text-transform: uppercase; padding: 4px 12px;
+        border-radius: 20px; margin-bottom: 6px;
+    }
+
+    /* ── Enquiry form ── */
+    .enquiry-section { background: linear-gradient(135deg, #001a4d 0%, #003087 100%); }
+    .enquiry-section .form-control,
+    .enquiry-section .form-select {
+        background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+        color: #fff; border-radius: 8px;
+    }
+    .enquiry-section .form-control::placeholder { color: rgba(255,255,255,.5); }
+    .enquiry-section .form-control:focus,
+    .enquiry-section .form-select:focus {
+        background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.5);
+        box-shadow: none; color: #fff;
+    }
+    .enquiry-section label { color: rgba(255,255,255,.8); font-size: .85rem; }
+    .enquiry-section .form-select option { background: #003087; color: #fff; }
+</style>
+
+
+<!-- ══ HERO ══ -->
+<section class="showroom-hero">
+    <div class="container position-relative" style="z-index:1;">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb" style="font-size:.8rem;">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" style="color:rgba(255,255,255,.6);">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'contact' %}" style="color:rgba(255,255,255,.6);">Showrooms</a></li>
+                <li class="breadcrumb-item active" style="color:#fff;">{{ showroom.name }}</li>
+            </ol>
+        </nav>
+
+        <span class="hero-badge">
+            <i class="bi bi-patch-check-fill me-1"></i>Authorized Bajaj Dealer
+        </span>
+        <h1 class="display-5 fw-bold text-white mb-2"
+            style="font-family:'Rajdhani',sans-serif; line-height:1.15;">
+            Bajaj Bikes in <span style="color:#7eb3ff;">{{ showroom.city }}</span>
+        </h1>
+        <p style="color:rgba(255,255,255,.7); font-size:1rem; max-width:540px;" class="mb-4">
+            {{ showroom.name }} — your authorized Bajaj showroom in {{ showroom.city }}.
+            New bikes, test rides, EMI &amp; exchange available.
+        </p>
+        <div class="d-flex gap-3 flex-wrap">
+            <a href="{% url 'enquiry' %}?showroom={{ showroom.pk }}"
+               class="btn btn-lg fw-bold"
+               style="background:#fff;color:#003087;border:none;border-radius:8px;">
+                <i class="bi bi-calendar-check me-2"></i>Book Test Ride
+            </a>
+            <a href="tel:{{ showroom.phone }}"
+               class="btn btn-lg fw-semibold"
+               style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:8px;">
+                <i class="bi bi-telephone me-2"></i>{{ showroom.phone }}
+            </a>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ SHOWROOM INFO + MAP ══ -->
+<section class="py-5" style="background:#f8faff;">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Info card -->
+            <div class="col-lg-4">
+                <div class="info-card shadow-sm h-100">
+                    <h2 class="fw-bold mb-3" style="color:#003087;font-size:1.1rem;">
+                        <i class="bi bi-shop me-2"></i>Showroom Details
+                    </h2>
+
+                    <div class="info-row">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <div>
+                            <div class="info-label">Address</div>
+                            <div class="info-value">{{ showroom.address }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <i class="bi bi-telephone-fill"></i>
+                        <div>
+                            <div class="info-label">Phone</div>
+                            <div class="info-value">
+                                <a href="tel:{{ showroom.phone }}" style="color:#003087;text-decoration:none;">
+                                    {{ showroom.phone }}
+                                </a>
+                                {% if showroom.phone2 %}
+                                <br>
+                                <a href="tel:{{ showroom.phone2 }}" style="color:#003087;text-decoration:none;">
+                                    {{ showroom.phone2 }}
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if showroom.email %}
+                    <div class="info-row">
+                        <i class="bi bi-envelope-fill"></i>
+                        <div>
+                            <div class="info-label">Email</div>
+                            <div class="info-value">
+                                <a href="mailto:{{ showroom.email }}" style="color:#003087;text-decoration:none;">
+                                    {{ showroom.email }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="info-row">
+                        <i class="bi bi-clock-fill"></i>
+                        <div>
+                            <div class="info-label">Working Hours</div>
+                            <div class="info-value">{{ showroom.working_hours }}</div>
+                        </div>
+                    </div>
+
+                    {% if showroom.has_service_center %}
+                    <div class="info-row">
+                        <i class="bi bi-wrench-adjustable-circle-fill"></i>
+                        <div>
+                            <div class="info-label">Services</div>
+                            <div class="info-value">Sales + Service Center</div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex gap-2 mt-3 flex-wrap">
+                        {% if showroom.google_maps_url %}
+                        <a href="{{ showroom.google_maps_url }}" target="_blank"
+                           class="btn btn-sm fw-semibold flex-fill"
+                           style="background:#003087;color:#fff;border:none;">
+                            <i class="bi bi-map me-1"></i>Get Directions
+                        </a>
+                        {% endif %}
+                        <a href="https://wa.me/{{ showroom.get_whatsapp_number }}"
+                           target="_blank"
+                           class="btn btn-sm fw-semibold"
+                           style="background:#25d366;color:#fff;border:none;">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map -->
+            <div class="col-lg-8">
+                {% if showroom.google_maps_embed %}
+                <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);height:100%;min-height:320px;">
+                    {{ showroom.google_maps_embed|safe }}
+                </div>
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center h-100"
+                     style="background:#e8f0fb;border-radius:14px;min-height:320px;">
+                    <div class="text-center" style="color:#5a6a8a;">
+                        <i class="bi bi-geo-alt" style="font-size:3rem;"></i>
+                        <p class="mt-2 mb-3 fw-semibold">{{ showroom.address }}</p>
+                        {% if showroom.google_maps_url %}
+                        <a href="{{ showroom.google_maps_url }}" target="_blank"
+                           class="btn btn-sm fw-semibold"
+                           style="background:#003087;color:#fff;border:none;">
+                            Open in Google Maps
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ AREAS WE SERVE ══ -->
+<section class="py-4" style="background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <span class="fw-bold text-uppercase"
+                  style="font-size:.72rem;letter-spacing:1.2px;color:#5a6a8a;white-space:nowrap;">
+                <i class="bi bi-geo-alt me-1"></i>Areas We Serve:
+            </span>
+            <div class="d-flex gap-2 flex-wrap">
+                {% for area in areas_served %}
+                <span class="area-tag">{{ area }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ BIKES GRID ══ -->
+<section class="py-5" style="background:#f8faff;">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="section-badge">Available Now</span>
+            <h2 class="fw-bold mb-1" style="color:#003087;">
+                Bajaj Bikes Available in {{ showroom.city }}
+            </h2>
+            <p style="color:#5a6a8a;">All models available at {{ showroom.name }} showroom</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for bike in bikes %}
+            <div class="col">
+                <a href="{% url 'bike_detail' bike.slug %}" class="text-decoration-none">
+                <div class="card h-100 border-0 bike-card">
+                    <div class="bike-img-wrap">
+                        {% with img=bike.get_primary_image_url %}
+                        {% if img %}
+                            <img src="{{ img|with_logo }}" class="bike-img"
+                                 referrerpolicy="no-referrer"
+                                 loading="lazy"
+                                 alt="{{ bike.name }} price in {{ showroom.city }}">
+                        {% else %}
+                            <div class="bike-img d-flex align-items-center justify-content-center bg-light">
+                                <i class="bi bi-bicycle text-secondary" style="font-size:4rem;opacity:.3;"></i>
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="card-body pt-2">
+                        <span class="badge px-2 py-1 mb-1"
+                              style="background:#e8f0fb;color:#003087;font-size:.7rem;">
+                            {{ bike.category.name }}
+                        </span>
+                        <h3 class="fw-bold mb-1" style="color:#111;font-size:1rem;">{{ bike.name }}</h3>
+                        <p class="fw-bold mb-2" style="color:#003087;font-size:1rem;">{{ bike.formatted_price }}</p>
+                        <div class="d-flex gap-3 flex-wrap" style="font-size:.78rem;color:#6b7a99;">
+                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>{% endif %}
+                            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>{% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 pb-3">
+                        <div class="d-flex gap-2">
+                            <span class="btn btn-sm flex-fill fw-semibold"
+                                  style="background:#003087;color:#fff;border:none;">
+                                View Details
+                            </span>
+                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}&showroom={{ showroom.pk }}"
+                               class="btn btn-sm flex-fill fw-semibold"
+                               style="background:#e8f0fb;color:#003087;border:1px solid #d0dff5;"
+                               onclick="event.stopPropagation();">
+                                Book Ride
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ WHY VISIT THIS SHOWROOM ══ -->
+<section class="py-5" style="background:#fff;">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="section-badge">Why Choose Us</span>
+            <h2 class="fw-bold mb-1" style="color:#003087;">
+                Why Buy Your Bajaj Bike from {{ showroom.name }}?
+            </h2>
+        </div>
+        <div class="row g-4 text-center">
+            <div class="col-md-3 col-6">
+                <div class="p-3">
+                    <i class="bi bi-patch-check-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
+                    <h6 class="fw-bold" style="color:#111;">Authorized Dealer</h6>
+                    <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Official Bajaj Auto dealership</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3">
+                    <i class="bi bi-currency-rupee fs-2 mb-2 d-block" style="color:#003087;"></i>
+                    <h6 class="fw-bold" style="color:#111;">Best EMI Options</h6>
+                    <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Easy finance starting ₹999/month</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3">
+                    <i class="bi bi-arrow-left-right fs-2 mb-2 d-block" style="color:#003087;"></i>
+                    <h6 class="fw-bold" style="color:#111;">Exchange Your Bike</h6>
+                    <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Best exchange value guaranteed</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-3">
+                    <i class="bi bi-calendar-check-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
+                    <h6 class="fw-bold" style="color:#111;">Free Test Ride</h6>
+                    <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Book a free test ride today</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ ENQUIRY FORM ══ -->
+<section class="enquiry-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7 text-center mb-4">
+                <span class="hero-badge">Get in Touch</span>
+                <h2 class="fw-bold text-white mt-2">
+                    Enquire at {{ showroom.name }}
+                </h2>
+                <p style="color:rgba(255,255,255,.65);">
+                    Our team at {{ showroom.city }} showroom will call you back within 2 hours.
+                </p>
+            </div>
+            <div class="col-lg-7">
+                <form method="POST" action="{% url 'enquiry' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="enquiry_type" value="general">
+                    <input type="hidden" name="showroom" value="{{ showroom.pk }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ enquiry_form.name.label_tag }}
+                            {{ enquiry_form.name }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ enquiry_form.phone.label_tag }}
+                            {{ enquiry_form.phone }}
+                        </div>
+                        <div class="col-12">
+                            {{ enquiry_form.bike.label_tag }}
+                            {{ enquiry_form.bike }}
+                        </div>
+                        <div class="col-12">
+                            {{ enquiry_form.message.label_tag }}
+                            {{ enquiry_form.message }}
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-lg w-100 fw-bold"
+                                    style="background:#fff;color:#003087;border:none;border-radius:8px;">
+                                <i class="bi bi-send-fill me-2"></i>Send Enquiry to {{ showroom.city }} Showroom
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══ OTHER SHOWROOMS ══ -->
+{% if other_showrooms %}
+<section class="py-4" style="background:#fff;border-top:1px solid var(--border);">
+    <div class="container">
+        <p class="text-center fw-bold text-uppercase mb-3"
+           style="font-size:.72rem;letter-spacing:1.5px;color:#5a6a8a;">
+            Other Skyline Bajaj Showrooms
+        </p>
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+            {% for s in other_showrooms %}
+            <a href="{% url 'showroom_detail' s.slug %}"
+               class="btn btn-sm fw-semibold"
+               style="background:#e8f0fb;color:#003087;border:1px solid #d0dff5;border-radius:20px;">
+                <i class="bi bi-geo-alt me-1"></i>{{ s.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
