@@ -352,6 +352,7 @@
     .showroom-badge:hover { background: var(--blue); color: #fff; }
 
     /* ══ Offers ══ */
+    /* FIX: darkened offer badge text from #b07800 → #7a5500 for WCAG AA contrast on #fff3dc */
     .offers-section { background: #fff9f0; border-top: 3px solid var(--gold); border-bottom: 3px solid var(--gold); }
     .offer-slide-img {
         width: 100%;
@@ -376,10 +377,15 @@
          style="position:absolute;inset:0;opacity:{% if forloop.first %}1{% else %}0{% endif %};transition:opacity .8s ease;z-index:{% if forloop.first %}1{% else %}0{% endif %};">
         {% with img_url=bike.get_primary_image_url %}
         {% if img_url %}
+            {# FIX: above-fold hero image — eager load, explicit width/height to prevent CLS #}
             <img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer"
+                 width="1600" height="900"
+                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                  alt="{{ bike.name }} – Bajaj dealer Noida">
         {% else %}
             <img src="{% static 'images/bike-placeholder.jpg' %}"
+                 width="1600" height="900"
+                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                  alt="{{ bike.name }} – Bajaj dealer Noida">
         {% endif %}
         {% endwith %}
@@ -414,24 +420,26 @@
         </div>
     </div>
 
-    <!-- prev / next -->
-    <button class="fullscreen-nav prev" onclick="fullscreenSlide(-1)">
-        <i class="bi bi-chevron-left"></i>
+    <!-- FIX: aria-label added to prev/next buttons for screen reader accessibility -->
+    <button class="fullscreen-nav prev" onclick="fullscreenSlide(-1)" aria-label="Previous bike">
+        <i class="bi bi-chevron-left" aria-hidden="true"></i>
     </button>
-    <button class="fullscreen-nav next" onclick="fullscreenSlide(1)">
-        <i class="bi bi-chevron-right"></i>
+    <button class="fullscreen-nav next" onclick="fullscreenSlide(1)" aria-label="Next bike">
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
     </button>
 
     <!-- dot indicators -->
     <div class="fullscreen-dots" id="fullscreenDots">
         {% for bike in featured_bikes %}
         <span class="{% if forloop.first %}active{% endif %}"
+              role="button"
+              aria-label="Go to slide {{ forloop.counter }}"
               onclick="fullscreenGoTo({{ forloop.counter0 }})"></span>
         {% endfor %}
     </div>
 
     <!-- scroll hint -->
-    <div class="scroll-hint">
+    <div class="scroll-hint" aria-hidden="true">
         <i class="bi bi-chevron-double-down"></i>
         <span>Scroll</span>
     </div>
@@ -447,9 +455,8 @@
         <div class="row align-items-center">
             <div class="col-lg-8">
                 <span class="hero-badge">
-                    <i class="bi bi-patch-check-fill me-1"></i>Authorized Dealer
+                    <i class="bi bi-patch-check-fill me-1" aria-hidden="true"></i>Authorized Dealer
                 </span>
-                {# ── CHANGED: H1 is now keyword-rich for local SEO ── #}
                 <h1 class="display-4 fw-bold mb-2 text-white"
                     style="line-height:1.15; font-family:'Rajdhani',sans-serif;">
                     Authorized Bajaj Dealer in <span style="color:#7eb3ff;">Noida</span> &amp; Greater Noida
@@ -462,12 +469,12 @@
                     <a href="{% url 'bike_list' %}"
                        class="btn btn-lg fw-bold"
                        style="background:#fff;color:#003087;border:none;border-radius:8px;">
-                        <i class="bi bi-grid-fill me-2"></i>Explore All Bikes
+                        <i class="bi bi-grid-fill me-2" aria-hidden="true"></i>Explore All Bikes
                     </a>
                     <a href="{% url 'enquiry' %}"
                        class="btn btn-lg fw-semibold"
                        style="background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:8px;">
-                        <i class="bi bi-calendar-check me-2"></i>Book Test Ride
+                        <i class="bi bi-calendar-check me-2" aria-hidden="true"></i>Book Test Ride
                     </a>
                 </div>
                 <div class="d-flex gap-4 flex-wrap">
@@ -486,7 +493,7 @@
                 </div>
             </div>
             <div class="col-lg-4 d-none d-lg-flex justify-content-end">
-                <div style="text-align:right; color:rgba(255,255,255,.2); font-family:'Rajdhani',sans-serif; font-size:6rem; font-weight:800; line-height:1; letter-spacing:-4px; user-select:none;">
+                <div style="text-align:right; color:rgba(255,255,255,.2); font-family:'Rajdhani',sans-serif; font-size:6rem; font-weight:800; line-height:1; letter-spacing:-4px; user-select:none;" aria-hidden="true">
                     BAJAJ
                 </div>
             </div>
@@ -507,7 +514,7 @@
                 {% endif %}
             {% endfor %}
             <a href="{% url 'chetak' %}" class="cat-btn" style="background:rgba(0,195,255,.2); border-color:rgba(0,195,255,.4);">
-                <i class="bi bi-lightning-charge-fill" style="color:#00c3ff;"></i> Chetak
+                <i class="bi bi-lightning-charge-fill" style="color:#00c3ff;" aria-hidden="true"></i> Chetak
             </a>
         </div>
     </div>
@@ -520,22 +527,37 @@
     <div class="container">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
-                <span class="section-badge" style="background:#fff3dc;color:#b07800;">
-                    <i class="bi bi-tag-fill me-1"></i>Current Offers
+                {# FIX: contrast — text color changed from #b07800 to #7a5500 (passes WCAG AA on #fff3dc) #}
+                {# FIX: heading order — was h3 → h5/h6; now h3 → h4 (no skipped levels) #}
+                <span class="section-badge" style="background:#fff3dc;color:#7a5500;">
+                    <i class="bi bi-tag-fill me-1" aria-hidden="true"></i>Current Offers
                 </span>
                 <h3 class="fw-bold mb-0" style="color:#003087;font-size:1.3rem;">Exclusive Deals &amp; Promotions</h3>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-target="#offersCarousel" data-bs-slide="prev"><i class="bi bi-chevron-left"></i></button>
-                <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-target="#offersCarousel" data-bs-slide="next"><i class="bi bi-chevron-right"></i></button>
+                {# FIX: aria-label added to carousel prev/next buttons #}
+                <button class="btn btn-sm btn-outline-secondary rounded-circle"
+                        data-bs-target="#offersCarousel"
+                        data-bs-slide="prev"
+                        aria-label="Previous offer">
+                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary rounded-circle"
+                        data-bs-target="#offersCarousel"
+                        data-bs-slide="next"
+                        aria-label="Next offer">
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
         <div id="offersCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
             <div class="carousel-inner">
                 {% for offer in offers %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    {% if offer.link %}<a href="{{ offer.link }}" target="_blank">{% endif %}
+                    {% if offer.link %}<a href="{{ offer.link }}" target="_blank" rel="noopener" aria-label="{{ offer.title }}">{% endif %}
+                    {# FIX: explicit width/height on offer images to prevent CLS #}
                     <img src="{{ offer.image.url }}" class="offer-slide-img"
+                         width="1200" height="400"
                          loading="lazy" alt="{{ offer.title }}">
                     {% if offer.link %}</a>{% endif %}
                 </div>
@@ -559,37 +581,47 @@
         <div class="gallery-strip-wrap mb-4">
             <div class="gallery-strip" id="galleryStrip">
                 {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
-                <a href="{% url 'bike_detail' bike.slug %}" class="gallery-thumb" title="{{ bike.name }}" style="text-decoration:none;">
-                    {# ── CHANGED: loading="lazy" + keyword alt text ── #}
+                {# FIX: aria-label on each gallery link with bike name #}
+                <a href="{% url 'bike_detail' bike.slug %}"
+                   class="gallery-thumb"
+                   aria-label="View {{ bike.name }} details"
+                   style="text-decoration:none;">
                     {% if img_url %}
+                        {# FIX: explicit width/height to prevent CLS #}
                         <img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer"
+                             width="200" height="130"
                              loading="lazy" alt="{{ bike.name }} price in Noida">
                     {% else %}
                         <img src="{% static 'images/bike-placeholder.jpg' %}"
+                             width="200" height="130"
                              loading="lazy" alt="{{ bike.name }} price in Noida">
                     {% endif %}
-                    <div class="gallery-thumb-label">{{ bike.name }}</div>
+                    <div class="gallery-thumb-label" aria-hidden="true">{{ bike.name }}</div>
                 </a>
                 {% endwith %}{% endfor %}
             </div>
         </div>
         <div class="big-gallery-grid">
             {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
+            {# FIX: aria-label on each big gallery link #}
             <a href="{% url 'bike_detail' bike.slug %}"
-               class="big-gallery-item {% if forloop.counter == 1 or forloop.counter == 6 %}large{% endif %}">
-                {# ── CHANGED: loading="lazy" + keyword alt text ── #}
+               class="big-gallery-item {% if forloop.counter == 1 or forloop.counter == 6 %}large{% endif %}"
+               aria-label="View {{ bike.name }} details – {{ bike.formatted_price }}">
                 {% if img_url %}
+                    {# FIX: explicit width/height to prevent CLS #}
                     <img src="{{ img_url|with_logo }}" referrerpolicy="no-referrer"
+                         width="560" height="420"
                          loading="lazy" alt="{{ bike.name }} – Bajaj dealer Noida">
                 {% else %}
                     <img src="{% static 'images/bike-placeholder.jpg' %}"
+                         width="560" height="420"
                          loading="lazy" alt="{{ bike.name }} – Bajaj dealer Noida">
                 {% endif %}
-                <div class="item-overlay"></div>
-                <div class="item-info">
+                <div class="item-overlay" aria-hidden="true"></div>
+                <div class="item-info" aria-hidden="true">
                     <div class="item-name">{{ bike.name }}</div>
                     <div class="item-price">{{ bike.formatted_price }}</div>
-                    <span class="item-cta"><i class="bi bi-eye-fill"></i> View Details</span>
+                    <span class="item-cta"><i class="bi bi-eye-fill" aria-hidden="true"></i> View Details</span>
                 </div>
             </a>
             {% endwith %}{% endfor %}
@@ -597,7 +629,7 @@
         <div class="text-center mt-4">
             <a href="{% url 'bike_list' %}" class="btn fw-semibold px-5"
                style="background:#fff;color:var(--blue);border:none;border-radius:8px;padding:12px 36px;">
-                View All Bikes <i class="bi bi-arrow-right ms-2"></i>
+                View All Bikes <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
             </a>
         </div>
     </div>
@@ -617,37 +649,43 @@
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for bike in featured_bikes %}
             <div class="col">
-                <a href="{% url 'bike_detail' bike.slug %}" class="text-decoration-none">
+                {# FIX: aria-label on featured bike card link #}
+                <a href="{% url 'bike_detail' bike.slug %}"
+                   class="text-decoration-none"
+                   aria-label="View {{ bike.name }} details – {{ bike.formatted_price }}">
                 <div class="card h-100 border-0 bike-card">
                     <div class="bike-img-wrap">
                         {% with first_img=bike.get_primary_image_url %}
                         {% if first_img %}
-                            {# ── CHANGED: loading="lazy" + keyword alt text ── #}
+                            {# FIX: explicit width/height on bike card images #}
                             <img src="{{ first_img|with_logo }}" class="bike-img"
                                  referrerpolicy="no-referrer"
+                                 width="400" height="210"
                                  loading="lazy"
                                  alt="{{ bike.name }} price in Noida">
                         {% else %}
                             <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
-                                <i class="bi bi-bicycle text-secondary" style="font-size:4rem;opacity:.3;"></i>
+                                <i class="bi bi-bicycle text-secondary" style="font-size:4rem;opacity:.3;" aria-hidden="true"></i>
                             </div>
                         {% endif %}
                         {% endwith %}
                     </div>
                     <div class="card-body pt-2">
                         <span class="badge px-2 py-1 mb-1" style="background:#e8f0fb;color:#003087;font-size:.7rem;">{{ bike.category.name }}</span>
-                        <h5 class="fw-bold mb-1" style="color:#111;">{{ bike.name }}</h5>
+                        <h3 class="fw-bold mb-1" style="color:#111;font-size:1.1rem;">{{ bike.name }}</h3>
                         <p class="fw-bold mb-2" style="color:#003087;font-size:1.05rem;">{{ bike.formatted_price }}</p>
                         <div class="d-flex gap-3 flex-wrap" style="font-size:.78rem;color:#6b7a99;">
-                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1"></i>{{ bike.engine_cc }}</span>{% endif %}
-                            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1"></i>{{ bike.mileage }}</span>{% endif %}
+                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1" aria-hidden="true"></i>{{ bike.engine_cc }}</span>{% endif %}
+                            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1" aria-hidden="true"></i>{{ bike.mileage }}</span>{% endif %}
                         </div>
                     </div>
                     <div class="card-footer bg-white border-0 pb-3">
                         <div class="d-flex gap-2">
                             <span class="btn btn-sm flex-fill fw-semibold" style="background:#003087;color:#fff;border:none;">View Details</span>
-                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}" class="btn btn-sm flex-fill fw-semibold"
+                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}"
+                               class="btn btn-sm flex-fill fw-semibold"
                                style="background:#e8f0fb;color:#003087;border:1px solid #d0dff5;"
+                               aria-label="Book a test ride for {{ bike.name }}"
                                onclick="event.stopPropagation();">Book Ride</a>
                         </div>
                     </div>
@@ -676,8 +714,8 @@
             <div class="col-md-3 col-6">
                 <a href="{% url 'enquiry' %}" class="text-decoration-none">
                     <div class="quick-action-card p-4 bg-white h-100">
-                        <i class="bi bi-calendar-check-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
-                        <h6 class="fw-bold" style="color:#111;">Book Test Ride</h6>
+                        <i class="bi bi-calendar-check-fill fs-2 mb-2 d-block" style="color:#003087;" aria-hidden="true"></i>
+                        <h3 class="fw-bold" style="color:#111;font-size:1rem;">Book Test Ride</h3>
                         <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Try before you buy</p>
                     </div>
                 </a>
@@ -685,8 +723,8 @@
             <div class="col-md-3 col-6">
                 <a href="{% url 'book_service' %}" class="text-decoration-none">
                     <div class="quick-action-card p-4 bg-white h-100">
-                        <i class="bi bi-wrench-adjustable-circle-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
-                        <h6 class="fw-bold" style="color:#111;">Book Service</h6>
+                        <i class="bi bi-wrench-adjustable-circle-fill fs-2 mb-2 d-block" style="color:#003087;" aria-hidden="true"></i>
+                        <h3 class="fw-bold" style="color:#111;font-size:1rem;">Book Service</h3>
                         <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Expert bike care</p>
                     </div>
                 </a>
@@ -694,8 +732,8 @@
             <div class="col-md-3 col-6">
                 <a href="{% url 'exchange_bike' %}" class="text-decoration-none">
                     <div class="quick-action-card p-4 bg-white h-100">
-                        <i class="bi bi-arrow-left-right fs-2 mb-2 d-block" style="color:#003087;"></i>
-                        <h6 class="fw-bold" style="color:#111;">Exchange Bike</h6>
+                        <i class="bi bi-arrow-left-right fs-2 mb-2 d-block" style="color:#003087;" aria-hidden="true"></i>
+                        <h3 class="fw-bold" style="color:#111;font-size:1rem;">Exchange Bike</h3>
                         <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">Upgrade your ride</p>
                     </div>
                 </a>
@@ -703,8 +741,8 @@
             <div class="col-md-3 col-6">
                 <a href="{% url 'contact' %}" class="text-decoration-none">
                     <div class="quick-action-card p-4 bg-white h-100">
-                        <i class="bi bi-geo-alt-fill fs-2 mb-2 d-block" style="color:#003087;"></i>
-                        <h6 class="fw-bold" style="color:#111;">Find Showroom</h6>
+                        <i class="bi bi-geo-alt-fill fs-2 mb-2 d-block" style="color:#003087;" aria-hidden="true"></i>
+                        <h3 class="fw-bold" style="color:#111;font-size:1rem;">Find Showroom</h3>
                         <p class="mb-0" style="font-size:.8rem;color:#5a6a8a;">{{ all_showrooms|length }} outlets near you</p>
                     </div>
                 </a>
@@ -728,7 +766,10 @@
             <div class="col-md-6 col-lg-4">
                 <div class="video-card">
                     <div class="ratio ratio-16x9">
-                        <iframe src="{{ video.embed_url }}" title="{{ video.title }}" allowfullscreen loading="lazy"></iframe>
+                        <iframe src="{{ video.embed_url }}"
+                                title="{{ video.title }}"
+                                allowfullscreen
+                                loading="lazy"></iframe>
                     </div>
                     <div class="p-3">
                         <p class="fw-semibold mb-0" style="font-size:.9rem;color:#1a1a2e;">{{ video.title }}</p>
@@ -764,7 +805,7 @@
                         <div class="col-12">
                             <button type="submit" class="btn btn-lg w-100 fw-bold"
                                     style="background:#fff;color:#003087;border:none;border-radius:8px;">
-                                <i class="bi bi-send-fill me-2"></i>Send Enquiry
+                                <i class="bi bi-send-fill me-2" aria-hidden="true"></i>Send Enquiry
                             </button>
                         </div>
                     </div>
@@ -783,7 +824,7 @@
         <div class="d-flex flex-wrap gap-2 justify-content-center">
             {% for showroom in showrooms %}
             <a href="{% url 'contact' %}#{{ showroom.slug }}" class="showroom-badge">
-                <i class="bi bi-geo-alt me-1"></i>{{ showroom.name }}
+                <i class="bi bi-geo-alt me-1" aria-hidden="true"></i>{{ showroom.name }}
             </a>
             {% endfor %}
         </div>
