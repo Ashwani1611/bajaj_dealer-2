@@ -7,4 +7,4 @@ Disallow: /enquiry/success/
 Disallow: /service/success/
 Disallow: /exchange/success/
 
-Sitemap: https://skylinewheels.in/sitemap.xml
+Sitemap: https://www.skylinewheels.in/sitemap.xml
