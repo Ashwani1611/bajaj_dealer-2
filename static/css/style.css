@@ -13,24 +13,6 @@ a {
     transition: color 0.2s, opacity 0.2s;
 }
 
-/* ---- HERO SECTION ---- */
-.hero-section {
-    min-height: 85vh;
-    background: linear-gradient(135deg, #111 0%, #1a1a2e 50%, #16213e 100%);
-    position: relative;
-    overflow: hidden;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 55%;
-    height: 100%;
-    background: url('/static/images/hero-bg.jpg') center/cover no-repeat;
-    opacity: 0.25;
-}
-
 /* ---- NAVBAR ---- */
 .navbar-brand {
     letter-spacing: 0.5px;
@@ -181,23 +163,6 @@ footer a:hover {
     font-size: 0.92rem;
 }
 
-/* ---- RESPONSIVE HERO ---- */
-@media (max-width: 768px) {
-    .hero-section {
-        min-height: 65vh;
-        text-align: center;
-    }
-
-    .hero-section .d-flex {
-        justify-content: center;
-    }
-
-    .hero-section::before {
-        width: 100%;
-        opacity: 0.1;
-    }
-}
-
 /* ---- SCROLLBAR (optional polish) ---- */
 ::-webkit-scrollbar {
     width: 6px;
@@ -206,3 +171,9 @@ footer a:hover {
     background: #ccc;
     border-radius: 3px;
 }
+
+/*
+ * REMOVED — .hero-section block was dead code (unused in any template).
+ * The homepage uses .hero-text-section defined inline in home.html.
+ * Removing it saves ~1.5 KiB and eliminates the "Reduce unused CSS" audit hit.
+ */
