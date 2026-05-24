@@ -221,6 +221,7 @@ EMAIL_HOST_USER     = config('EMAIL_HOST_USER',     default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL  = config('EMAIL_HOST_USER',     default='')
 DEALER_MASTER_EMAIL = config('DEALER_MASTER_EMAIL', default='')
+EMAIL_TIMEOUT       = 10 
 
 # --- WHATSAPP ---
 WHATSAPP_NUMBER = config('WHATSAPP_NUMBER', default='')
