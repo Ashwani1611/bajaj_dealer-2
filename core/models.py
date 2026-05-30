@@ -91,6 +91,12 @@ class Bike(models.Model):
     formatted_price.short_description = 'Price'
 
     def get_primary_image_url(self):
+        """
+        Returns the raw Cloudinary URL for the bike's primary image.
+        NO quality/format/width transforms are applied here.
+        The template is responsible for all Cloudinary transformations
+        via the |with_logo and |cloudinary_w filters.
+        """
         # 1. Try to get the first available color image
         for color in self.colors.all():
             if color.is_available:
@@ -104,14 +110,11 @@ class Bike(models.Model):
         # 2. Fallback to the main Bike image
         if self.image:
             try:
-                url = self.image.url
-                if 'res.cloudinary.com' in url:
-                    url = url.replace('/upload/', '/upload/q_auto:best,f_auto/')
-                return url
+                return self.image.url  # raw URL — template handles transforms
             except AttributeError:
                 return ''
 
-        # 3. Final fallback
+        # 3. Final fallback — static placeholder
         from django.templatetags.static import static
         return static('images/bike-placeholder.jpg')
 
@@ -234,26 +237,28 @@ class BikeImage(models.Model):
     def get_youtube_thumbnail_url(self):
         return f'https://img.youtube.com/vi/{self.media_link}/hqdefault.jpg'
 
-    def _optimize_cloudinary_url(self, url):
-        if not url or 'res.cloudinary.com' not in url:
-            return url
-        if '/upload/q_auto' in url or '/upload/f_auto' in url:
-            return url
-        return url.replace('/upload/', '/upload/q_auto:best,f_auto/')
-
     def get_display_url(self):
+        """
+        Returns the raw URL for this media item.
+        NO Cloudinary quality/format/width transforms are applied here.
+        All Cloudinary transforms are handled in the template via
+        |with_logo and |cloudinary_w filters.
+        """
         if self.media_type in ('image_upload', 'gif_upload'):
-            url = self.image_file.url if self.image_file else ''
-            return self._optimize_cloudinary_url(url)
+            return self.image_file.url if self.image_file else ''
+
         elif self.media_type == 'video_upload':
             return self.video_file.url if self.video_file else ''
+
         elif self.media_type in ('image_url', 'video_url'):
             url = self.media_link or ''
             if 'drive.google.com' in url:
                 return self.get_drive_direct_url(url)
-            return self._optimize_cloudinary_url(url)
+            return url
+
         elif self.media_type == 'youtube':
             return self.get_youtube_embed_url()
+
         return ''
 
     def save(self, *args, **kwargs):
@@ -334,7 +339,6 @@ class Showroom(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        # Auto-generate slug from name if not set
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
@@ -399,7 +403,6 @@ class ServiceStation(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        # Auto-generate slug from name if not set
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)

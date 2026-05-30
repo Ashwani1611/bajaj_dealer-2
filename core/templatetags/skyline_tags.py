@@ -15,6 +15,8 @@ def with_logo(url):
     """
     Injects Skyline watermark logo into a Cloudinary image URL.
     Safe: returns unchanged URL if not a Cloudinary URL.
+    Always call BEFORE cloudinary_w so the logo sits inside the
+    final resize step, not after it.
     """
     if not url:
         return url
@@ -27,12 +29,18 @@ def with_logo(url):
 @register.filter(name='cloudinary_w')
 def cloudinary_w(url, width):
     """
-    Injects width + auto format/quality into a Cloudinary URL.
-    Chain AFTER with_logo: {{ img|with_logo|cloudinary_w:440 }}
+    Injects width + format + quality into a Cloudinary URL.
+
+    Usage: {{ img_url|with_logo|cloudinary_w:1920 }}
+
+    Produces a SINGLE clean transformation step:
+        /upload/f_auto,q_auto:best,w_<width>/...
+    Never call on a URL that already has f_auto or q_auto baked in
+    (models.py no longer does that — get_display_url returns raw URLs).
     """
     if not url:
         return url
     url = str(url)
     if 'res.cloudinary.com' not in url or '/upload/' not in url:
         return url
-    return url.replace('/upload/', f'/upload/f_auto,q_auto,w_{int(width)}/', 1)
+    return url.replace('/upload/', f'/upload/f_auto,q_auto:best,w_{int(width)}/', 1)

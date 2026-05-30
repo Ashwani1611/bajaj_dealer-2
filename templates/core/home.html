@@ -379,7 +379,7 @@
         {% if img_url %}
             {# FIX: fetchpriority="high" on first slide = LCP element, tells browser to prioritise this fetch #}
             {# FIX: cloudinary_w:1200 — serves correct size, f_auto gives WebP/AVIF automatically           #}
-            <img src="{{ img_url|with_logo|cloudinary_w:1200 }}" referrerpolicy="no-referrer"
+            <img src="{{ img_url|with_logo|cloudinary_w:1920 }}" referrerpolicy="no-referrer"
                  width="1600" height="900"
                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                  {% if forloop.first %}fetchpriority="high"{% endif %}
