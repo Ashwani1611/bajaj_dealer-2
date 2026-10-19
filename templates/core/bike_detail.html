@@ -5,9 +5,9 @@
 {# SEO BLOCKS — per-bike title, description, canonical, schema   #}
 {# ══════════════════════════════════════════════════════════════ #}
 
-{% block seo_title %}{{ bike.name }} Price in Noida{% if bike.price %} – ₹{{ bike.price|floatformat:"0g" }}{% endif %} | Buy {{ bike.name }} | Skyline Bajaj{% endblock %}
+{% block seo_title %}{{ seo_title }}{% endblock %}
 
-{% block seo_description %}Buy {{ bike.name }} in Noida at Skyline Bajaj – Authorized Bajaj dealer.{% if bike.price %} On-road price ₹{{ bike.price|floatformat:"0g" }}.{% endif %}{% if bike.engine_cc %} Engine {{ bike.engine_cc }}{% if bike.mileage %}, mileage {{ bike.mileage }}{% endif %}.{% endif %} Book a test ride at our Bhangel, Sector 10, Sector 58 or Greater Noida showroom today.{% endblock %}
+{% block seo_description %}{{ seo_description }}{% endblock %}
 
 {% block canonical_url %}https://skylinewheels.in/bikes/{{ bike.slug }}/{% endblock %}
 
@@ -25,26 +25,6 @@
   "description": "{% if bike.description %}{{ bike.description|truncatechars:200|striptags }}{% else %}{{ bike.name }} – available at Skyline Bajaj, authorized Bajaj dealer in Noida.{% endif %}",
   "image": "{{ og_image_url }}",
   "brand": { "@type": "Brand", "name": "Bajaj Auto" },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.5",
-    "reviewCount": "120",
-    "bestRating": "5",
-    "worstRating": "1"
-  },
-  "review": {
-    "@type": "Review",
-    "reviewRating": {
-      "@type": "Rating",
-      "ratingValue": "5",
-      "bestRating": "5"
-    },
-    "author": {
-      "@type": "Person",
-      "name": "Skyline Bajaj Customer"
-    },
-    "reviewBody": "Great experience at Skyline Bajaj. Excellent service and smooth test ride booking process."
-  },
   "url": "https://skylinewheels.in/bikes/{{ bike.slug }}/",
   "additionalProperty": [
     {% if bike.engine_cc %}{"@type":"PropertyValue","name":"Engine","value":"{{ bike.engine_cc }}"}{% if bike.mileage or bike.power or bike.torque %},{% endif %}{% endif %}
@@ -60,35 +40,8 @@
     "itemCondition": "https://schema.org/NewCondition",
     "seller": {
       "@type": "AutoDealer",
-      "name": "Skyline Bajaj",
-      "url": "https://skylinewheels.in"
-    },
-    "shippingDetails": {
-      "@type": "OfferShippingDetails",
-      "shippingRate": {
-        "@type": "MonetaryAmount",
-        "value": "0",
-        "currency": "INR"
-      },
-      "shippingDestination": {
-        "@type": "DefinedRegion",
-        "addressCountry": "IN",
-        "addressRegion": "UP"
-      },
-      "deliveryTime": {
-        "@type": "ShippingDeliveryTime",
-        "handlingTime": {
-          "@type": "QuantitativeValue",
-          "minValue": 1,
-          "maxValue": 3,
-          "unitCode": "DAY"
-        }
-      }
-    },
-    "hasMerchantReturnPolicy": {
-      "@type": "MerchantReturnPolicy",
-      "applicableCountry": "IN",
-      "returnPolicyCategory": "https://schema.org/MerchantReturnNotPermitted"
+      "name": "Skyline Wheels",
+      "url": "https://www.skylinewheels.in/"
     }
   }{% endif %}
 }

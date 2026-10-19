@@ -316,16 +316,15 @@ def bike_detail(request, slug):
     showrooms = _get_all_showrooms()
 
     # ── SEO — use custom meta fields if set, else auto-generate ───
-    price_str = f'₹{bike.price:,.0f}' if bike.price else 'On Request'
-
     seo_title = bike.meta_title if bike.meta_title else (
-        f'{bike.name} Price in Noida – {price_str} | Skyline Bajaj Dealer'
+        f'Bajaj {bike.name} Price in Noida | Specs & Test Ride'
     )
     seo_desc = bike.meta_description if bike.meta_description else (
-        f'Buy {bike.name} in Noida at Skyline Bajaj. '
-        f'Price {price_str}. '
-        + (f'Engine {bike.engine_cc}, mileage {bike.mileage}. ' if bike.engine_cc else '')
-        + 'Book test ride at Bhangel, Sector 10, Sector 58 or Greater Noida showroom.'
+        f'Check the Bajaj {bike.name} price in Noida at Skyline Wheels. '
+        + (f'{bike.engine_cc} engine, {bike.mileage} mileage. ' if bike.engine_cc and bike.mileage else '')
+        + (f'{bike.engine_cc} engine. ' if bike.engine_cc and not bike.mileage else '')
+        + (f'{bike.mileage} mileage. ' if bike.mileage and not bike.engine_cc else '')
+        + 'Ask about current price and availability, compare specifications, and book a test ride at our Noida or Greater Noida showroom.'
     )
     canonical_url = f'{SITE_URL}/bikes/{bike.slug}/'
     og_image = bike.get_primary_image_url() if callable(bike.get_primary_image_url) else bike.get_primary_image_url
@@ -731,19 +730,19 @@ def showroom_detail(request, slug):
     # ── SEO: Chetak showroom gets Chetak-specific title/description ──
     if is_chetak_showroom:
         seo_title = (
-            f'Chetak Electric Scooter Dealer Greater Noida | {showroom.name}'
+            f'Chetak Electric Scooter Showroom Greater Noida | {showroom.name}'
         )
         seo_description = (
-            f'Buy Bajaj Chetak electric scooter at {showroom.name}, Greater Noida. '
-            f'Authorized Chetak EV dealer. Test ride, EMI, home delivery available. '
+            f'Looking for a Chetak electric scooter showroom near you in Greater Noida? '
+            f'Visit {showroom.name} at {showroom.address}. Ask about current models, price and test rides. '
             f'Call {showroom.phone}.'
         )
     else:
-        seo_title = f'Bajaj Bikes in {city} | {showroom.name} | Skyline Bajaj'
+        seo_title = f'Bajaj Showroom in {city} | {showroom.name}'
         seo_description = (
-            f'Buy Bajaj bikes at {showroom.name} – authorized Bajaj dealer in {city}. '
-            f'Pulsar, Dominar, Platina, CT100 and more. '
-            f'EMI, exchange, test ride available. Call {showroom.phone}.'
+            f'Looking for a Bajaj bike showroom near you in {city}? Visit {showroom.name} at {showroom.address}. '
+            f'Explore Bajaj bikes, ask about current models, price and finance, or book a test ride. '
+            f'Call {showroom.phone}.'
         )
 
     return render(request, 'core/showroom_detail.html', {

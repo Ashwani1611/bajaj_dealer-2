@@ -14,8 +14,6 @@
 
     <meta name="description" content="{% block seo_description %}{{ seo_description|default:"Skyline Bajaj – Authorized Bajaj &amp; Chetak dealer in Noida, Bhangel, Greater Noida and Sector 10. New bikes, test rides, EMI, exchange and service. Visit your nearest showroom today." }}{% endblock %}">
 
-    <meta name="keywords" content="Bajaj showroom Noida, Bajaj dealer Bhangel, Bajaj showroom near me, Bajaj bike dealer Greater Noida, Bajaj showroom Sector 10 Noida, Skyline Bajaj, Chetak scooter dealer Noida, authorized Bajaj dealer Noida, Bajaj Pulsar Noida, Bajaj Platina Noida">
-
     <meta name="robots" content="index, follow">
     <meta name="author" content="Skyline Bajaj">
 
@@ -37,21 +35,15 @@
     <meta name="twitter:description" content="{{ seo_description|default:'Authorized Bajaj dealer in Noida. New bikes, test rides, EMI, exchange, service.' }}">
     <meta name="twitter:image" content="{% if og_image_url %}{{ og_image_url }}{% else %}{% static 'images/logo.png' %}{% endif %}">
 
-    {# ── Geo tags — helps Google local search #}
-    <meta name="geo.region" content="IN-UP">
-    <meta name="geo.placename" content="Noida, Uttar Pradesh">
-    <meta name="geo.position" content="28.608669;77.354608">
-    <meta name="ICBM" content="28.608669, 77.354608">
-
-    {# ══════════════════════════════════════════════════════════════ #}
-    {# Google Search Console ownership verification                   #}
-    {# ══════════════════════════════════════════════════════════════ #}
-    <meta name="google-site-verification" content="PASTE_YOUR_CODE_HERE">
-
-    {# ══════════════════════════════════════════════════════════════ #}
-    {# Schema Markup — all 9 locations (JSON-LD)                     #}
-    {# ══════════════════════════════════════════════════════════════ #}
-    {% include 'seo/schema_markup.html' %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Skyline Wheels",
+      "alternateName": "Skyline Bajaj",
+      "url": "https://www.skylinewheels.in/"
+    }
+    </script>
 
     {# ── Extra schema injected by child templates (e.g. bike_detail) #}
     {% block schema_markup %}{% endblock %}

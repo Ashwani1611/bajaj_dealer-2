@@ -2,9 +2,9 @@
 {% load static %}
 {% load skyline_tags %}
 
-{% block seo_title %}Authorized Bajaj Dealer in Noida & Greater Noida | Skyline Bajaj{% endblock %}
+{% block seo_title %}Bajaj Bike Showrooms in Noida & Greater Noida | Skyline Wheels{% endblock %}
 
-{% block seo_description %}Buy new Bajaj bikes at Skyline Bajaj — authorized dealer in Noida, Bhangel, Sector 10 & Greater Noida. Pulsar, Dominar, Platina, CT100, Chetak EV. EMI, exchange, test ride available.{% endblock %}
+{% block seo_description %}Find a Bajaj bike showroom near you in Noida and Greater Noida. Explore Pulsar, Dominar, Platina and Chetak models, compare prices, and enquire about test rides, finance and exchange at Skyline Wheels.{% endblock %}
 
 {% block content %}
 <style>
@@ -820,7 +820,7 @@
            style="font-size:.72rem;letter-spacing:1.5px;color:#5a6a8a;">Our Showroom Locations</p>
         <div class="d-flex flex-wrap gap-2 justify-content-center">
             {% for showroom in showrooms %}
-            <a href="{% url 'contact' %}#{{ showroom.slug }}" class="showroom-badge">
+            <a href="{% url 'showroom_detail' showroom.slug %}" class="showroom-badge">
                 <i class="bi bi-geo-alt me-1" aria-hidden="true"></i>{{ showroom.name }}
             </a>
             {% endfor %}
