@@ -9,23 +9,23 @@
 
 {% block seo_description %}{{ seo_description }}{% endblock %}
 
-{% block canonical_url %}https://skylinewheels.in/bikes/{{ bike.slug }}/{% endblock %}
+{% block canonical_url %}https://www.skylinewheels.in/bikes/{{ bike.slug }}/{% endblock %}
 
-{% block og_title %}{{ bike.name }}{% if bike.price %} – ₹{{ bike.price|floatformat:"0g" }}{% endif %} | Skyline Bajaj Noida{% endblock %}
-{% block og_description %}{{ bike.name }} available at Skyline Bajaj Noida.{% if bike.engine_cc %} {{ bike.engine_cc }}{% endif %}{% if bike.mileage %}, {{ bike.mileage }} mileage{% endif %}. Book test ride today.{% endblock %}
+{% block og_title %}{{ seo_title }}{% endblock %}
+{% block og_description %}{{ seo_description }}{% endblock %}
 {% block og_image %}{{ og_image_url }}{% endblock %}
-{% block og_url %}https://skylinewheels.in/bikes/{{ bike.slug }}/{% endblock %}
+{% block og_url %}https://www.skylinewheels.in/bikes/{{ bike.slug }}/{% endblock %}
 
 {% block schema_markup %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": "{{ bike.name }}",
-  "description": "{% if bike.description %}{{ bike.description|truncatechars:200|striptags }}{% else %}{{ bike.name }} – available at Skyline Bajaj, authorized Bajaj dealer in Noida.{% endif %}",
+  "name": "Bajaj {{ bike.name }}",
+  "description": "{% if bike.description %}{{ bike.description|truncatechars:200|striptags }}{% else %}Bajaj {{ bike.name }} available at Skyline Bajaj in Noida. Check specifications and ask the showroom to confirm current price, availability and test ride details.{% endif %}",
   "image": "{{ og_image_url }}",
   "brand": { "@type": "Brand", "name": "Bajaj Auto" },
-  "url": "https://skylinewheels.in/bikes/{{ bike.slug }}/",
+  "url": "https://www.skylinewheels.in/bikes/{{ bike.slug }}/",
   "additionalProperty": [
     {% if bike.engine_cc %}{"@type":"PropertyValue","name":"Engine","value":"{{ bike.engine_cc }}"}{% if bike.mileage or bike.power or bike.torque %},{% endif %}{% endif %}
     {% if bike.mileage %}{"@type":"PropertyValue","name":"Mileage","value":"{{ bike.mileage }}"}{% if bike.power or bike.torque %},{% endif %}{% endif %}
@@ -51,10 +51,10 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type":"ListItem","position":1,"name":"Home","item":"https://skylinewheels.in"},
-    {"@type":"ListItem","position":2,"name":"All Bikes","item":"https://skylinewheels.in/bikes/"},
-    {"@type":"ListItem","position":3,"name":"{{ bike.category.name }}","item":"https://skylinewheels.in/bikes/?category={{ bike.category.slug }}"},
-    {"@type":"ListItem","position":4,"name":"{{ bike.name }}","item":"https://skylinewheels.in/bikes/{{ bike.slug }}/"}
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://www.skylinewheels.in/"},
+    {"@type":"ListItem","position":2,"name":"All Bikes","item":"https://www.skylinewheels.in/bikes/"},
+    {"@type":"ListItem","position":3,"name":"{{ bike.category.name }}","item":"https://www.skylinewheels.in/bikes/?category={{ bike.category.slug }}"},
+    {"@type":"ListItem","position":4,"name":"Bajaj {{ bike.name }}","item":"https://www.skylinewheels.in/bikes/{{ bike.slug }}/"}
   ]
 }
 </script>
@@ -365,13 +365,15 @@
                   style="background:#e8f0fb; color:#003087; font-size:.8rem;">
                 {{ bike.category.name }}
             </span>
-            <h1 class="fw-bold mb-1" style="color:#111;">{{ bike.name }}</h1>
+            <h1 class="fw-bold mb-1" style="color:#111;">Bajaj {{ bike.name }} Price, Specs &amp; Test Ride in Noida</h1>
             <p class="fw-bold mb-3" style="color:#003087; font-size:1.9rem;">
                 {{ bike.formatted_price }}
             </p>
 
             {% if bike.description %}
             <p style="color:#4a5568; line-height:1.7;">{{ bike.description }}</p>
+            {% else %}
+            <p style="color:#4a5568; line-height:1.7;">Explore the Bajaj {{ bike.name }} at Skyline Bajaj. Check the specifications and displayed price, then contact a Noida or Greater Noida showroom to confirm current on-road price, availability, finance options and test ride details.</p>
             {% endif %}
 
             {% if bike.engine_cc or bike.power or bike.torque or bike.mileage %}

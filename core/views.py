@@ -25,7 +25,7 @@ from .forms import EnquiryForm, ServiceBookingForm, ExchangeForm
 # SITE CONFIG
 # ══════════════════════════════════════════════════════════════════════════════
 
-SITE_URL = 'https://skylinewheels.in'
+SITE_URL = 'https://www.skylinewheels.in'
 
 # Slug of the Chetak-only showroom
 CHETAK_SHOWROOM_SLUG = 'skyline-chetak-greater-noida'
@@ -259,10 +259,10 @@ def bike_list(request):
         )
         canonical_url   = f'{SITE_URL}/bikes/?category={selected_category}'
     else:
-        seo_title       = 'All Bajaj Bikes in Noida | Pulsar, Platina, CT, Dominar | Skyline Bajaj'
+        seo_title       = 'Bajaj Bikes in Noida | Pulsar, Platina, Dominar & More | Skyline Bajaj'
         seo_description = (
-            'Explore all Bajaj bikes available at Skyline Bajaj showrooms in Noida, '
-            'Bhangel and Greater Noida. Best price, EMI, exchange and test ride.'
+            'Explore Bajaj bike models at Skyline Bajaj showrooms in Noida, Bhangel and Greater Noida. '
+            'Compare Pulsar, Platina, CT, Dominar and Avenger details, then ask about current prices, finance, exchange or test rides.'
         )
         canonical_url   = f'{SITE_URL}/bikes/'
 
@@ -317,14 +317,14 @@ def bike_detail(request, slug):
 
     # ── SEO — use custom meta fields if set, else auto-generate ───
     seo_title = bike.meta_title if bike.meta_title else (
-        f'Bajaj {bike.name} Price in Noida | Specs & Test Ride'
+        f'{bike.name} Price in Noida | Specs & Test Ride | Skyline Bajaj'
     )
     seo_desc = bike.meta_description if bike.meta_description else (
-        f'Check the Bajaj {bike.name} price in Noida at Skyline Wheels. '
+        f'Explore the Bajaj {bike.name} at Skyline Bajaj in Noida. '
         + (f'{bike.engine_cc} engine, {bike.mileage} mileage. ' if bike.engine_cc and bike.mileage else '')
         + (f'{bike.engine_cc} engine. ' if bike.engine_cc and not bike.mileage else '')
         + (f'{bike.mileage} mileage. ' if bike.mileage and not bike.engine_cc else '')
-        + 'Ask about current price and availability, compare specifications, and book a test ride at our Noida or Greater Noida showroom.'
+        + 'View specifications, ask about current price and availability, or enquire about a test ride at a Noida or Greater Noida showroom.'
     )
     canonical_url = f'{SITE_URL}/bikes/{bike.slug}/'
     og_image = bike.get_primary_image_url() if callable(bike.get_primary_image_url) else bike.get_primary_image_url

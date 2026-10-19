@@ -5,11 +5,11 @@
 {# SEO BLOCKS                                                     #}
 {# ══════════════════════════════════════════════════════════════ #}
 
-{% block seo_title %}{{ seo_title|default:"All Bajaj Bikes in Noida | Pulsar, Platina, CT, Dominar | Skyline Bajaj" }}{% endblock %}
+{% block seo_title %}{{ seo_title|default:"Bajaj Bikes in Noida | Pulsar, Platina, Dominar & More | Skyline Bajaj" }}{% endblock %}
 
-{% block seo_description %}{{ seo_description|default:"Explore all Bajaj bikes at Skyline Bajaj showrooms in Noida, Bhangel and Greater Noida. Best price, EMI, exchange and test ride available." }}{% endblock %}
+{% block seo_description %}{{ seo_description|default:"Explore Bajaj bike models at Skyline Bajaj showrooms in Noida, Bhangel and Greater Noida. Compare model details, then ask about current prices, finance, exchange or test rides." }}{% endblock %}
 
-{% block canonical_url %}{{ canonical_url|default:"https://skylinewheels.in/bikes/" }}{% endblock %}
+{% block canonical_url %}{{ canonical_url|default:"https://www.skylinewheels.in/bikes/" }}{% endblock %}
 
 {% block og_title %}{{ seo_title|default:"All Bajaj Bikes in Noida | Skyline Bajaj" }}{% endblock %}
 {% block og_url %}{{ canonical_url|default:"https://skylinewheels.in/bikes/" }}{% endblock %}
@@ -282,7 +282,7 @@
                           style="background:#e8f0fb; color:#003087; font-size:.72rem;">
                         {{ bike.category.name }}
                     </span>
-                    <h2 class="fw-bold mb-1" style="color:#111; font-size:1rem;">{{ bike.name }}</h2>
+                    <h2 class="fw-bold mb-1" style="color:#111; font-size:1rem;">Bajaj {{ bike.name }}</h2>
                     <p class="fw-bold mb-2" style="color:#003087;">{{ bike.formatted_price }}</p>
 
                     <div class="d-flex gap-3 flex-wrap" style="font-size:.8rem; color:#6b7a99;">

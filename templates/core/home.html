@@ -2,9 +2,9 @@
 {% load static %}
 {% load skyline_tags %}
 
-{% block seo_title %}Bajaj Bike Showrooms in Noida & Greater Noida | Skyline Wheels{% endblock %}
+{% block seo_title %}Bajaj Showroom Near You in Noida & Greater Noida | Skyline Bajaj{% endblock %}
 
-{% block seo_description %}Find a Bajaj bike showroom near you in Noida and Greater Noida. Explore Pulsar, Dominar, Platina and Chetak models, compare prices, and enquire about test rides, finance and exchange at Skyline Wheels.{% endblock %}
+{% block seo_description %}Looking for a Bajaj showroom near you in Noida or Greater Noida? Explore Pulsar, Dominar, Platina, Avenger and Chetak models at Skyline Bajaj. Check model details and ask about current price, finance, exchange and test rides.{% endblock %}
 
 {% block content %}
 <style>
@@ -465,7 +465,7 @@
                 </h1>
                 <p class="mb-4"
                    style="color:rgba(255,255,255,.7); font-size:1.05rem; line-height:1.7; max-width:520px;">
-                    Ride the Thrill. Own a Bajaj. — From Pulsar to Chetak EV, explore the full range at your nearest showroom.
+                    Explore Bajaj motorcycles and Chetak electric scooters at Skyline showrooms in Noida and Greater Noida. View model details, compare specifications, and ask about current prices, finance and test rides.
                 </p>
                 <div class="d-flex gap-3 flex-wrap mb-4">
                     <a href="{% url 'bike_list' %}"
@@ -817,7 +817,7 @@
 <section class="py-4" style="background:#fff;border-top:1px solid #e8f0fb;">
     <div class="container">
         <p class="text-center fw-bold text-uppercase mb-3"
-           style="font-size:.72rem;letter-spacing:1.5px;color:#5a6a8a;">Our Showroom Locations</p>
+           style="font-size:.72rem;letter-spacing:1.5px;color:#5a6a8a;">Bajaj and Chetak Showrooms in Noida &amp; Greater Noida</p>
         <div class="d-flex flex-wrap gap-2 justify-content-center">
             {% for showroom in showrooms %}
             <a href="{% url 'showroom_detail' showroom.slug %}" class="showroom-badge">
@@ -825,6 +825,16 @@
             </a>
             {% endfor %}
         </div>
+        {% if all_bikes %}
+        <div class="mt-4 text-center" aria-label="Explore Bajaj bike models">
+            <p class="small fw-semibold mb-2" style="color:#5a6a8a;">Explore Bajaj bike prices, specifications and model details</p>
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                {% for bike in all_bikes %}
+                <a class="showroom-badge" href="{% url 'bike_detail' bike.slug %}">Bajaj {{ bike.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 </section>
 

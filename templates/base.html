@@ -18,13 +18,13 @@
     <meta name="author" content="Skyline Bajaj">
 
     {# Canonical — per-page URL passed from view context or overridden in child template #}
-    <link rel="canonical" href="{% block canonical_url %}{{ canonical_url|default:"https://skylinewheels.in/" }}{% endblock %}">
+    <link rel="canonical" href="{% block canonical_url %}{{ canonical_url|default:"https://www.skylinewheels.in/" }}{% endblock %}">
 
     {# ── Open Graph ── controls WhatsApp / Facebook link previews #}
     <meta property="og:type" content="website">
     <meta property="og:title" content="{% block og_title %}{{ seo_title|default:"Bajaj Showroom in Noida | Bhangel | Greater Noida | Skyline Bajaj" }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ seo_description|default:"Authorized Bajaj &amp; Chetak dealer. New bikes, test rides, EMI, exchange, service. 4 showrooms across Noida and Greater Noida." }}{% endblock %}">
-    <meta property="og:url" content="{% block og_url %}{{ canonical_url|default:"https://skylinewheels.in/" }}{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ canonical_url|default:"https://www.skylinewheels.in/" }}{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{% if og_image_url %}{{ og_image_url }}{% else %}{% static 'images/logo.png' %}{% endif %}{% endblock %}">
     <meta property="og:site_name" content="Skyline Bajaj">
     <meta property="og:locale" content="en_IN">
