@@ -29,12 +29,12 @@ def with_logo(url):
 @register.filter(name='cloudinary_w')
 def cloudinary_w(url, width):
     """
-    Injects width + format + quality into a Cloudinary URL.
+    Injects width + automatic format + bandwidth-oriented quality into a Cloudinary URL.
 
     Usage: {{ img_url|with_logo|cloudinary_w:1920 }}
 
     Produces a SINGLE clean transformation step:
-        /upload/f_auto,q_auto:best,w_<width>/...
+        /upload/f_auto,q_auto:eco,w_<width>/...
     Never call on a URL that already has f_auto or q_auto baked in
     (models.py no longer does that — get_display_url returns raw URLs).
     """
@@ -43,4 +43,4 @@ def cloudinary_w(url, width):
     url = str(url)
     if 'res.cloudinary.com' not in url or '/upload/' not in url:
         return url
-    return url.replace('/upload/', f'/upload/f_auto,q_auto:best,w_{int(width)}/', 1)
+    return url.replace('/upload/', f'/upload/f_auto,q_auto:eco,w_{int(width)}/', 1)

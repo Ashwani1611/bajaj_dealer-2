@@ -378,16 +378,20 @@
         {% with img_url=bike.get_primary_image_url %}
         {% if img_url %}
             {# FIX: fetchpriority="high" on first slide = LCP element, tells browser to prioritise this fetch #}
-            {# FIX: cloudinary_w:1200 — serves correct size, f_auto gives WebP/AVIF automatically           #}
-            <img src="{{ img_url|with_logo|cloudinary_w:1920 }}" referrerpolicy="no-referrer"
+            {# Responsive sources keep mobile from downloading the full desktop hero. #}
+            <img src="{{ img_url|with_logo|cloudinary_w:1280 }}"
+                 srcset="{{ img_url|with_logo|cloudinary_w:640 }} 640w, {{ img_url|with_logo|cloudinary_w:960 }} 960w, {{ img_url|with_logo|cloudinary_w:1280 }} 1280w, {{ img_url|with_logo|cloudinary_w:1920 }} 1920w"
+                 sizes="100vw" referrerpolicy="no-referrer"
                  width="1600" height="900"
                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                 decoding="async"
                  {% if forloop.first %}fetchpriority="high"{% endif %}
                  alt="{{ bike.name }} – Bajaj dealer Noida">
         {% else %}
             <img src="{% static 'images/bike-placeholder.jpg' %}"
                  width="1600" height="900"
                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                 decoding="async"
                  {% if forloop.first %}fetchpriority="high"{% endif %}
                  alt="{{ bike.name }} – Bajaj dealer Noida">
         {% endif %}
@@ -558,7 +562,7 @@
                     {# FIX: cloudinary_w:1200 — resizes offer image to actual display width, serves WebP/AVIF #}
                     <img src="{{ offer.image.url|cloudinary_w:1200 }}" class="offer-slide-img"
                          width="1200" height="400"
-                         loading="lazy" alt="{{ offer.title }}">
+                         loading="lazy" decoding="async" alt="{{ offer.title }}">
                     {% if offer.link %}</a>{% endif %}
                 </div>
                 {% endfor %}
@@ -589,11 +593,11 @@
                         {# FIX: cloudinary_w:200 — strip thumbnails display at 200px, no need to download 800px #}
                         <img src="{{ img_url|with_logo|cloudinary_w:200 }}" referrerpolicy="no-referrer"
                              width="200" height="130"
-                             loading="lazy" alt="{{ bike.name }} price in Noida">
+                             loading="lazy" decoding="async" alt="{{ bike.name }} price in Noida">
                     {% else %}
                         <img src="{% static 'images/bike-placeholder.jpg' %}"
                              width="200" height="130"
-                             loading="lazy" alt="{{ bike.name }} price in Noida">
+                             loading="lazy" decoding="async" alt="{{ bike.name }} price in Noida">
                     {% endif %}
                     <div class="gallery-thumb-label" aria-hidden="true">{{ bike.name }}</div>
                 </a>
@@ -609,11 +613,11 @@
                     {# FIX: cloudinary_w:560 — matches the width/height attrs already on these images #}
                     <img src="{{ img_url|with_logo|cloudinary_w:560 }}" referrerpolicy="no-referrer"
                          width="560" height="420"
-                         loading="lazy" alt="{{ bike.name }} – Bajaj dealer Noida">
+                         loading="lazy" decoding="async" alt="{{ bike.name }} – Bajaj dealer Noida">
                 {% else %}
                     <img src="{% static 'images/bike-placeholder.jpg' %}"
                          width="560" height="420"
-                         loading="lazy" alt="{{ bike.name }} – Bajaj dealer Noida">
+                         loading="lazy" decoding="async" alt="{{ bike.name }} – Bajaj dealer Noida">
                 {% endif %}
                 <div class="item-overlay" aria-hidden="true"></div>
                 <div class="item-info" aria-hidden="true">
@@ -658,6 +662,7 @@
                             <img src="{{ first_img|with_logo|cloudinary_w:400 }}" class="bike-img"
                                  referrerpolicy="no-referrer"
                                  width="400" height="210"
+                                 decoding="async"
                                  loading="lazy"
                                  alt="{{ bike.name }} price in Noida">
                         {% else %}
