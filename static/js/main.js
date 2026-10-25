@@ -5,6 +5,24 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
+    // ---- HOME BIKE CATALOG CATEGORY FILTERS ----
+    var catalog = document.querySelector('[data-bike-catalog]');
+    if (catalog) {
+        var filters = catalog.querySelectorAll('[data-catalog-filter]');
+        var cards = catalog.querySelectorAll('[data-bike-card]');
+        filters.forEach(function (filter) {
+            filter.addEventListener('click', function () {
+                var category = filter.getAttribute('data-catalog-filter');
+                filters.forEach(function (item) {
+                    item.setAttribute('aria-pressed', item === filter ? 'true' : 'false');
+                });
+                cards.forEach(function (card) {
+                    card.hidden = category !== 'all' && card.getAttribute('data-category') !== category;
+                });
+            });
+        });
+    }
+
     // ---- AUTO-DISMISS ALERTS after 4 seconds ----
     document.querySelectorAll('.alert.alert-success').forEach(function (alert) {
         setTimeout(function () {

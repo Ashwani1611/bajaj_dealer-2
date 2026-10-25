@@ -315,6 +315,28 @@
     .bike-card:hover .bike-img { transform: scale(1.04); }
     .bike-img-wrap { overflow: hidden; }
     .bike-img-placeholder { height: 210px; }
+    .catalog-section { background: #f8faff; }
+    .catalog-toolbar { position: sticky; top: 72px; z-index: 20; background: rgba(248,250,255,.96); backdrop-filter: blur(10px); padding: 12px 0; }
+    .catalog-filters { display: flex; gap: 8px; overflow-x: auto; padding: 2px 1px 8px; scrollbar-width: thin; }
+    .catalog-filter { flex: 0 0 auto; border: 1px solid #d0dff5; border-radius: 999px; background: #fff; color: #244064; padding: 8px 16px; font-size: .85rem; font-weight: 650; }
+    .catalog-filter[aria-pressed="true"] { background: #003087; border-color: #003087; color: #fff; }
+    .catalog-bike-card { background: #fff; border: 1px solid #d0dff5; border-radius: 14px; overflow: hidden; height: 100%; transition: transform .2s, box-shadow .2s; }
+    .catalog-bike-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,48,135,.12); }
+    .catalog-bike-image { height: 190px; width: 100%; object-fit: contain; background: #fff; padding: 10px; }
+    .catalog-bike-placeholder { height: 190px; background: #eef3fa; color: #91a0b5; }
+    .catalog-bike-body { padding: 16px; }
+    .catalog-bike-name { color: #14243c; font-size: 1.05rem; font-weight: 750; line-height: 1.25; min-height: 2.5em; }
+    .catalog-bike-price { color: #003087; font-size: 1.1rem; font-weight: 800; }
+    .catalog-bike-specs { min-height: 24px; color: #66758c; font-size: .78rem; }
+    .catalog-bike-actions { display: flex; gap: 8px; padding: 0 16px 16px; }
+    .catalog-bike-actions .btn { flex: 1; font-size: .82rem; }
+    @media (max-width: 575px) {
+        .catalog-toolbar { top: 62px; }
+        .catalog-bike-image, .catalog-bike-placeholder { height: 145px; }
+        .catalog-bike-body { padding: 12px; }
+        .catalog-bike-actions { padding: 0 12px 12px; gap: 6px; }
+        .catalog-bike-actions .btn { padding: 7px 5px; font-size: .75rem; }
+    }
 
     /* ══ Quick Actions ══ */
     .quick-action-card {
@@ -573,133 +595,52 @@
 {% endif %}
 
 
-<!-- ══ GALLERY ══ -->
+<!-- ══ FULL BIKE RANGE ══ -->
 {% if all_bikes %}
-<section class="gallery-section py-5">
-    <div class="container-fluid px-4">
-        <div class="text-center mb-4">
-            <span class="section-badge" style="background:rgba(255,255,255,.1);color:#7eb3ff;">Our Bikes</span>
-            <h2 class="fw-bold text-white" style="font-family:'Rajdhani',sans-serif;font-size:2rem;">Explore the Full Range</h2>
-            <p style="color:rgba(255,255,255,.5);">Click any bike to see full details</p>
-        </div>
-        <div class="gallery-strip-wrap mb-4">
-            <div class="gallery-strip" id="galleryStrip">
-                {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
-                <a href="{% url 'bike_detail' bike.slug %}"
-                   class="gallery-thumb"
-                   aria-label="View {{ bike.name }} details"
-                   style="text-decoration:none;">
-                    {% if img_url %}
-                        {# FIX: cloudinary_w:200 — strip thumbnails display at 200px, no need to download 800px #}
-                        <img src="{{ img_url|with_logo|cloudinary_w:200 }}" referrerpolicy="no-referrer"
-                             width="200" height="130"
-                             loading="lazy" decoding="async" alt="{{ bike.name }} price in Noida">
-                    {% else %}
-                        <img src="{% static 'images/bike-placeholder.jpg' %}"
-                             width="200" height="130"
-                             loading="lazy" decoding="async" alt="{{ bike.name }} price in Noida">
-                    {% endif %}
-                    <div class="gallery-thumb-label" aria-hidden="true">{{ bike.name }}</div>
-                </a>
-                {% endwith %}{% endfor %}
-            </div>
-        </div>
-        <div class="big-gallery-grid">
-            {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
-            <a href="{% url 'bike_detail' bike.slug %}"
-               class="big-gallery-item {% if forloop.counter == 1 or forloop.counter == 6 %}large{% endif %}"
-               aria-label="View {{ bike.name }} details – {{ bike.formatted_price }}">
-                {% if img_url %}
-                    {# FIX: cloudinary_w:560 — matches the width/height attrs already on these images #}
-                    <img src="{{ img_url|with_logo|cloudinary_w:560 }}" referrerpolicy="no-referrer"
-                         width="560" height="420"
-                         loading="lazy" decoding="async" alt="{{ bike.name }} – Bajaj dealer Noida">
-                {% else %}
-                    <img src="{% static 'images/bike-placeholder.jpg' %}"
-                         width="560" height="420"
-                         loading="lazy" decoding="async" alt="{{ bike.name }} – Bajaj dealer Noida">
-                {% endif %}
-                <div class="item-overlay" aria-hidden="true"></div>
-                <div class="item-info" aria-hidden="true">
-                    <div class="item-name">{{ bike.name }}</div>
-                    <div class="item-price">{{ bike.formatted_price }}</div>
-                    <span class="item-cta"><i class="bi bi-eye-fill" aria-hidden="true"></i> View Details</span>
-                </div>
-            </a>
-            {% endwith %}{% endfor %}
-        </div>
-        <div class="text-center mt-4">
-            <a href="{% url 'bike_list' %}" class="btn fw-semibold px-5"
-               style="background:#fff;color:var(--blue);border:none;border-radius:8px;padding:12px 36px;">
-                View All Bikes <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
-            </a>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-
-<!-- ══ FEATURED BIKES CARDS ══ -->
-{% if featured_bikes %}
-<section class="py-5" style="background:#f8faff;">
+<section class="catalog-section py-5" id="bike-catalog" data-bike-catalog>
     <div class="container">
         <div class="text-center mb-4">
-            <span class="section-badge">Top Picks</span>
-            <h2 class="fw-bold mb-1" style="color:#003087;">Featured Bikes</h2>
-            <p style="color:#5a6a8a;">Handpicked models for every rider</p>
+            <span class="section-badge">The Bajaj Range</span>
+            <h2 class="fw-bold mb-1" style="color:#003087;">Find your next ride</h2>
+            <p class="mb-0" style="color:#5a6a8a;">Browse all {{ all_bikes|length }} models. Choose a family to narrow the list.</p>
         </div>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for bike in featured_bikes %}
-            <div class="col">
-                <a href="{% url 'bike_detail' bike.slug %}"
-                   class="text-decoration-none"
-                   aria-label="View {{ bike.name }} details – {{ bike.formatted_price }}">
-                <div class="card h-100 border-0 bike-card">
-                    <div class="bike-img-wrap">
-                        {% with first_img=bike.get_primary_image_url %}
-                        {% if first_img %}
-                            {# FIX: cloudinary_w:400 — card image displays at 400px, was downloading at 827px #}
-                            <img src="{{ first_img|with_logo|cloudinary_w:400 }}" class="bike-img"
-                                 referrerpolicy="no-referrer"
-                                 width="400" height="210"
-                                 decoding="async"
-                                 loading="lazy"
-                                 alt="{{ bike.name }} price in Noida">
-                        {% else %}
-                            <div class="bike-img-placeholder d-flex align-items-center justify-content-center bg-light">
-                                <i class="bi bi-bicycle text-secondary" style="font-size:4rem;opacity:.3;" aria-hidden="true"></i>
-                            </div>
-                        {% endif %}
-                        {% endwith %}
-                    </div>
-                    <div class="card-body pt-2">
-                        <span class="badge px-2 py-1 mb-1" style="background:#e8f0fb;color:#003087;font-size:.7rem;">{{ bike.category.name }}</span>
-                        <h3 class="fw-bold mb-1" style="color:#111;font-size:1.1rem;">{{ bike.name }}</h3>
-                        <p class="fw-bold mb-2" style="color:#003087;font-size:1.05rem;">{{ bike.formatted_price }}</p>
-                        <div class="d-flex gap-3 flex-wrap" style="font-size:.78rem;color:#6b7a99;">
-                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1" aria-hidden="true"></i>{{ bike.engine_cc }}</span>{% endif %}
-                            {% if bike.mileage %}<span><i class="bi bi-fuel-pump me-1" aria-hidden="true"></i>{{ bike.mileage }}</span>{% endif %}
-                        </div>
-                    </div>
-                    <div class="card-footer bg-white border-0 pb-3">
-                        <div class="d-flex gap-2">
-                            <span class="btn btn-sm flex-fill fw-semibold" style="background:#003087;color:#fff;border:none;">View Details</span>
-                            <a href="{% url 'enquiry' %}?bike={{ bike.pk }}"
-                               class="btn btn-sm flex-fill fw-semibold"
-                               style="background:#e8f0fb;color:#003087;border:1px solid #d0dff5;"
-                               aria-label="Book a test ride for {{ bike.name }}"
-                               onclick="event.stopPropagation();">Book Ride</a>
-                        </div>
-                    </div>
-                </div>
-                </a>
+        <div class="catalog-toolbar">
+            <div class="catalog-filters" role="group" aria-label="Filter bikes by category">
+                <button type="button" class="catalog-filter" data-catalog-filter="all" aria-pressed="true">All models <span class="ms-1">{{ all_bikes|length }}</span></button>
+                {% for cat in categories %}
+                <button type="button" class="catalog-filter" data-catalog-filter="{{ cat.slug }}" aria-pressed="false">{{ cat.name }}</button>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
-        <div class="text-center mt-4">
-            <a href="{% url 'bike_list' %}" class="btn fw-semibold px-5"
-               style="background:#003087;color:#fff;border:none;border-radius:8px;">View All Bikes</a>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 g-lg-4" data-catalog-grid>
+            {% for bike in all_bikes %}{% with img_url=bike.get_primary_image_url %}
+            <div class="col" data-bike-card data-category="{{ bike.category.slug }}">
+                <article class="catalog-bike-card">
+                    <a href="{% url 'bike_detail' bike.slug %}" class="d-block" aria-label="View {{ bike.name }} details">
+                        {% if img_url %}
+                        <img src="{{ img_url|with_logo|cloudinary_w:400 }}" class="catalog-bike-image" width="400" height="190" loading="lazy" decoding="async" alt="{{ bike.name }}">
+                        {% else %}
+                        <div class="catalog-bike-placeholder d-flex align-items-center justify-content-center"><i class="bi bi-bicycle" style="font-size:3rem;" aria-hidden="true"></i></div>
+                        {% endif %}
+                    </a>
+                    <div class="catalog-bike-body">
+                        <span class="badge mb-2" style="background:#e8f0fb;color:#003087;">{{ bike.category.name }}</span>
+                        <h3 class="catalog-bike-name mb-2">{{ bike.name }}</h3>
+                        <div class="catalog-bike-price">{{ bike.formatted_price }}</div>
+                        <div class="catalog-bike-specs mt-2 d-flex gap-2 flex-wrap">
+                            {% if bike.engine_cc %}<span><i class="bi bi-gear me-1" aria-hidden="true"></i>{{ bike.engine_cc }}</span>{% endif %}
+                            {% if bike.mileage %}<span><i class="bi bi-speedometer2 me-1" aria-hidden="true"></i>{{ bike.mileage }}</span>{% endif %}
+                        </div>
+                    </div>
+                    <div class="catalog-bike-actions">
+                        <a href="{% url 'bike_detail' bike.slug %}" class="btn btn-sm fw-semibold" style="background:#003087;color:#fff;">Details</a>
+                        <a href="{% url 'enquiry' %}?bike={{ bike.pk }}" class="btn btn-sm fw-semibold" style="background:#e8f0fb;color:#003087;border:1px solid #d0dff5;">Test ride</a>
+                    </div>
+                </article>
+                </div>
+            {% endwith %}{% endfor %}
         </div>
+        <p class="text-center mt-4 mb-0" style="color:#66758c;font-size:.82rem;">Prices shown are indicative. Contact a showroom for current on-road pricing and offers.</p>
     </div>
 </section>
 {% endif %}

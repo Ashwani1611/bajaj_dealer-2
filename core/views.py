@@ -185,8 +185,8 @@ def home(request):
             .filter(is_active=True)
             .select_related('category')
             .prefetch_related(_color_prefetch(images_qs=_media_images_qs()))
-            .only('id', 'name', 'slug', 'price', 'category')
-            [:24]
+            .only('id', 'name', 'slug', 'price', 'engine_cc', 'mileage', 'category')
+            .order_by('category__order', 'name')
         )
         cache.set('home_all_bikes', home_bikes, timeout=60 * 15)
 
